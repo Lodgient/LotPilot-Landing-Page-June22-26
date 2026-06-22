@@ -51,14 +51,12 @@ export default function Nav() {
         </div>
 
         <div className="hidden items-center gap-3 lg:flex">
-          <a
-            href="https://lotpilot.com"
-            target="_blank"
-            rel="noopener noreferrer"
+          <Link
+            href="/login"
             className="text-sm text-ink-muted transition-colors hover:text-ink"
           >
             Dealer login
-          </a>
+          </Link>
           <Link
             href="/#demo"
             className="inline-flex h-10 items-center rounded-full bg-cyan px-5 text-sm font-semibold text-ink-inverse transition-all hover:-translate-y-0.5 hover:bg-cyan/90 cta-glow"

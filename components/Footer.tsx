@@ -18,7 +18,7 @@ const COLS = [
       { label: "Connect your feed", href: "#feed" },
       { label: "Book a demo", href: "#demo" },
       { label: "Pricing", href: "#pricing" },
-      { label: "Dealer login", href: "https://lotpilot.com" },
+      { label: "Dealer login", href: "/login" },
     ],
   },
   {
