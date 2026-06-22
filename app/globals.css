@@ -213,6 +213,19 @@ body::before {
   border-radius: 4px;
 }
 
+/* Board-ready print: drop the dark chrome, print legible on white. */
+@media print {
+  .no-print { display: none !important; }
+  body::before { display: none !important; }
+  body { background: #fff !important; color: #111 !important; }
+  main { padding: 0 !important; }
+  .surface,
+  .ring-gradient::after { background: #fff !important; border-color: #d9dee6 !important; box-shadow: none !important; }
+  .glow-accent, .glow-cyan, .glow-violet, .cta-glow { display: none !important; box-shadow: none !important; }
+  .text-ink, .text-ink-soft, .text-ink-muted, .text-ink-faint { color: #1a1f2b !important; }
+  .text-gradient { -webkit-text-fill-color: #0b7285 !important; color: #0b7285 !important; }
+}
+
 .scroll-slim::-webkit-scrollbar { width: 8px; height: 8px; }
 .scroll-slim::-webkit-scrollbar-thumb {
   background: var(--color-line-strong);

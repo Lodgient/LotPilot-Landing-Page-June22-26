@@ -163,6 +163,23 @@ export interface Recommendation {
   category: string;
 }
 
+export interface Benchmark {
+  metric: string;
+  yourValue: number;
+  peerMedian: number;
+  peerTop: number;
+  percentile: number;
+  unit: "score" | "pct" | "sec" | "usd" | "count";
+  higherBetter: boolean;
+}
+
+export interface ForecastRow {
+  metric: string;
+  current: number;
+  projected: number;
+  unit: "score" | "usd" | "count";
+}
+
 export interface FunnelStage {
   stage: string;
   value: number;

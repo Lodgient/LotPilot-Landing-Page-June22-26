@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, type ReactNode } from "react";
+import { Suspense, useState, type ReactNode } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import Logo from "@/components/Logo";
@@ -8,6 +8,8 @@ import { cn } from "@/lib/cn";
 import { createClient } from "@/lib/supabase/client";
 import type { Dealer, Profile } from "@/lib/dashboard/types";
 import { DemoBadge } from "./ui";
+import DateRange from "./DateRange";
+import { PrintButton } from "./Exports";
 
 const NAV = [
   { href: "/dashboard", label: "Command Center", icon: "◧", exact: true },
@@ -151,7 +153,7 @@ export default function Shell({
   return (
     <div className="min-h-screen lg:grid lg:grid-cols-[268px_1fr]">
       {/* desktop sidebar */}
-      <aside className="sticky top-0 hidden h-screen flex-col border-r border-line bg-canvas-2/40 p-5 lg:flex">
+      <aside className="no-print sticky top-0 hidden h-screen flex-col border-r border-line bg-canvas-2/40 p-5 lg:flex">
         <SidebarInner dealer={dealer} profile={profile} />
       </aside>
 
@@ -167,7 +169,7 @@ export default function Shell({
 
       <div className="min-w-0">
         {/* topbar */}
-        <header className="sticky top-0 z-40 flex h-16 items-center gap-3 border-b border-line bg-canvas/80 px-5 backdrop-blur-xl sm:px-8">
+        <header className="no-print sticky top-0 z-40 flex h-16 items-center gap-3 border-b border-line bg-canvas/80 px-5 backdrop-blur-xl sm:px-8">
           <button
             onClick={() => setOpen(true)}
             className="grid h-9 w-9 place-items-center rounded-lg border border-line text-ink lg:hidden"
@@ -179,13 +181,11 @@ export default function Shell({
             <h1 className="truncate text-base font-semibold text-ink sm:text-lg">{title}</h1>
             {intro && <p className="hidden truncate text-xs text-ink-muted sm:block">{intro}</p>}
           </div>
+          <Suspense fallback={null}>
+            <DateRange />
+          </Suspense>
+          <PrintButton />
           <DemoBadge />
-          <Link
-            href="/#audit"
-            className="hidden h-9 items-center rounded-full bg-cyan px-4 text-sm font-semibold text-ink-inverse transition-colors hover:bg-cyan/90 sm:inline-flex"
-          >
-            New audit
-          </Link>
         </header>
 
         <main className="px-5 py-6 sm:px-8 sm:py-8">{children}</main>

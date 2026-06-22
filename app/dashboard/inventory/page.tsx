@@ -1,3 +1,4 @@
+import { Suspense } from "react";
 import Shell from "@/components/dashboard/Shell";
 import InventoryView from "@/components/dashboard/InventoryView";
 import { requireDealer, getVehicles } from "@/lib/dashboard/queries";
@@ -15,7 +16,9 @@ export default async function InventoryPage() {
       title="Inventory AI"
       intro="How every car on your lot performs inside AI answer engines."
     >
-      <InventoryView vehicles={vehicles} />
+      <Suspense fallback={null}>
+        <InventoryView vehicles={vehicles} />
+      </Suspense>
     </Shell>
   );
 }

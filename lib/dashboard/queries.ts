@@ -3,8 +3,10 @@ import { createClient } from "@/lib/supabase/server";
 import type {
   ActivityEvent,
   AttributionEngine,
+  Benchmark,
   Dealer,
   DemandRow,
+  ForecastRow,
   FunnelStage,
   KPI,
   Lead,
@@ -235,6 +237,31 @@ export async function getRecommendations(): Promise<Recommendation[]> {
     impact: r.impact,
     effort: r.effort,
     category: r.category,
+  }));
+}
+
+export async function getBenchmarks(): Promise<Benchmark[]> {
+  const supabase = await createClient();
+  const { data } = await supabase.from("dp_benchmarks").select("*").order("sort");
+  return (data ?? []).map((r: any) => ({
+    metric: r.metric,
+    yourValue: Number(r.your_value),
+    peerMedian: Number(r.peer_median),
+    peerTop: Number(r.peer_top),
+    percentile: r.percentile,
+    unit: r.unit,
+    higherBetter: r.higher_better,
+  }));
+}
+
+export async function getForecast(): Promise<ForecastRow[]> {
+  const supabase = await createClient();
+  const { data } = await supabase.from("dp_forecast").select("*").order("sort");
+  return (data ?? []).map((r: any) => ({
+    metric: r.metric,
+    current: Number(r.current),
+    projected: Number(r.projected),
+    unit: r.unit,
   }));
 }
 

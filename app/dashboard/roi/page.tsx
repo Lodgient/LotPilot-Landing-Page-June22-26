@@ -1,6 +1,7 @@
 import Shell from "@/components/dashboard/Shell";
 import { Card, PanelHeading, StatCard, Badge } from "@/components/dashboard/ui";
 import { Funnel } from "@/components/dashboard/charts";
+import Forecast from "@/components/dashboard/Forecast";
 import {
   requireDealer,
   getKpis,
@@ -8,6 +9,7 @@ import {
   getVsMarketplace,
   getCustomersOwned,
   getAttributionByEngine,
+  getForecast,
 } from "@/lib/dashboard/queries";
 
 export const dynamic = "force-dynamic";
@@ -16,12 +18,13 @@ const money = (n: number) => "$" + n.toLocaleString();
 
 export default async function RoiPage() {
   const { dealer, profile } = await requireDealer();
-  const [kpis, funnel, vsMarket, owned, byEngine] = await Promise.all([
+  const [kpis, funnel, vsMarket, owned, byEngine, forecast] = await Promise.all([
     getKpis("roi"),
     getFunnel(),
     getVsMarketplace(),
     getCustomersOwned(),
     getAttributionByEngine(),
+    getForecast(),
   ]);
   const maxGross = Math.max(...byEngine.map((e) => e.gross), 1);
   const totalGross = byEngine.reduce((s, e) => s + e.gross, 0);
@@ -38,6 +41,15 @@ export default async function RoiPage() {
           <StatCard key={k.label} kpi={k} />
         ))}
       </div>
+
+      {/* Forecast */}
+      <Card glow className="mt-6">
+        <PanelHeading
+          title="Projected impact"
+          sub="If you clear your 5 flagged fixes — next 90 days"
+        />
+        <Forecast items={forecast} />
+      </Card>
 
       <div className="mt-6 grid gap-6 lg:grid-cols-[1.3fr_1fr]">
         <Card>

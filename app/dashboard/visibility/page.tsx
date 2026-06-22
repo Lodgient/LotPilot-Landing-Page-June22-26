@@ -1,6 +1,7 @@
 import Shell from "@/components/dashboard/Shell";
 import { Card, PanelHeading, Badge } from "@/components/dashboard/ui";
 import { LineChart, Donut, ProgressBar } from "@/components/dashboard/charts";
+import Benchmarks from "@/components/dashboard/Benchmarks";
 import {
   requireDealer,
   getVisibility,
@@ -8,6 +9,7 @@ import {
   getVisibilityQueries,
   getShareOfVoice,
   getRecommendedVins,
+  getBenchmarks,
 } from "@/lib/dashboard/queries";
 import { ENGINES } from "@/lib/dashboard/types";
 
@@ -15,12 +17,13 @@ export const dynamic = "force-dynamic";
 
 export default async function VisibilityPage() {
   const { dealer, profile } = await requireDealer();
-  const [visibility, pillars, queries, sov, vins] = await Promise.all([
+  const [visibility, pillars, queries, sov, vins, benchmarks] = await Promise.all([
     getVisibility(),
     getPillars(),
     getVisibilityQueries(),
     getShareOfVoice(),
     getRecommendedVins(),
+    getBenchmarks(),
   ]);
 
   const you = sov.find((s) => s.value === Math.max(...sov.map((x) => x.value)));
@@ -158,6 +161,14 @@ export default async function VisibilityPage() {
           </ul>
         </Card>
       </div>
+
+      <Card className="mt-6">
+        <PanelHeading
+          title="How you stack up"
+          sub="Benchmarked against comparable franchise dealers"
+        />
+        <Benchmarks items={benchmarks} />
+      </Card>
     </Shell>
   );
 }

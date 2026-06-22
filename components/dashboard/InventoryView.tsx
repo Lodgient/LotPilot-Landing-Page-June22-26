@@ -1,8 +1,10 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import { usePathname, useSearchParams } from "next/navigation";
 import { Card } from "@/components/dashboard/ui";
 import { Sparkline } from "@/components/dashboard/charts";
+import { ExportCsv } from "@/components/dashboard/Exports";
 import { ENGINES, type Vehicle } from "@/lib/dashboard/types";
 import { cn } from "@/lib/cn";
 
@@ -44,10 +46,24 @@ function EngineDots({ v }: { v: Vehicle }) {
 }
 
 export default function InventoryView({ vehicles }: { vehicles: Vehicle[] }) {
-  const [filter, setFilter] = useState<Filter>("all");
-  const [sort, setSort] = useState<SortKey>("ai");
-  const [q, setQ] = useState("");
+  const sp = useSearchParams();
+  const pathname = usePathname();
+  const [filter, setFilter] = useState<Filter>(((sp.get("view") as Filter) ?? "all"));
+  const [sort, setSort] = useState<SortKey>(((sp.get("sort") as SortKey) ?? "ai"));
+  const [q, setQ] = useState(sp.get("q") ?? "");
   const [active, setActive] = useState<Vehicle | null>(null);
+  const [copied, setCopied] = useState(false);
+
+  function copyView() {
+    const p = new URLSearchParams();
+    p.set("view", filter);
+    p.set("sort", sort);
+    if (q.trim()) p.set("q", q.trim());
+    const url = `${window.location.origin}${pathname}?${p.toString()}`;
+    navigator.clipboard?.writeText(url);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 1600);
+  }
 
   const summary = useMemo(() => {
     const total = vehicles.length;
@@ -149,7 +165,7 @@ export default function InventoryView({ vehicles }: { vehicles: Vehicle[] }) {
             {f.label}
           </button>
         ))}
-        <div className="ml-auto flex items-center gap-2">
+        <div className="ml-auto flex flex-wrap items-center gap-2">
           <input
             value={q}
             onChange={(e) => setQ(e.target.value)}
@@ -166,6 +182,41 @@ export default function InventoryView({ vehicles }: { vehicles: Vehicle[] }) {
             <option value="leads" className="bg-panel">Sort: AI leads</option>
             <option value="price" className="bg-panel">Sort: Price</option>
           </select>
+          <button
+            onClick={copyView}
+            className="inline-flex h-9 items-center gap-1.5 rounded-lg border border-line-strong bg-white/[0.03] px-3 text-sm text-ink-soft transition-colors hover:border-cyan/50 hover:text-ink"
+          >
+            {copied ? "✓ Link copied" : "🔗 Save view"}
+          </button>
+          <ExportCsv
+            filename="lotpilot-inventory-ai.csv"
+            columns={[
+              { key: "vehicle", label: "Vehicle" },
+              { key: "vin", label: "VIN" },
+              { key: "stockType", label: "Stock" },
+              { key: "price", label: "Price" },
+              { key: "mileage", label: "Mileage" },
+              { key: "daysOnLot", label: "Days on lot" },
+              { key: "aiScore", label: "AI score" },
+              { key: "enginesCiting", label: "Engines citing" },
+              { key: "queriesMatched", label: "Queries matched" },
+              { key: "aiLeads", label: "AI leads" },
+              { key: "blocker", label: "Top fix" },
+            ]}
+            rows={rows.map((v) => ({
+              vehicle: `${v.year} ${v.make} ${v.model} ${v.trim}`,
+              vin: v.vin,
+              stockType: v.stockType,
+              price: v.price,
+              mileage: v.mileage,
+              daysOnLot: v.daysOnLot,
+              aiScore: v.aiScore,
+              enginesCiting: v.enginesCiting,
+              queriesMatched: v.queriesMatched,
+              aiLeads: v.aiLeads,
+              blocker: v.blocker,
+            }))}
+          />
         </div>
       </div>
 

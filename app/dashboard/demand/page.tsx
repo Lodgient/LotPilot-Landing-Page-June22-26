@@ -1,6 +1,7 @@
 import Shell from "@/components/dashboard/Shell";
 import { Card, PanelHeading, Badge } from "@/components/dashboard/ui";
 import { Sparkline } from "@/components/dashboard/charts";
+import { ExportCsv } from "@/components/dashboard/Exports";
 import { requireDealer, getDemand } from "@/lib/dashboard/queries";
 
 export const dynamic = "force-dynamic";
@@ -46,6 +47,29 @@ export default async function DemandPage() {
           <PanelHeading
             title="Buyer demand vs your coverage"
             sub="Weekly query volume in Austin, TX"
+            action={
+              <ExportCsv
+                filename="lotpilot-demand.csv"
+                columns={[
+                  { key: "query", label: "Query" },
+                  { key: "segment", label: "Segment" },
+                  { key: "weeklyVolume", label: "Weekly volume" },
+                  { key: "yourStock", label: "Your stock" },
+                  { key: "cited", label: "Cited" },
+                  { key: "topSource", label: "AI favors" },
+                  { key: "status", label: "Status" },
+                ]}
+                rows={demand.map((d) => ({
+                  query: d.query,
+                  segment: d.segment,
+                  weeklyVolume: d.weeklyVolume,
+                  yourStock: d.yourStock,
+                  cited: d.cited,
+                  topSource: d.topSource,
+                  status: d.status,
+                }))}
+              />
+            }
           />
         </div>
         <div className="overflow-x-auto scroll-slim">
