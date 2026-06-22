@@ -27,10 +27,6 @@ const PILOTS = [
     name: "Capitol Nissan Infiniti",
     type: "Franchise dealer · pilot",
   },
-  {
-    name: "Unique Drive",
-    type: "Independent dealer · pilot",
-  },
 ];
 
 export default function Proof() {
@@ -45,12 +41,12 @@ export default function Proof() {
           <span className="font-display text-gradient">launch pilots.</span>
         </>
       }
-      intro="We're rolling out with select franchise and independent stores. Verified results land here as pilots report — no invented numbers."
+      intro="We're rolling out with a select launch store. Verified results land here as the pilot reports — no invented numbers."
     >
-      <div className="grid gap-5 md:grid-cols-2">
+      <div className="mx-auto max-w-2xl">
         {PILOTS.map((p, i) => (
           <Reveal key={p.name} delay={i * 0.1}>
-            <div className="surface surface-hover h-full rounded-2xl p-6">
+            <div className="surface surface-hover h-full rounded-2xl p-6 sm:p-8">
               <div className="flex items-center gap-3">
                 <span className="grid h-12 w-12 place-items-center rounded-xl bg-white/[0.05] font-display text-xl text-gradient ring-1 ring-line-strong">
                   {p.name.charAt(0)}
