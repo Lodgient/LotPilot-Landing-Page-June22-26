@@ -6,7 +6,8 @@ import Icon from "@/components/Icon";
 import { Card } from "@/components/dashboard/ui";
 import { Sparkline } from "@/components/dashboard/charts";
 import { ExportCsv } from "@/components/dashboard/Exports";
-import { ENGINES, type Vehicle } from "@/lib/dashboard/types";
+import LivePagePreview from "@/components/dashboard/LivePagePreview";
+import { ENGINES, type Dealer, type Vehicle } from "@/lib/dashboard/types";
 import { cn } from "@/lib/cn";
 
 const money = (n: number) => "$" + n.toLocaleString();
@@ -46,13 +47,14 @@ function EngineDots({ v }: { v: Vehicle }) {
   );
 }
 
-export default function InventoryView({ vehicles }: { vehicles: Vehicle[] }) {
+export default function InventoryView({ vehicles, dealer }: { vehicles: Vehicle[]; dealer: Dealer }) {
   const sp = useSearchParams();
   const pathname = usePathname();
   const [filter, setFilter] = useState<Filter>(((sp.get("view") as Filter) ?? "all"));
   const [sort, setSort] = useState<SortKey>(((sp.get("sort") as SortKey) ?? "ai"));
   const [q, setQ] = useState(sp.get("q") ?? "");
   const [active, setActive] = useState<Vehicle | null>(null);
+  const [preview, setPreview] = useState<Vehicle | null>(null);
   const [copied, setCopied] = useState(false);
 
   function copyView() {
@@ -224,7 +226,7 @@ export default function InventoryView({ vehicles }: { vehicles: Vehicle[] }) {
       {/* table */}
       <Card className="mt-4 p-0">
         <div className="overflow-x-auto scroll-slim">
-          <table className="w-full min-w-[860px] border-collapse">
+          <table className="w-full min-w-[940px] border-collapse">
             <thead>
               <tr className="text-xs text-ink-faint">
                 <th className="px-4 py-3 text-left font-medium">Vehicle</th>
@@ -235,6 +237,7 @@ export default function InventoryView({ vehicles }: { vehicles: Vehicle[] }) {
                 <th className="px-3 py-3 text-center font-medium">AI leads</th>
                 <th className="px-3 py-3 text-left font-medium">Top fix</th>
                 <th className="px-3 py-3 text-center font-medium">Trend</th>
+                <th className="px-3 py-3 text-center font-medium">AI page</th>
               </tr>
             </thead>
             <tbody>
@@ -274,6 +277,17 @@ export default function InventoryView({ vehicles }: { vehicles: Vehicle[] }) {
                     )}
                   </td>
                   <td className="px-3 py-3"><div className="flex justify-center"><Sparkline data={v.trend} accent={scoreTone(v.aiScore)} width={72} height={26} /></div></td>
+                  <td className="px-3 py-3">
+                    <div className="flex justify-center">
+                      <button
+                        onClick={(e) => { e.stopPropagation(); setPreview(v); }}
+                        title="View this car's live LotPilot AI page"
+                        className="grid h-8 w-8 place-items-center rounded-lg border border-line text-ink-muted transition-colors hover:border-cyan/50 hover:bg-cyan/10 hover:text-cyan"
+                      >
+                        <Icon name="globe" size={16} />
+                      </button>
+                    </div>
+                  </td>
                 </tr>
               ))}
             </tbody>
@@ -285,12 +299,31 @@ export default function InventoryView({ vehicles }: { vehicles: Vehicle[] }) {
       </Card>
 
       {/* drill-down modal */}
-      {active && <VehicleDetail vehicle={active} onClose={() => setActive(null)} />}
+      {active && (
+        <VehicleDetail
+          vehicle={active}
+          onClose={() => setActive(null)}
+          onViewPage={() => setPreview(active)}
+        />
+      )}
+
+      {/* live AI page preview */}
+      {preview && (
+        <LivePagePreview dealer={dealer} vehicle={preview} onClose={() => setPreview(null)} />
+      )}
     </div>
   );
 }
 
-function VehicleDetail({ vehicle: v, onClose }: { vehicle: Vehicle; onClose: () => void }) {
+function VehicleDetail({
+  vehicle: v,
+  onClose,
+  onViewPage,
+}: {
+  vehicle: Vehicle;
+  onClose: () => void;
+  onViewPage: () => void;
+}) {
   return (
     <div className="fixed inset-0 z-50 flex justify-end">
       <div className="absolute inset-0 bg-black/60" onClick={onClose} />
@@ -312,7 +345,23 @@ function VehicleDetail({ vehicle: v, onClose }: { vehicle: Vehicle; onClose: () 
           </button>
         </div>
 
-        <div className="mt-6 grid grid-cols-3 gap-3">
+        <button
+          onClick={onViewPage}
+          className="mt-5 flex w-full items-center gap-3 rounded-xl border border-cyan/30 bg-cyan/[0.06] px-4 py-3 text-left transition-colors hover:bg-cyan/10"
+        >
+          <span className="grid h-9 w-9 shrink-0 place-items-center rounded-lg bg-cyan/15 text-cyan ring-1 ring-inset ring-cyan/20">
+            <Icon name="globe" size={18} />
+          </span>
+          <span className="min-w-0 flex-1">
+            <span className="block text-sm font-semibold text-ink">View this car&apos;s live AI page</span>
+            <span className="block truncate text-xs text-ink-muted">
+              The answer-engine page LotPilot publishes for this VIN
+            </span>
+          </span>
+          <Icon name="arrow-right" size={16} className="shrink-0 text-cyan" />
+        </button>
+
+        <div className="mt-5 grid grid-cols-3 gap-3">
           <Metric label="AI score" value={String(v.aiScore)} color={scoreColor(v.aiScore)} />
           <Metric label="AI leads" value={String(v.aiLeads)} />
           <Metric label="AI VDP views" value={v.aiVdpViews.toLocaleString()} />

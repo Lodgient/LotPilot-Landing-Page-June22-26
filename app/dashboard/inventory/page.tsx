@@ -17,7 +17,7 @@ export default async function InventoryPage() {
       intro="How every car on your lot performs inside AI answer engines."
     >
       <Suspense fallback={null}>
-        <InventoryView vehicles={vehicles} />
+        <InventoryView vehicles={vehicles} dealer={dealer} />
       </Suspense>
     </Shell>
   );

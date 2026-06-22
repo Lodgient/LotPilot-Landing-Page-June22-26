@@ -24,7 +24,10 @@ export type IconName =
   | "sparkles"
   | "target"
   | "gauge"
-  | "shield";
+  | "shield"
+  | "globe"
+  | "external"
+  | "copy";
 
 const PATHS: Record<IconName, React.ReactNode> = {
   // layout-dashboard — Command Center
@@ -123,6 +126,26 @@ const PATHS: Record<IconName, React.ReactNode> = {
     <>
       <path d="M12 3 5 5.5V11c0 4.4 3 7.6 7 9 4-1.4 7-4.6 7-9V5.5L12 3Z" />
       <path d="m9 12 2 2 4-4" />
+    </>
+  ),
+  globe: (
+    <>
+      <circle cx="12" cy="12" r="9" />
+      <path d="M3 12h18" />
+      <path d="M12 3c2.5 2.5 3.8 5.7 3.8 9s-1.3 6.5-3.8 9c-2.5-2.5-3.8-5.7-3.8-9S9.5 5.5 12 3Z" />
+    </>
+  ),
+  external: (
+    <>
+      <path d="M14 4h6v6" />
+      <path d="M20 4 11 13" />
+      <path d="M18 14v4a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4" />
+    </>
+  ),
+  copy: (
+    <>
+      <rect x="9" y="9" width="11" height="11" rx="2" />
+      <path d="M5 15V5a2 2 0 0 1 2-2h10" />
     </>
   ),
 };
