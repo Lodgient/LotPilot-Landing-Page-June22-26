@@ -231,12 +231,14 @@ export async function getRecommendations(): Promise<Recommendation[]> {
   const supabase = await createClient();
   const { data } = await supabase.from("dp_recommendations").select("*").order("sort");
   return (data ?? []).map((r: any) => ({
+    id: r.id,
     priority: r.priority,
     title: r.title,
     detail: r.detail,
     impact: r.impact,
     effort: r.effort,
     category: r.category,
+    status: r.status ?? "open",
   }));
 }
 

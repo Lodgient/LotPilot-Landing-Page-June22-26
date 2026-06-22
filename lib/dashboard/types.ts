@@ -155,12 +155,14 @@ export interface AttributionEngine {
 }
 
 export interface Recommendation {
+  id: string;
   priority: "High" | "Medium" | "Low";
   title: string;
   detail: string;
   impact: string;
   effort: string;
   category: string;
+  status: "open" | "applied";
 }
 
 export interface Benchmark {

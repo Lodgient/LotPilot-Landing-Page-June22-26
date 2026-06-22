@@ -90,9 +90,9 @@ export default function LoginForm() {
       </button>
 
       <p className="mt-6 text-center text-xs text-ink-faint">
-        Not a partner yet?{" "}
-        <Link href="/#audit" className="text-cyan hover:underline">
-          Run your free AI audit
+        New to LotPilot?{" "}
+        <Link href="/signup" className="text-cyan hover:underline">
+          Create your workspace
         </Link>
       </p>
     </div>
