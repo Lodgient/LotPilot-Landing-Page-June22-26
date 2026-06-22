@@ -82,7 +82,32 @@ export default async function VisibilityPage() {
 
       <Card className="mt-6">
         <PanelHeading title="Where you show up" sub="Real buyer queries in your market, by engine" />
-        <div className="-mx-2 overflow-x-auto scroll-slim">
+
+        {/* mobile cards */}
+        <div className="space-y-3 sm:hidden">
+          {queries.map((q) => (
+            <div key={q.query} className="rounded-xl border border-line bg-white/[0.02] p-3">
+              <p className="text-sm font-medium text-ink">{q.query}</p>
+              <div className="mt-2.5 flex flex-wrap gap-1.5">
+                {ENGINES.map((e) => (
+                  <span
+                    key={e}
+                    className={
+                      q.engines[e]
+                        ? "inline-flex items-center gap-1 rounded-md border border-accent/30 bg-accent/10 px-2 py-0.5 text-[11px] text-accent"
+                        : "inline-flex items-center gap-1 rounded-md border border-line bg-white/[0.02] px-2 py-0.5 text-[11px] text-ink-faint"
+                    }
+                  >
+                    {q.engines[e] ? "✓" : "✕"}{" "}
+                    {e.replace(" AI Overviews", " AIO").replace("Bing ", "")}
+                  </span>
+                ))}
+              </div>
+            </div>
+          ))}
+        </div>
+
+        <div className="-mx-2 hidden overflow-x-auto scroll-slim sm:block">
           <table className="w-full min-w-[640px] border-collapse">
             <thead>
               <tr className="text-xs text-ink-faint">
@@ -124,7 +149,7 @@ export default async function VisibilityPage() {
       <div className="mt-6 grid gap-6 lg:grid-cols-2">
         <Card>
           <PanelHeading title="Share of voice" sub="Who AI recommends in your market" />
-          <div className="flex flex-wrap items-center justify-center gap-8">
+          <div className="flex flex-col flex-wrap items-center justify-center gap-8 sm:flex-row">
             <Donut segments={sov} centerLabel={you ? `${you.value}%` : ""} centerSub="you" />
             <ul className="space-y-2">
               {sov.map((s) => (

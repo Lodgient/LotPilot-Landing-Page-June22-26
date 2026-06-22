@@ -30,12 +30,46 @@ export interface DealerContext {
  * Resolve the signed-in user's dealer + profile. Redirects to /login if there's
  * no session or the user isn't linked to a dealer.
  */
+const DEMO_DEALER_ID = "11111111-1111-1111-1111-111111111111";
+
 export async function requireDealer(): Promise<DealerContext> {
   const supabase = await createClient();
   const {
     data: { user },
   } = await supabase.auth.getUser();
-  if (!user) redirect("/login");
+
+  // Public read-only demo: anonymous visitors see the demo dealer's workspace.
+  // RLS scopes anon reads to this dealer only. Disable with DASHBOARD_PUBLIC=false.
+  if (!user) {
+    if (process.env.DASHBOARD_PUBLIC === "false") redirect("/login");
+    const { data: demo } = await supabase
+      .from("dp_dealers")
+      .select("*")
+      .eq("id", DEMO_DEALER_ID)
+      .single();
+    if (!demo) redirect("/login");
+    const { data: demoProfile } = await supabase
+      .from("dp_profiles")
+      .select("full_name, role")
+      .eq("dealer_id", DEMO_DEALER_ID)
+      .limit(1)
+      .maybeSingle();
+    return {
+      dealer: {
+        id: demo.id,
+        name: demo.name,
+        metro: demo.metro ?? "",
+        rooftops: demo.rooftops ?? 1,
+        feedType: demo.feed_type ?? "",
+        vehicles: demo.vehicles ?? 0,
+        lastSync: demo.last_sync ?? "",
+      },
+      profile: {
+        fullName: demoProfile?.full_name ?? demo.name ?? "Demo",
+        role: demoProfile?.role ?? "Demo workspace",
+      },
+    };
+  }
 
   const { data: profile } = await supabase
     .from("dp_profiles")

@@ -189,11 +189,15 @@ export default function Shell({
           <Suspense fallback={null}>
             <DateRange />
           </Suspense>
-          <PrintButton />
-          <DemoBadge />
+          <span className="hidden sm:inline-flex">
+            <PrintButton />
+          </span>
+          <span className="hidden sm:inline-flex">
+            <DemoBadge />
+          </span>
         </header>
 
-        <main className="px-5 py-6 sm:px-8 sm:py-8">{children}</main>
+        <main className="px-5 pb-24 pt-6 sm:px-8 sm:py-8">{children}</main>
       </div>
 
       <Copilot dealerName={dealer.name} />

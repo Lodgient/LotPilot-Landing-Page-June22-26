@@ -159,7 +159,7 @@ export default function InventoryView({ vehicles, dealer }: { vehicles: Vehicle[
             key={f.key}
             onClick={() => setFilter(f.key)}
             className={cn(
-              "rounded-full border px-3 py-1.5 text-xs font-medium transition-colors",
+              "rounded-full border px-3 py-2 text-xs font-medium transition-colors sm:py-1.5",
               filter === f.key
                 ? "border-cyan/50 bg-cyan/10 text-cyan"
                 : "border-line bg-white/[0.02] text-ink-muted hover:text-ink",
@@ -168,12 +168,12 @@ export default function InventoryView({ vehicles, dealer }: { vehicles: Vehicle[
             {f.label}
           </button>
         ))}
-        <div className="ml-auto flex flex-wrap items-center gap-2">
+        <div className="flex w-full flex-wrap items-center gap-2 sm:ml-auto sm:w-auto">
           <input
             value={q}
             onChange={(e) => setQ(e.target.value)}
             placeholder="Search VIN / model…"
-            className="h-9 w-44 rounded-lg border border-line-strong bg-white/[0.03] px-3 text-sm text-ink placeholder:text-ink-faint focus:border-cyan/60 focus:outline-none"
+            className="h-9 w-full rounded-lg border border-line-strong bg-white/[0.03] px-3 text-sm text-ink placeholder:text-ink-faint focus:border-cyan/60 focus:outline-none sm:w-44"
           />
           <select
             value={sort}
@@ -223,8 +223,60 @@ export default function InventoryView({ vehicles, dealer }: { vehicles: Vehicle[
         </div>
       </div>
 
+      {/* mobile cards */}
+      <div className="mt-4 space-y-3 lg:hidden">
+        {rows.map((v) => (
+          <div
+            key={v.id}
+            onClick={() => setActive(v)}
+            className="surface cursor-pointer rounded-2xl p-4 transition-colors hover:bg-white/[0.03]"
+          >
+            <div className="flex items-start justify-between gap-3">
+              <div className="min-w-0">
+                <p className="text-sm font-medium text-ink">
+                  {v.year} {v.make} {v.model} <span className="text-ink-muted">{v.trim}</span>
+                </p>
+                <p className="mt-0.5 text-xs text-ink-faint">
+                  {v.stockType} · {v.mileage.toLocaleString()} mi · {v.vin}
+                </p>
+              </div>
+              <span
+                className="inline-grid h-9 w-9 shrink-0 place-items-center rounded-lg text-sm font-bold tabular-nums"
+                style={{ color: scoreColor(v.aiScore), background: "color-mix(in oklab," + scoreColor(v.aiScore) + " 14%, transparent)" }}
+              >
+                {v.aiScore}
+              </span>
+            </div>
+            <div className="mt-3 flex items-center justify-between gap-3">
+              <span className="text-sm tabular-nums text-ink-soft">{money(v.price)}</span>
+              <span className="text-xs text-ink-faint">{v.aiLeads} AI leads</span>
+            </div>
+            <div className="mt-2.5 flex flex-wrap items-center justify-between gap-2">
+              {v.blocker === "None" ? (
+                <span className="inline-flex items-center gap-1 text-xs text-accent">
+                  <Icon name="check" size={13} strokeWidth={2.25} /> Fully optimized
+                </span>
+              ) : (
+                <span className="text-xs text-ink-muted">Top fix: {v.blocker}</span>
+              )}
+              {v.liveUrl && (
+                <button
+                  onClick={(e) => { e.stopPropagation(); setPreview(v); }}
+                  className="inline-flex items-center gap-1.5 rounded-lg border border-line px-2.5 py-1.5 text-xs text-ink-muted transition-colors hover:border-cyan/50 hover:bg-cyan/10 hover:text-cyan"
+                >
+                  <Icon name="globe" size={14} /> AI page
+                </button>
+              )}
+            </div>
+          </div>
+        ))}
+        {rows.length === 0 && (
+          <p className="surface rounded-2xl p-6 text-center text-sm text-ink-muted">No vehicles match this view.</p>
+        )}
+      </div>
+
       {/* table */}
-      <Card className="mt-4 p-0">
+      <Card className="mt-4 hidden p-0 lg:block">
         <div className="overflow-x-auto scroll-slim">
           <table className="w-full min-w-[940px] border-collapse">
             <thead>
@@ -361,7 +413,7 @@ function VehicleDetail({
           <Icon name="arrow-right" size={16} className="shrink-0 text-cyan" />
         </button>
 
-        <div className="mt-5 grid grid-cols-3 gap-3">
+        <div className="mt-5 grid grid-cols-2 gap-3 sm:grid-cols-3">
           <Metric label="AI score" value={String(v.aiScore)} color={scoreColor(v.aiScore)} />
           <Metric label="AI leads" value={String(v.aiLeads)} />
           <Metric label="AI VDP views" value={v.aiVdpViews.toLocaleString()} />

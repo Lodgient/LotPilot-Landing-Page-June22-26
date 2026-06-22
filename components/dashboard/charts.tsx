@@ -154,7 +154,7 @@ export function Funnel({ stages }: { stages: { stage: string; value: number }[] 
         const conv = i === 0 ? 100 : Math.round((s.value / stages[0].value) * 100);
         return (
           <div key={s.stage} className="flex items-center gap-3">
-            <span className="w-36 shrink-0 text-right text-xs text-ink-muted">{s.stage}</span>
+            <span className="w-20 shrink-0 text-right text-xs text-ink-muted sm:w-36">{s.stage}</span>
             <div className="relative h-8 flex-1 overflow-hidden rounded-lg bg-white/[0.04]">
               <div
                 className="flex h-full items-center rounded-lg bg-gradient-to-r from-cyan/70 to-violet/60 px-3 text-xs font-semibold text-ink-inverse"

@@ -45,7 +45,7 @@ export default function LeadsView({ leads }: { leads: Lead[] }) {
               key={f}
               onClick={() => setFilter(f)}
               className={cn(
-                "rounded-full border px-3 py-1.5 text-xs font-medium transition-colors",
+                "rounded-full border px-3 py-2 text-xs font-medium transition-colors sm:py-1.5",
                 filter === f
                   ? "border-cyan/50 bg-cyan/10 text-cyan"
                   : "border-line bg-white/[0.02] text-ink-muted hover:text-ink",

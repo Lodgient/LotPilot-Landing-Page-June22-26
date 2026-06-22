@@ -3,6 +3,7 @@ import { Card, PanelHeading, Badge } from "@/components/dashboard/ui";
 import { Sparkline } from "@/components/dashboard/charts";
 import { ExportCsv } from "@/components/dashboard/Exports";
 import { requireDealer, getDemand } from "@/lib/dashboard/queries";
+import { cn } from "@/lib/cn";
 
 export const dynamic = "force-dynamic";
 
@@ -72,7 +73,47 @@ export default async function DemandPage() {
             }
           />
         </div>
-        <div className="overflow-x-auto scroll-slim">
+        {/* mobile cards */}
+        <div className="space-y-3 px-5 pb-1 lg:hidden">
+          {demand.map((d) => {
+            const meta = STATUS[d.status];
+            return (
+              <div key={d.query} className="rounded-xl border border-line bg-white/[0.02] p-3">
+                <div className="flex items-start justify-between gap-3">
+                  <div className="min-w-0">
+                    <p className="text-sm font-medium text-ink">{d.query}</p>
+                    <p className="text-xs text-ink-faint">{d.segment}</p>
+                  </div>
+                  <Badge tone={meta.tone}>{meta.label}</Badge>
+                </div>
+                <div className="mt-3 grid grid-cols-2 gap-x-4 gap-y-2 text-xs">
+                  <div className="flex justify-between">
+                    <span className="text-ink-muted">Weekly</span>
+                    <span className="font-semibold tabular-nums text-ink">{d.weeklyVolume}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-ink-muted">Your stock</span>
+                    <span className="tabular-nums text-ink-soft">{d.yourStock}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-ink-muted">Cited</span>
+                    <span className={cn("tabular-nums", d.cited < d.yourStock ? "text-warn" : "text-accent")}>
+                      {d.cited}/{d.yourStock}
+                    </span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-ink-muted">AI favors</span>
+                    <span className={d.topSource === "You" ? "text-accent" : "text-danger"}>
+                      {d.topSource}
+                    </span>
+                  </div>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+
+        <div className="hidden overflow-x-auto scroll-slim lg:block">
           <table className="w-full min-w-[820px] border-collapse">
             <thead>
               <tr className="text-xs text-ink-faint">

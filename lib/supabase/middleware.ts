@@ -24,8 +24,11 @@ export async function updateSession(request: NextRequest) {
     data: { user },
   } = await supabase.auth.getUser();
 
-  // Gate the dashboard.
-  if (!user && request.nextUrl.pathname.startsWith("/dashboard")) {
+  // Gate the dashboard. A public, read-only demo is allowed by default (all
+  // data is demo, scoped to the demo dealer via RLS). Set DASHBOARD_PUBLIC=false
+  // to require login before launch.
+  const demoOpen = process.env.DASHBOARD_PUBLIC !== "false";
+  if (!user && !demoOpen && request.nextUrl.pathname.startsWith("/dashboard")) {
     const url = request.nextUrl.clone();
     url.pathname = "/login";
     return NextResponse.redirect(url);
