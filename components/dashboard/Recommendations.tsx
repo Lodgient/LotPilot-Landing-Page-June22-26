@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Icon from "@/components/Icon";
 import { Badge } from "./ui";
 import { createClient } from "@/lib/supabase/client";
 import type { Recommendation } from "@/lib/dashboard/types";
@@ -43,15 +44,21 @@ function Item({ r }: { r: Recommendation }) {
         </span>
         {state === "applied" ? (
           <span className="ml-auto inline-flex h-9 items-center gap-1.5 rounded-full border border-accent/40 bg-accent/10 px-4 text-xs font-semibold text-accent">
-            ✓ Queued for LotPilot
+            <Icon name="check" size={14} strokeWidth={2.25} /> Queued for LotPilot
           </span>
         ) : (
           <button
             onClick={apply}
             disabled={state === "applying"}
-            className="ml-auto inline-flex h-9 items-center rounded-full bg-cyan px-4 text-xs font-semibold text-ink-inverse transition-colors hover:bg-cyan/90 disabled:opacity-60"
+            className="ml-auto inline-flex h-9 items-center gap-1.5 rounded-full bg-cyan px-4 text-xs font-semibold text-ink-inverse transition-colors hover:bg-cyan/90 disabled:opacity-60"
           >
-            {state === "applying" ? "Applying…" : "Apply with LotPilot →"}
+            {state === "applying" ? (
+              "Applying…"
+            ) : (
+              <>
+                Apply with LotPilot <Icon name="arrow-right" size={14} strokeWidth={2.25} />
+              </>
+            )}
           </button>
         )}
       </div>

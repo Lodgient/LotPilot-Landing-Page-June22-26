@@ -1,7 +1,28 @@
 import type { ReactNode } from "react";
 import { cn } from "@/lib/cn";
+import Icon, { type IconName } from "@/components/Icon";
 import { Sparkline, TrendPill } from "./charts";
 import type { KPI } from "@/lib/dashboard/types";
+
+// Map a KPI label to a fitting line icon (keyword match, safe default).
+function kpiIcon(label: string): IconName {
+  const l = label.toLowerCase();
+  if (l.includes("appoint") || l.includes("appt")) return "calendar";
+  if (l.includes("credit") || l.includes("app")) return "file";
+  if (l.includes("speed") || l.includes("reply") || l.includes("fast") || l.includes("time"))
+    return "bolt";
+  if (l.includes("sale") || l.includes("attribut") || l.includes("revenue") || l.includes("cost"))
+    return "chart";
+  if (l.includes("visib") || l.includes("rank")) return "target";
+  return "sparkles";
+}
+
+const ACCENT_CHIP: Record<NonNullable<KPI["accent"]>, string> = {
+  cyan: "bg-cyan/12 text-cyan ring-cyan/20",
+  accent: "bg-accent/12 text-accent ring-accent/20",
+  violet: "bg-violet/15 text-violet ring-violet/20",
+  warn: "bg-warn/12 text-warn ring-warn/20",
+};
 
 export function Card({
   children,
@@ -40,10 +61,21 @@ export function PanelHeading({
 }
 
 export function StatCard({ kpi }: { kpi: KPI }) {
+  const accent = kpi.accent ?? "cyan";
   return (
     <Card className="flex flex-col justify-between">
       <div className="flex items-start justify-between">
-        <span className="text-sm text-ink-muted">{kpi.label}</span>
+        <div className="flex items-center gap-2.5">
+          <span
+            className={cn(
+              "grid h-8 w-8 place-items-center rounded-lg ring-1 ring-inset",
+              ACCENT_CHIP[accent],
+            )}
+          >
+            <Icon name={kpiIcon(kpi.label)} size={16} />
+          </span>
+          <span className="text-sm text-ink-muted">{kpi.label}</span>
+        </div>
         {typeof kpi.trend === "number" && <TrendPill value={kpi.trend} invert={kpi.invertTrend} />}
       </div>
       <div className="mt-3 flex items-end justify-between gap-3">

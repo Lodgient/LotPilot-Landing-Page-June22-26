@@ -1,4 +1,5 @@
 import Shell from "@/components/dashboard/Shell";
+import Icon from "@/components/Icon";
 import { Card, PanelHeading, StatCard, Badge } from "@/components/dashboard/ui";
 import { Funnel } from "@/components/dashboard/charts";
 import Forecast from "@/components/dashboard/Forecast";
@@ -133,11 +134,11 @@ export default async function RoiPage() {
             >
               <div className="flex items-center p-3 text-ink-soft sm:p-4">{r.metric}</div>
               <div className="flex items-center justify-center gap-1.5 border-l border-line p-3 text-center sm:p-4">
-                <span className="text-accent">✓</span>
+                <Icon name="check" size={14} strokeWidth={2.25} className="text-accent" />
                 <span className="text-ink">{r.lp}</span>
               </div>
               <div className="flex items-center justify-center gap-1.5 border-l border-line p-3 text-center text-ink-muted sm:p-4">
-                <span className="text-danger">✕</span>
+                <Icon name="close" size={14} strokeWidth={2.25} className="text-danger" />
                 <span>{r.mk}</span>
               </div>
             </div>

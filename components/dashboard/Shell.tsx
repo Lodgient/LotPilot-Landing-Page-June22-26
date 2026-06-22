@@ -4,6 +4,7 @@ import { Suspense, useState, type ReactNode } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import Logo from "@/components/Logo";
+import Icon, { type IconName } from "@/components/Icon";
 import { cn } from "@/lib/cn";
 import { createClient } from "@/lib/supabase/client";
 import type { Dealer, Profile } from "@/lib/dashboard/types";
@@ -11,13 +12,13 @@ import { DemoBadge } from "./ui";
 import DateRange from "./DateRange";
 import { PrintButton } from "./Exports";
 
-const NAV = [
-  { href: "/dashboard", label: "Command Center", icon: "◧", exact: true },
-  { href: "/dashboard/visibility", label: "AI Visibility", icon: "◎" },
-  { href: "/dashboard/inventory", label: "Inventory AI", icon: "🚗" },
-  { href: "/dashboard/demand", label: "Demand Intelligence", icon: "📈" },
-  { href: "/dashboard/leads", label: "Leads & Conversations", icon: "✦" },
-  { href: "/dashboard/roi", label: "ROI & Attribution", icon: "▤" },
+const NAV: { href: string; label: string; icon: IconName; exact?: boolean }[] = [
+  { href: "/dashboard", label: "Command Center", icon: "command", exact: true },
+  { href: "/dashboard/visibility", label: "AI Visibility", icon: "radar" },
+  { href: "/dashboard/inventory", label: "Inventory AI", icon: "car" },
+  { href: "/dashboard/demand", label: "Demand Intelligence", icon: "trending" },
+  { href: "/dashboard/leads", label: "Leads & Conversations", icon: "messages" },
+  { href: "/dashboard/roi", label: "ROI & Attribution", icon: "chart" },
 ];
 
 function NavLinks({ onNavigate }: { onNavigate?: () => void }) {
@@ -40,11 +41,13 @@ function NavLinks({ onNavigate }: { onNavigate?: () => void }) {
           >
             <span
               className={cn(
-                "grid h-7 w-7 place-items-center rounded-lg text-[13px] transition-colors",
-                active ? "bg-cyan/15 text-cyan" : "bg-white/[0.04] text-ink-muted group-hover:text-ink",
+                "grid h-8 w-8 place-items-center rounded-lg transition-colors",
+                active
+                  ? "bg-cyan/15 text-cyan ring-1 ring-inset ring-cyan/20"
+                  : "bg-white/[0.04] text-ink-muted group-hover:text-ink",
               )}
             >
-              {item.icon}
+              <Icon name={item.icon} size={17} />
             </span>
             {item.label}
           </Link>
@@ -175,7 +178,7 @@ export default function Shell({
             className="grid h-9 w-9 place-items-center rounded-lg border border-line text-ink lg:hidden"
             aria-label="Open menu"
           >
-            ☰
+            <Icon name="menu" size={18} />
           </button>
           <div className="min-w-0 flex-1">
             <h1 className="truncate text-base font-semibold text-ink sm:text-lg">{title}</h1>

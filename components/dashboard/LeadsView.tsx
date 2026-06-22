@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Icon from "@/components/Icon";
 import { Card, Badge } from "@/components/dashboard/ui";
 import type { Lead, LeadTemp } from "@/lib/dashboard/types";
 import { cn } from "@/lib/cn";
@@ -112,7 +113,7 @@ export default function LeadsView({ leads }: { leads: Lead[] }) {
             </div>
           </div>
           <div className="flex flex-wrap items-center gap-2">
-            <Badge tone="cyan">⚡ {active.firstReplySec}s first reply</Badge>
+            <Badge tone="cyan"><Icon name="bolt" size={12} /> {active.firstReplySec}s first reply</Badge>
             <Badge tone={active.status === "Appointment booked" ? "accent" : "neutral"}>
               {active.status}
             </Badge>

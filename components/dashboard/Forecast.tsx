@@ -1,3 +1,4 @@
+import Icon from "@/components/Icon";
 import type { ForecastRow } from "@/lib/dashboard/types";
 
 function fmt(v: number, unit: ForecastRow["unit"]) {
@@ -17,7 +18,8 @@ export default function Forecast({ items }: { items: ForecastRow[] }) {
             <p className="text-xs text-ink-muted">{f.metric}</p>
             <div className="mt-2 flex items-baseline gap-1.5">
               <span className="text-sm text-ink-faint tabular-nums">{fmt(f.current, f.unit)}</span>
-              <span className="text-ink-faint">→</span>
+              <Icon name="arrow-right" size={13} className="text-ink-faint" />
+
               <span className="text-xl font-bold tabular-nums text-gradient">
                 {fmt(f.projected, f.unit)}
               </span>

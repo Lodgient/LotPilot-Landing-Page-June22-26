@@ -2,6 +2,7 @@
 
 import { useMemo, useState } from "react";
 import { usePathname, useSearchParams } from "next/navigation";
+import Icon from "@/components/Icon";
 import { Card } from "@/components/dashboard/ui";
 import { Sparkline } from "@/components/dashboard/charts";
 import { ExportCsv } from "@/components/dashboard/Exports";
@@ -267,7 +268,7 @@ export default function InventoryView({ vehicles }: { vehicles: Vehicle[] }) {
                   <td className="px-3 py-3 text-center text-sm tabular-nums text-ink-soft">{v.aiLeads}</td>
                   <td className="px-3 py-3">
                     {v.blocker === "None" ? (
-                      <span className="text-xs text-accent">✓ Fully optimized</span>
+                      <span className="inline-flex items-center gap-1 text-xs text-accent"><Icon name="check" size={13} strokeWidth={2.25} /> Fully optimized</span>
                     ) : (
                       <span className="text-xs text-ink-muted">{v.blocker}</span>
                     )}
