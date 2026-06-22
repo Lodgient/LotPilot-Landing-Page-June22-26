@@ -2,6 +2,7 @@ import type { ReactNode } from "react";
 import { cn } from "@/lib/cn";
 import Icon, { type IconName } from "@/components/Icon";
 import { Sparkline, TrendPill } from "./charts";
+import CountUp from "./CountUp";
 import type { KPI } from "@/lib/dashboard/types";
 
 // Map a KPI label to a fitting line icon (keyword match, safe default).
@@ -76,11 +77,18 @@ export function StatCard({ kpi }: { kpi: KPI }) {
           </span>
           <span className="text-sm text-ink-muted">{kpi.label}</span>
         </div>
-        {typeof kpi.trend === "number" && <TrendPill value={kpi.trend} invert={kpi.invertTrend} />}
+        {typeof kpi.trend === "number" && (
+          <div className="flex flex-col items-end">
+            <TrendPill value={kpi.trend} invert={kpi.invertTrend} />
+            <span className="mt-1 text-[10px] text-ink-faint">vs prev. 30 days</span>
+          </div>
+        )}
       </div>
       <div className="mt-3 flex items-end justify-between gap-3">
         <div>
-          <div className="text-3xl font-bold tracking-tight text-ink">{kpi.value}</div>
+          <div className="text-3xl font-bold tracking-tight text-ink">
+            <CountUp value={kpi.value} />
+          </div>
           {kpi.sub && <div className="mt-0.5 text-xs text-ink-muted">{kpi.sub}</div>}
         </div>
         {kpi.spark && <Sparkline data={kpi.spark} accent={kpi.accent ?? "cyan"} />}

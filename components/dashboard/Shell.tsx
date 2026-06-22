@@ -148,8 +148,8 @@ export default function Shell({
   profile,
   children,
 }: {
-  title: string;
-  intro?: string;
+  title: ReactNode;
+  intro?: ReactNode;
   dealer: Dealer;
   profile: Profile;
   children: ReactNode;

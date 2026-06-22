@@ -5,6 +5,8 @@ import ActivityFeed from "@/components/dashboard/ActivityFeed";
 import Recommendations from "@/components/dashboard/Recommendations";
 import ScoreRing from "@/components/audit/ScoreRing";
 import { Sparkline } from "@/components/dashboard/charts";
+import CountUp from "@/components/dashboard/CountUp";
+import Greeting from "@/components/dashboard/Greeting";
 import {
   requireDealer,
   getKpis,
@@ -75,7 +77,7 @@ export default async function CommandCenter() {
     <Shell
       dealer={dealer}
       profile={profile}
-      title={`Good morning, ${profile.fullName.split(" ")[0]}`}
+      title={<Greeting name={profile.fullName.split(" ")[0]} />}
       intro={`Here's what your AI did for ${dealer.name}.`}
     >
       {/* While you slept */}
@@ -83,19 +85,40 @@ export default async function CommandCenter() {
         <div className="glow-cyan pointer-events-none absolute -right-10 -top-16 h-56 w-56 opacity-50" />
         <div className="relative grid gap-6 lg:grid-cols-[1fr_auto]">
           <div>
-            <Badge tone="cyan">● While you slept</Badge>
-            <h2 className="mt-3 text-pretty text-2xl font-semibold tracking-tight text-ink sm:text-3xl">
-              Your AI answered{" "}
-              <span className="text-gradient">{overnight.leadsAnswered ?? "—"} leads</span>, booked{" "}
-              <span className="text-gradient">{overnight.appts ?? "—"} appointments</span> and
-              captured{" "}
-              <span className="text-gradient">{overnight.creditApps ?? "—"} credit apps</span>{" "}
-              overnight.
-            </h2>
-            <p className="mt-2 text-sm text-ink-muted">
-              Fastest response: {overnight.fastestReply ?? "—"}. Nothing leaked while the store was
-              closed.
+            <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
+              <Badge tone="cyan">● While you slept</Badge>
+              <span className="text-xs text-ink-faint">Since 6:00 PM yesterday</span>
+            </div>
+
+            {/* North-star: gross influenced overnight */}
+            <p className="mt-4 text-sm font-medium text-ink-muted">
+              AI-influenced gross overnight
             </p>
+            <div className="mt-1 flex flex-wrap items-baseline gap-x-3 gap-y-2">
+              <span className="text-gradient text-4xl font-bold tracking-tight sm:text-5xl">
+                <CountUp value={overnight.grossInfluenced ?? "—"} />
+              </span>
+              <span className="inline-flex items-center gap-1 rounded-full bg-accent/12 px-2 py-0.5 text-xs font-medium text-accent">
+                ▲ 2× a typical night
+              </span>
+            </div>
+
+            <p className="mt-3 text-pretty text-base text-ink sm:text-lg">
+              Your AI answered{" "}
+              <span className="font-semibold">
+                <CountUp value={String(overnight.leadsAnswered ?? "—")} /> leads
+              </span>
+              , booked{" "}
+              <span className="font-semibold">
+                <CountUp value={String(overnight.appts ?? "—")} /> appointments
+              </span>{" "}
+              and captured{" "}
+              <span className="font-semibold">
+                <CountUp value={String(overnight.creditApps ?? "—")} /> credit apps
+              </span>{" "}
+              — fastest reply in {overnight.fastestReply ?? "—"}.
+            </p>
+            <p className="mt-1 text-sm text-ink-muted">Nothing leaked while the store was closed.</p>
           </div>
           <div className="flex items-center gap-4 lg:flex-col lg:items-end lg:justify-center">
             <Link
