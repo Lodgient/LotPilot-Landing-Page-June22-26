@@ -29,7 +29,7 @@ export default function Nav() {
       className={cn(
         "fixed inset-x-0 top-0 z-50 transition-all duration-300",
         scrolled
-          ? "border-b border-line bg-base/80 backdrop-blur-xl"
+          ? "border-b border-line bg-canvas/80 backdrop-blur-xl"
           : "border-b border-transparent",
       )}
     >
@@ -78,7 +78,7 @@ export default function Nav() {
       </nav>
 
       {open && (
-        <div className="border-t border-line bg-base/95 px-5 py-4 backdrop-blur-xl lg:hidden">
+        <div className="border-t border-line bg-canvas/95 px-5 py-4 backdrop-blur-xl lg:hidden">
           <div className="flex flex-col gap-1">
             {LINKS.map((l) => (
               <a

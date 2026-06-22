@@ -29,6 +29,8 @@ export default function HowItWorks() {
   return (
     <Section
       id="how"
+      glow="accent"
+      glowSide="left"
       eyebrow="How LotPilot works"
       title={
         <>
@@ -40,15 +42,15 @@ export default function HowItWorks() {
       <div className="grid gap-5 md:grid-cols-3">
         {STEPS.map((s, i) => (
           <Reveal key={s.n} delay={i * 0.1}>
-            <div className="surface relative h-full overflow-hidden rounded-2xl p-7">
-              <span className="font-mono text-5xl font-bold text-white/[0.06]">
+            <div className="surface surface-hover relative h-full overflow-hidden rounded-2xl p-7">
+              <span className="font-display text-6xl text-transparent [-webkit-text-stroke:1px_rgba(255,255,255,0.14)]">
                 {s.n}
               </span>
               <p className={`mt-2 text-xs font-mono uppercase tracking-wider ${s.tagColor}`}>
                 {s.tag}
               </p>
-              <h3 className="mt-2 text-xl font-semibold">{s.title}</h3>
-              <p className="mt-3 text-sm leading-relaxed text-ink-muted">{s.body}</p>
+              <h3 className="mt-2 text-xl font-semibold text-ink">{s.title}</h3>
+              <p className="mt-3 text-sm leading-relaxed text-ink-soft">{s.body}</p>
               {i < STEPS.length - 1 && (
                 <span className="pointer-events-none absolute -right-3 top-1/2 hidden -translate-y-1/2 text-2xl text-line-strong md:block">
                   →

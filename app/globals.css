@@ -2,30 +2,34 @@
 
 /* ============================================================
    LotPilot for Dealers — Design System
-   Dark theme, AI-engine aesthetic. Brand-consistent with lotpilot.com.
+   Dark, but alive: layered color, depth and motion.
+   Brand-consistent with lotpilot.com (green + cyan on near-black).
    ============================================================ */
 
 @theme {
-  /* Base surfaces */
-  --color-base: #0b0f17;
-  --color-base-2: #0f141f;
-  --color-panel: #121826;
-  --color-panel-2: #161d2e;
-  --color-line: rgba(255, 255, 255, 0.08);
-  --color-line-strong: rgba(255, 255, 255, 0.14);
+  /* Surfaces — note: NOT named "base" (that collides with the text-base
+     font-size utility in Tailwind v4 and silently recolors text). */
+  --color-canvas: #0b0f17;
+  --color-canvas-2: #0e1422;
+  --color-panel: #141b2c;
+  --color-panel-2: #19223a;
+  --color-line: rgba(255, 255, 255, 0.09);
+  --color-line-strong: rgba(255, 255, 255, 0.16);
 
-  /* Text */
-  --color-ink: #eef2f8;
-  --color-ink-soft: #c2cad8;
-  --color-ink-muted: #8a93a6;
-  --color-ink-faint: #5b637a;
+  /* Text — brighter muted tones for readability on dark panels */
+  --color-ink: #f1f4fa;
+  --color-ink-soft: #cdd5e3;
+  --color-ink-muted: #9aa4ba;
+  --color-ink-faint: #6b7592;
 
   /* Brand accents */
   --color-accent: #8af671; /* signal green */
   --color-accent-dim: #6fd95a;
   --color-cyan: #00c4ff; /* CTA cyan */
   --color-cyan-dim: #06a7da;
-  --color-danger: #ff5d6c;
+  --color-violet: #a78bfa; /* ambient third accent — life, not branding */
+  --color-magenta: #f472b6;
+  --color-danger: #ff6b79;
   --color-warn: #ffc24b;
 
   /* Fonts */
@@ -55,7 +59,7 @@ html {
 }
 
 body {
-  background-color: var(--color-base);
+  background-color: var(--color-canvas);
   color: var(--color-ink);
   font-family: var(--font-sans);
   -webkit-font-smoothing: antialiased;
@@ -63,8 +67,22 @@ body {
   overflow-x: hidden;
 }
 
+/* Page-wide colored bloom mesh so the dark never reads as flat black. */
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background:
+    radial-gradient(55% 45% at 10% -5%, color-mix(in oklab, var(--color-accent) 13%, transparent), transparent 60%),
+    radial-gradient(50% 45% at 92% 4%, color-mix(in oklab, var(--color-cyan) 15%, transparent), transparent 55%),
+    radial-gradient(55% 55% at 85% 102%, color-mix(in oklab, var(--color-violet) 15%, transparent), transparent 60%),
+    radial-gradient(45% 45% at 2% 98%, color-mix(in oklab, var(--color-accent) 9%, transparent), transparent 60%);
+}
+
 ::selection {
-  background: color-mix(in oklab, var(--color-accent) 30%, transparent);
+  background: color-mix(in oklab, var(--color-accent) 32%, transparent);
   color: #fff;
 }
 
@@ -79,54 +97,74 @@ body {
 /* Ambient grid + glows */
 .bg-grid {
   background-image:
-    linear-gradient(to right, rgba(255, 255, 255, 0.035) 1px, transparent 1px),
-    linear-gradient(to bottom, rgba(255, 255, 255, 0.035) 1px, transparent 1px);
+    linear-gradient(to right, rgba(255, 255, 255, 0.04) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(255, 255, 255, 0.04) 1px, transparent 1px);
   background-size: 56px 56px;
   mask-image: radial-gradient(ellipse 90% 60% at 50% 0%, #000 35%, transparent 100%);
 }
 
 .glow-accent {
-  background: radial-gradient(
-    50% 50% at 50% 50%,
-    color-mix(in oklab, var(--color-accent) 22%, transparent) 0%,
-    transparent 100%
-  );
+  background: radial-gradient(50% 50% at 50% 50%, color-mix(in oklab, var(--color-accent) 26%, transparent) 0%, transparent 100%);
+  filter: blur(8px);
 }
 .glow-cyan {
-  background: radial-gradient(
-    50% 50% at 50% 50%,
-    color-mix(in oklab, var(--color-cyan) 22%, transparent) 0%,
-    transparent 100%
-  );
+  background: radial-gradient(50% 50% at 50% 50%, color-mix(in oklab, var(--color-cyan) 26%, transparent) 0%, transparent 100%);
+  filter: blur(8px);
+}
+.glow-violet {
+  background: radial-gradient(50% 50% at 50% 50%, color-mix(in oklab, var(--color-violet) 26%, transparent) 0%, transparent 100%);
+  filter: blur(8px);
 }
 
-/* Dark text for use on the bright cyan/accent CTA fills.
-   (Avoids the text-base ambiguity: text-base resolves to a font-size in v4.) */
+/* Dark text for use on the bright cyan/accent CTA fills. */
 .text-ink-inverse {
-  color: var(--color-base);
+  color: #06111d;
 }
 
-/* Gradient text helper */
+/* Gradient text helper — three-stop for more life */
 .text-gradient {
-  background: linear-gradient(100deg, var(--color-accent), var(--color-cyan));
+  background: linear-gradient(100deg, var(--color-accent), var(--color-cyan) 55%, var(--color-violet));
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
 }
 
-/* Card surface */
+/* Card surface + interactive lift */
 .surface {
   background:
-    linear-gradient(180deg, rgba(255, 255, 255, 0.035), rgba(255, 255, 255, 0)),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0)),
     var(--color-panel);
   border: 1px solid var(--color-line);
+  transition: border-color 0.25s ease, transform 0.25s var(--ease-out-expo), box-shadow 0.25s ease;
+}
+.surface-hover:hover {
+  border-color: color-mix(in oklab, var(--color-cyan) 45%, transparent);
+  transform: translateY(-3px);
+  box-shadow: 0 20px 50px -24px color-mix(in oklab, var(--color-cyan) 60%, transparent);
+}
+
+/* Gradient hairline border (for feature/hero cards) */
+.ring-gradient {
+  position: relative;
+}
+.ring-gradient::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  padding: 1px;
+  background: linear-gradient(140deg, color-mix(in oklab, var(--color-accent) 55%, transparent), transparent 40%, color-mix(in oklab, var(--color-cyan) 55%, transparent));
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  pointer-events: none;
 }
 
 /* Elevated CTA glow */
 .cta-glow {
   box-shadow:
     0 0 0 1px color-mix(in oklab, var(--color-cyan) 40%, transparent),
-    0 18px 50px -12px color-mix(in oklab, var(--color-cyan) 45%, transparent);
+    0 18px 50px -12px color-mix(in oklab, var(--color-cyan) 55%, transparent);
 }
 
 /* Scanning shimmer for the audit tool */
@@ -150,6 +188,14 @@ body {
 }
 .marquee { animation: marquee 30s linear infinite; }
 .marquee:hover { animation-play-state: paused; }
+
+/* Slow drift for ambient blooms */
+@keyframes drift {
+  0%, 100% { transform: translate3d(0, 0, 0) scale(1); }
+  50% { transform: translate3d(0, -24px, 0) scale(1.06); }
+}
+.drift { animation: drift 14s ease-in-out infinite; }
+.drift-slow { animation: drift 22s ease-in-out infinite; }
 
 /* Reduced motion */
 @media (prefers-reduced-motion: reduce) {

@@ -6,6 +6,8 @@ export default function AuditSection() {
   return (
     <Section
       id="audit"
+      glow="cyan"
+      tinted
       eyebrow="The free AI-Visibility Audit"
       title={
         <>

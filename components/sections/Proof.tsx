@@ -36,6 +36,8 @@ const PILOTS = [
 export default function Proof() {
   return (
     <Section
+      glow="violet"
+      tinted
       eyebrow="Proof in progress"
       title={
         <>
@@ -48,14 +50,14 @@ export default function Proof() {
       <div className="grid gap-5 md:grid-cols-2">
         {PILOTS.map((p, i) => (
           <Reveal key={p.name} delay={i * 0.1}>
-            <div className="surface h-full rounded-2xl p-6">
+            <div className="surface surface-hover h-full rounded-2xl p-6">
               <div className="flex items-center gap-3">
-                <span className="grid h-12 w-12 place-items-center rounded-xl bg-white/[0.05] font-display text-xl text-gradient">
+                <span className="grid h-12 w-12 place-items-center rounded-xl bg-white/[0.05] font-display text-xl text-gradient ring-1 ring-line-strong">
                   {p.name.charAt(0)}
                 </span>
                 <div>
-                  <h3 className="text-base font-semibold">{p.name}</h3>
-                  <p className="text-xs text-ink-faint">{p.type}</p>
+                  <h3 className="text-base font-semibold text-ink">{p.name}</h3>
+                  <p className="text-xs text-ink-muted">{p.type}</p>
                 </div>
               </div>
               <div className="mt-5 grid grid-cols-3 gap-3">

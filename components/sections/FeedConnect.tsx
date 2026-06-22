@@ -8,6 +8,8 @@ export default function FeedConnect() {
   return (
     <Section
       id="feed"
+      glow="cyan"
+      glowSide="left"
       eyebrow="The only thing we need from you"
       title={
         <>

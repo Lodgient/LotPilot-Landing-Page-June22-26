@@ -12,6 +12,8 @@ export default function Discovery() {
   return (
     <Section
       id="discovery"
+      glow="violet"
+      glowSide="right"
       eyebrow="Discovery layer"
       title={
         <>
@@ -59,7 +61,7 @@ export default function Discovery() {
                   <span className="font-semibold text-accent">your dealership</span>{" "}
                   — certified, under budget, with Apple CarPlay.
                 </p>
-                <div className="mt-3 flex items-center gap-2 rounded-lg border border-line bg-base/60 p-2.5">
+                <div className="mt-3 flex items-center gap-2 rounded-lg border border-line bg-canvas/60 p-2.5">
                   <span className="grid h-9 w-9 place-items-center rounded-md bg-accent/15 text-accent">
                     ★
                   </span>

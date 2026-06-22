@@ -23,6 +23,8 @@ export default function Problem() {
   return (
     <Section
       id="problem"
+      glow="violet"
+      glowSide="right"
       eyebrow="The shift nobody told your store about"
       title={
         <>
@@ -36,17 +38,17 @@ export default function Problem() {
       <div className="grid gap-5 md:grid-cols-3">
         {PAINS.map((p, i) => (
           <Reveal key={p.title} delay={i * 0.08}>
-            <div className="surface h-full rounded-2xl p-6">
-              <p className="font-mono text-sm text-danger">{p.stat}</p>
-              <h3 className="mt-3 text-lg font-semibold">{p.title}</h3>
-              <p className="mt-2 text-sm leading-relaxed text-ink-muted">{p.body}</p>
+            <div className="surface surface-hover h-full rounded-2xl p-6">
+              <p className="inline-flex rounded-md bg-danger/12 px-2 py-1 font-mono text-sm text-danger">{p.stat}</p>
+              <h3 className="mt-3 text-lg font-semibold text-ink">{p.title}</h3>
+              <p className="mt-2 text-sm leading-relaxed text-ink-soft">{p.body}</p>
             </div>
           </Reveal>
         ))}
       </div>
 
       <Reveal delay={0.1}>
-        <div className="mt-10 overflow-hidden rounded-2xl border border-line bg-base-2 p-6 sm:p-8">
+        <div className="mt-10 overflow-hidden rounded-2xl border border-line bg-canvas-2 p-6 sm:p-8">
           <div className="grid items-center gap-6 sm:grid-cols-[1fr_auto_1fr]">
             <div className="text-center sm:text-right">
               <p className="text-xs uppercase tracking-wider text-ink-faint">

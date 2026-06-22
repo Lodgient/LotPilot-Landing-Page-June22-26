@@ -14,6 +14,8 @@ export default function Pricing() {
   return (
     <Section
       id="pricing"
+      glow="accent"
+      tinted
       eyebrow="Pricing"
       title={
         <>

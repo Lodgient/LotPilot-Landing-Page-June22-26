@@ -17,6 +17,8 @@ export default function Comparison() {
   return (
     <Section
       id="compare"
+      glow="accent"
+      glowSide="right"
       eyebrow="LotPilot vs marketplaces"
       title={
         <>
