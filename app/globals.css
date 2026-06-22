@@ -142,6 +142,23 @@ body::before {
   transform: translateY(-3px);
   box-shadow: 0 20px 50px -24px color-mix(in oklab, var(--color-cyan) 60%, transparent);
 }
+.input {
+  width: 100%;
+  border-radius: 0.625rem;
+  border: 1px solid var(--color-line);
+  background: var(--color-canvas);
+  padding: 0.5rem 0.75rem;
+  font-size: 0.875rem;
+  color: var(--color-ink);
+  outline: none;
+  transition: border-color 0.2s ease;
+}
+.input::placeholder {
+  color: var(--color-ink-faint);
+}
+.input:focus {
+  border-color: color-mix(in oklab, var(--color-cyan) 50%, transparent);
+}
 
 /* Gradient hairline border (for feature/hero cards) */
 .ring-gradient {

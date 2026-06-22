@@ -11,6 +11,7 @@ import type { Dealer, Profile } from "@/lib/dashboard/types";
 import { DemoBadge } from "./ui";
 import DateRange from "./DateRange";
 import { PrintButton } from "./Exports";
+import Copilot from "./Copilot";
 
 const NAV: { href: string; label: string; icon: IconName; exact?: boolean }[] = [
   { href: "/dashboard", label: "Command Center", icon: "command", exact: true },
@@ -18,6 +19,7 @@ const NAV: { href: string; label: string; icon: IconName; exact?: boolean }[] = 
   { href: "/dashboard/inventory", label: "Inventory AI", icon: "car" },
   { href: "/dashboard/demand", label: "Demand Intelligence", icon: "trending" },
   { href: "/dashboard/leads", label: "Leads & Conversations", icon: "messages" },
+  { href: "/dashboard/assistant", label: "AI Sales Assistant", icon: "bolt" },
   { href: "/dashboard/roi", label: "ROI & Attribution", icon: "chart" },
 ];
 
@@ -193,6 +195,8 @@ export default function Shell({
 
         <main className="px-5 py-6 sm:px-8 sm:py-8">{children}</main>
       </div>
+
+      <Copilot dealerName={dealer.name} />
     </div>
   );
 }

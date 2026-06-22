@@ -192,3 +192,25 @@ export interface VsMarketplaceRow {
   lp: string;
   mk: string;
 }
+
+export type AgentStatus = "active" | "paused" | "not_deployed";
+
+export interface AgentConfig {
+  status: AgentStatus;
+  displayName: string;
+  persona: string;
+  channels: { sms: boolean; voice: boolean; chat: boolean };
+  greeting: string;
+  handoffPhone: string;
+  businessHours: string;
+  speedToLeadSec: number;
+  deployedAt: string;
+}
+
+export interface AgentPerformance {
+  leadsWorked: number;
+  appts: number;
+  creditApps: number;
+  attributedSales: number;
+  gross: number;
+}

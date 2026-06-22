@@ -272,4 +272,55 @@ export async function getCustomersOwned(): Promise<number> {
   const { data } = await supabase.from("dp_roi").select("customers_owned").maybeSingle();
   return data?.customers_owned ?? 0;
 }
+
+import type { AgentConfig, AgentPerformance, AgentStatus } from "./types";
+
+export async function getAgentConfig(dealerId?: string): Promise<AgentConfig | null> {
+  const supabase = await createClient();
+  let { data } = await supabase.from("dp_agent").select("*").maybeSingle();
+  // New dealers (self-serve signups) have no row yet — create a default one,
+  // deployed-off, so they can turn their assistant on. RLS scopes the insert.
+  if (!data && dealerId) {
+    const { data: created } = await supabase
+      .from("dp_agent")
+      .insert({ dealer_id: dealerId, status: "not_deployed" })
+      .select("*")
+      .maybeSingle();
+    data = created;
+  }
+  if (!data) return null;
+  const ch = data.channels ?? {};
+  return {
+    status: (data.status ?? "active") as AgentStatus,
+    displayName: data.display_name ?? "Ava",
+    persona: data.persona ?? "warm",
+    channels: { sms: !!ch.sms, voice: !!ch.voice, chat: !!ch.chat },
+    greeting: data.greeting ?? "",
+    handoffPhone: data.handoff_phone ?? "",
+    businessHours: data.business_hours ?? "24/7 — always on",
+    speedToLeadSec: data.speed_to_lead_sec ?? 11,
+    deployedAt: data.deployed_at ?? "",
+  };
+}
+
+/**
+ * Derive the agent's real output from the same tables the rest of the dashboard
+ * uses — leads it worked plus attributed sales/gross by engine.
+ */
+export async function getAgentPerformance(): Promise<AgentPerformance> {
+  const supabase = await createClient();
+  const [leads, attribution] = await Promise.all([
+    supabase.from("dp_leads").select("status, credit_app"),
+    supabase.from("dp_attribution_engine").select("appts, sales, gross"),
+  ]);
+  const ld = (leads.data ?? []) as any[];
+  const at = (attribution.data ?? []) as any[];
+  return {
+    leadsWorked: ld.length,
+    appts: at.reduce((s, r) => s + (r.appts ?? 0), 0),
+    creditApps: ld.filter((l) => l.credit_app).length,
+    attributedSales: at.reduce((s, r) => s + (r.sales ?? 0), 0),
+    gross: at.reduce((s, r) => s + (r.gross ?? 0), 0),
+  };
+}
 /* eslint-enable @typescript-eslint/no-explicit-any */
