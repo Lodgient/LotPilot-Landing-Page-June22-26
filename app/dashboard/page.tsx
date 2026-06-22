@@ -2,6 +2,7 @@ import Link from "next/link";
 import Shell from "@/components/dashboard/Shell";
 import { Card, PanelHeading, StatCard, Badge } from "@/components/dashboard/ui";
 import ActivityFeed from "@/components/dashboard/ActivityFeed";
+import Recommendations from "@/components/dashboard/Recommendations";
 import ScoreRing from "@/components/audit/ScoreRing";
 import { Sparkline } from "@/components/dashboard/charts";
 import {
@@ -11,18 +12,20 @@ import {
   getVisibility,
   getLeads,
   getOvernightSummary,
+  getRecommendations,
 } from "@/lib/dashboard/queries";
 
 export const dynamic = "force-dynamic";
 
 export default async function CommandCenter() {
   const { dealer, profile } = await requireDealer();
-  const [kpis, activity, visibility, leads, overnight] = await Promise.all([
+  const [kpis, activity, visibility, leads, overnight, recommendations] = await Promise.all([
     getKpis("today"),
     getActivity(),
     getVisibility(),
     getLeads(),
     getOvernightSummary(),
+    getRecommendations(),
   ]);
   const hot = leads.filter((l) => l.temp === "Hot");
 
@@ -69,6 +72,20 @@ export default async function CommandCenter() {
           <StatCard key={k.label} kpi={k} />
         ))}
       </div>
+
+      {/* Recommended actions */}
+      <Card className="mt-6">
+        <PanelHeading
+          title="Recommended actions"
+          sub="Prioritized by projected revenue impact"
+          action={
+            <Link href="/dashboard/inventory" className="text-xs text-cyan hover:underline">
+              See inventory
+            </Link>
+          }
+        />
+        <Recommendations items={recommendations} />
+      </Card>
 
       <div className="mt-6 grid gap-6 lg:grid-cols-[1.3fr_1fr]">
         {/* Activity feed */}

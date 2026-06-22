@@ -105,6 +105,64 @@ export interface Lead {
   transcript: Message[];
 }
 
+export interface VehicleCitation {
+  query: string;
+  topSource: string;
+  engines: Record<string, boolean>;
+}
+
+export interface Vehicle {
+  id: string;
+  vin: string;
+  year: number;
+  make: string;
+  model: string;
+  trim: string;
+  body: string;
+  stockType: string;
+  price: number;
+  mileage: number;
+  daysOnLot: number;
+  estGross: number;
+  aiScore: number;
+  enginesCiting: number;
+  queriesMatched: number;
+  aiLeads: number;
+  aiVdpViews: number;
+  trend: number[];
+  blocker: string;
+  engines: Record<string, boolean>;
+  citations: VehicleCitation[];
+}
+
+export interface DemandRow {
+  query: string;
+  segment: string;
+  weeklyVolume: number;
+  trend: number[];
+  yourStock: number;
+  cited: number;
+  topSource: string;
+  status: "gap" | "covered" | "surplus";
+}
+
+export interface AttributionEngine {
+  engine: string;
+  leads: number;
+  appts: number;
+  sales: number;
+  gross: number;
+}
+
+export interface Recommendation {
+  priority: "High" | "Medium" | "Low";
+  title: string;
+  detail: string;
+  impact: string;
+  effort: string;
+  category: string;
+}
+
 export interface FunnelStage {
   stage: string;
   value: number;

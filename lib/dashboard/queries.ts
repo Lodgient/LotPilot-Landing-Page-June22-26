@@ -2,14 +2,18 @@ import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import type {
   ActivityEvent,
+  AttributionEngine,
   Dealer,
+  DemandRow,
   FunnelStage,
   KPI,
   Lead,
   Pillar,
   Profile,
+  Recommendation,
   RecommendedVin,
   ShareSegment,
+  Vehicle,
   VisibilityQuery,
   VisibilitySnapshot,
   VsMarketplaceRow,
@@ -164,6 +168,74 @@ export async function getVsMarketplace(): Promise<VsMarketplaceRow[]> {
   const supabase = await createClient();
   const { data } = await supabase.from("dp_vs_marketplace").select("*").order("sort");
   return (data ?? []).map((r: any) => ({ metric: r.metric, lp: r.lp, mk: r.mk }));
+}
+
+export async function getVehicles(): Promise<Vehicle[]> {
+  const supabase = await createClient();
+  const { data } = await supabase.from("dp_vehicles").select("*").order("sort");
+  return (data ?? []).map((r: any) => ({
+    id: r.id,
+    vin: r.vin,
+    year: r.year,
+    make: r.make,
+    model: r.model,
+    trim: r.trim,
+    body: r.body,
+    stockType: r.stock_type,
+    price: r.price,
+    mileage: r.mileage,
+    daysOnLot: r.days_on_lot,
+    estGross: r.est_gross,
+    aiScore: r.ai_score,
+    enginesCiting: r.engines_citing,
+    queriesMatched: r.queries_matched,
+    aiLeads: r.ai_leads,
+    aiVdpViews: r.ai_vdp_views,
+    trend: r.trend ?? [],
+    blocker: r.blocker,
+    engines: r.engines ?? {},
+    citations: r.citations ?? [],
+  }));
+}
+
+export async function getDemand(): Promise<DemandRow[]> {
+  const supabase = await createClient();
+  const { data } = await supabase.from("dp_demand").select("*").order("sort");
+  return (data ?? []).map((r: any) => ({
+    query: r.query,
+    segment: r.segment,
+    weeklyVolume: r.weekly_volume,
+    trend: r.trend ?? [],
+    yourStock: r.your_stock,
+    cited: r.cited,
+    topSource: r.top_source,
+    status: r.status,
+  }));
+}
+
+export async function getAttributionByEngine(): Promise<AttributionEngine[]> {
+  const supabase = await createClient();
+  const { data } = await supabase.from("dp_attribution_engine").select("*").order("sort");
+  return (data ?? []).map((r: any) => ({
+    engine: r.engine,
+    leads: r.leads,
+    appts: r.appts,
+    sales: r.sales,
+    gross: r.gross,
+  }));
+}
+
+export async function getRecommendations(): Promise<Recommendation[]> {
+  const supabase = await createClient();
+  const { data } = await supabase.from("dp_recommendations").select("*").order("sort");
+  return (data ?? []).map((r: any) => ({
+    priority: r.priority,
+    title: r.title,
+    detail: r.detail,
+    impact: r.impact,
+    effort: r.effort,
+    category: r.category,
+  }));
 }
 
 export async function getCustomersOwned(): Promise<number> {

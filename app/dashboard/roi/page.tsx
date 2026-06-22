@@ -7,18 +7,24 @@ import {
   getFunnel,
   getVsMarketplace,
   getCustomersOwned,
+  getAttributionByEngine,
 } from "@/lib/dashboard/queries";
 
 export const dynamic = "force-dynamic";
 
+const money = (n: number) => "$" + n.toLocaleString();
+
 export default async function RoiPage() {
   const { dealer, profile } = await requireDealer();
-  const [kpis, funnel, vsMarket, owned] = await Promise.all([
+  const [kpis, funnel, vsMarket, owned, byEngine] = await Promise.all([
     getKpis("roi"),
     getFunnel(),
     getVsMarketplace(),
     getCustomersOwned(),
+    getAttributionByEngine(),
   ]);
+  const maxGross = Math.max(...byEngine.map((e) => e.gross), 1);
+  const totalGross = byEngine.reduce((s, e) => s + e.gross, 0);
 
   return (
     <Shell
@@ -53,6 +59,50 @@ export default async function RoiPage() {
           </div>
         </Card>
       </div>
+
+      {/* Attribution by engine */}
+      <Card className="mt-6">
+        <PanelHeading
+          title="Attribution by AI engine"
+          sub={`${money(totalGross)} in front gross traced to AI this month`}
+        />
+        <div className="overflow-x-auto scroll-slim">
+          <table className="w-full min-w-[640px] border-collapse">
+            <thead>
+              <tr className="text-xs text-ink-faint">
+                <th className="px-3 py-3 text-left font-medium">Engine</th>
+                <th className="px-3 py-3 text-center font-medium">Leads</th>
+                <th className="px-3 py-3 text-center font-medium">Appts</th>
+                <th className="px-3 py-3 text-center font-medium">Sales</th>
+                <th className="px-3 py-3 text-left font-medium">Attributed gross</th>
+              </tr>
+            </thead>
+            <tbody>
+              {byEngine.map((e) => (
+                <tr key={e.engine} className="border-t border-line">
+                  <td className="px-3 py-3 text-sm font-medium text-ink">{e.engine}</td>
+                  <td className="px-3 py-3 text-center text-sm tabular-nums text-ink-soft">{e.leads}</td>
+                  <td className="px-3 py-3 text-center text-sm tabular-nums text-ink-soft">{e.appts}</td>
+                  <td className="px-3 py-3 text-center text-sm tabular-nums text-ink-soft">{e.sales}</td>
+                  <td className="px-3 py-3">
+                    <div className="flex items-center gap-3">
+                      <div className="h-2.5 flex-1 overflow-hidden rounded-full bg-white/[0.06]">
+                        <div
+                          className="h-full rounded-full bg-gradient-to-r from-cyan to-violet"
+                          style={{ width: `${(e.gross / maxGross) * 100}%` }}
+                        />
+                      </div>
+                      <span className="w-20 text-right text-sm tabular-nums text-ink-soft">
+                        {money(e.gross)}
+                      </span>
+                    </div>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </Card>
 
       <Card className="mt-6">
         <PanelHeading title="LotPilot vs marketplaces" sub="The same spend, a very different deal" />

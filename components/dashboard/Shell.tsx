@@ -12,6 +12,8 @@ import { DemoBadge } from "./ui";
 const NAV = [
   { href: "/dashboard", label: "Command Center", icon: "◧", exact: true },
   { href: "/dashboard/visibility", label: "AI Visibility", icon: "◎" },
+  { href: "/dashboard/inventory", label: "Inventory AI", icon: "🚗" },
+  { href: "/dashboard/demand", label: "Demand Intelligence", icon: "📈" },
   { href: "/dashboard/leads", label: "Leads & Conversations", icon: "✦" },
   { href: "/dashboard/roi", label: "ROI & Attribution", icon: "▤" },
 ];
