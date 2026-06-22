@@ -1,0 +1,48 @@
+# dealers.lotpilot.com — robots.txt
+# Allow all major AI answer-engine crawlers + search bots.
+
+User-Agent: *
+Allow: /
+Disallow: /api/
+Disallow: /_next/
+
+User-Agent: OAI-SearchBot
+Allow: /
+
+User-Agent: GPTBot
+Allow: /
+
+User-Agent: ChatGPT-User
+Allow: /
+
+User-Agent: ClaudeBot
+Allow: /
+
+User-Agent: Claude-SearchBot
+Allow: /
+
+User-Agent: Claude-Web
+Allow: /
+
+User-Agent: PerplexityBot
+Allow: /
+
+User-Agent: Perplexity-User
+Allow: /
+
+User-Agent: CCBot
+Allow: /
+
+User-Agent: Googlebot
+Allow: /
+
+User-Agent: Google-Extended
+Allow: /
+
+User-Agent: bingbot
+Allow: /
+
+User-Agent: msnbot
+Allow: /
+
+Sitemap: https://dealers.lotpilot.com/sitemap.xml

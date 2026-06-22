@@ -1,0 +1,30 @@
+# LotPilot for Dealers
+
+LotPilot makes a car dealership's inventory visible and recommended inside AI
+answer engines (ChatGPT, Perplexity, Gemini, Google AI Overviews, Bing Copilot),
+then works the resulting leads with AI agents that respond instantly over SMS and
+voice, capture credit applications, and drive deals to appointment and sale.
+
+The dealer's only requirement is to connect their existing inventory feed.
+
+## What LotPilot does
+- Discovery: ingests the dealer's inventory feed and makes every vehicle
+  discoverable and citable by AI answer engines on the dealer's behalf.
+- Conversion: AI SMS and voice agents work every lead in seconds — qualify,
+  answer questions, capture credit applications, book appointments, progress deals.
+
+## Who it's for
+Franchise and independent U.S. car dealerships, dealer principals, GMs, and
+internet/BDC directors who want leads directly from AI search instead of paying
+marketplaces that resell the same lead to competitors.
+
+## Key pages
+- / : overview and free AI-Visibility Audit
+- /how-it-works : the discovery + conversion model
+- /demo : book a demo / connect inventory feed
+
+## Supported inventory feed formats
+vAuto, HomeNet, Dealer.com, DealerSocket, and generic CSV / XML exports.
+
+## Contact
+Book a demo or connect a feed at https://dealers.lotpilot.com
