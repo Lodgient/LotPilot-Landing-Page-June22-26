@@ -38,6 +38,7 @@ export default function LivePagePreview({
   onClose: () => void;
 }) {
   const [copied, setCopied] = useState(false);
+  const [imgError, setImgError] = useState(false);
   const url = resolveLivePageUrl(dealer, vehicle);
   const path = url.replace(/^https?:\/\//, "");
   const synced = !!vehicle.liveUrl;
@@ -115,12 +116,13 @@ export default function LivePagePreview({
           </div>
 
           {/* real listing photo when the VIN is synced from the page system */}
-          {vehicle.liveImage && (
+          {vehicle.liveImage && !imgError && (
             // eslint-disable-next-line @next/next/no-img-element
             <img
               src={vehicle.liveImage}
               alt={`${name} at ${dealer.name}`}
               className="h-52 w-full object-cover sm:h-64"
+              onError={() => setImgError(true)}
             />
           )}
 
