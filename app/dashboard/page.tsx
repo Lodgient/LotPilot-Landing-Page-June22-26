@@ -5,22 +5,33 @@ import ActivityFeed from "@/components/dashboard/ActivityFeed";
 import ScoreRing from "@/components/audit/ScoreRing";
 import { Sparkline } from "@/components/dashboard/charts";
 import {
-  TODAY_KPIS,
-  OVERNIGHT,
-  OVERNIGHT_SUMMARY,
-  VISIBILITY_SCORE,
-  VISIBILITY_TREND,
-  LEADS,
-  DEMO_DEALER,
-} from "@/lib/dashboard/data";
+  requireDealer,
+  getKpis,
+  getActivity,
+  getVisibility,
+  getLeads,
+  getOvernightSummary,
+} from "@/lib/dashboard/queries";
 
-export default function CommandCenter() {
-  const hot = LEADS.filter((l) => l.temp === "Hot");
+export const dynamic = "force-dynamic";
+
+export default async function CommandCenter() {
+  const { dealer, profile } = await requireDealer();
+  const [kpis, activity, visibility, leads, overnight] = await Promise.all([
+    getKpis("today"),
+    getActivity(),
+    getVisibility(),
+    getLeads(),
+    getOvernightSummary(),
+  ]);
+  const hot = leads.filter((l) => l.temp === "Hot");
 
   return (
     <Shell
-      title={`Good morning, ${DEMO_DEALER.contact.split(" ")[0]}`}
-      intro={`Here's what your AI did for ${DEMO_DEALER.name}.`}
+      dealer={dealer}
+      profile={profile}
+      title={`Good morning, ${profile.fullName.split(" ")[0]}`}
+      intro={`Here's what your AI did for ${dealer.name}.`}
     >
       {/* While you slept */}
       <Card glow className="relative overflow-hidden">
@@ -30,16 +41,15 @@ export default function CommandCenter() {
             <Badge tone="cyan">● While you slept</Badge>
             <h2 className="mt-3 text-pretty text-2xl font-semibold tracking-tight text-ink sm:text-3xl">
               Your AI answered{" "}
-              <span className="text-gradient">{OVERNIGHT_SUMMARY.leadsAnswered} leads</span>,
-              booked{" "}
-              <span className="text-gradient">{OVERNIGHT_SUMMARY.appts} appointments</span> and
+              <span className="text-gradient">{overnight.leadsAnswered ?? "—"} leads</span>, booked{" "}
+              <span className="text-gradient">{overnight.appts ?? "—"} appointments</span> and
               captured{" "}
-              <span className="text-gradient">{OVERNIGHT_SUMMARY.creditApps} credit apps</span>{" "}
+              <span className="text-gradient">{overnight.creditApps ?? "—"} credit apps</span>{" "}
               overnight.
             </h2>
             <p className="mt-2 text-sm text-ink-muted">
-              Fastest response: {OVERNIGHT_SUMMARY.fastestReply}. Nothing leaked while the store
-              was closed.
+              Fastest response: {overnight.fastestReply ?? "—"}. Nothing leaked while the store was
+              closed.
             </p>
           </div>
           <div className="flex items-center gap-4 lg:flex-col lg:items-end lg:justify-center">
@@ -55,8 +65,8 @@ export default function CommandCenter() {
 
       {/* Today KPIs */}
       <div className="mt-6 grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-        {TODAY_KPIS.map((k) => (
-          <StatCard key={k.label} kpi={k} invertTrend={k.label === "Avg speed-to-lead"} />
+        {kpis.map((k) => (
+          <StatCard key={k.label} kpi={k} />
         ))}
       </div>
 
@@ -72,35 +82,36 @@ export default function CommandCenter() {
               </Link>
             }
           />
-          <ActivityFeed events={OVERNIGHT} />
+          <ActivityFeed events={activity} />
         </Card>
 
         <div className="space-y-6">
           {/* Visibility snapshot */}
-          <Card>
-            <PanelHeading
-              title="AI Visibility"
-              action={
-                <Link href="/dashboard/visibility" className="text-xs text-cyan hover:underline">
-                  Details
-                </Link>
-              }
-            />
-            <div className="flex items-center gap-5">
-              <ScoreRing score={VISIBILITY_SCORE.score} band={VISIBILITY_SCORE.band} size={132} />
-              <div>
-                <p className="text-sm text-ink-soft">
-                  Up{" "}
-                  <span className="font-semibold text-accent">+{VISIBILITY_SCORE.delta} pts</span>{" "}
-                  since you connected your feed.
-                </p>
-                <div className="mt-3">
-                  <Sparkline data={VISIBILITY_TREND} accent="accent" width={150} height={42} />
+          {visibility && (
+            <Card>
+              <PanelHeading
+                title="AI Visibility"
+                action={
+                  <Link href="/dashboard/visibility" className="text-xs text-cyan hover:underline">
+                    Details
+                  </Link>
+                }
+              />
+              <div className="flex items-center gap-5">
+                <ScoreRing score={visibility.score} band={visibility.band} size={132} />
+                <div>
+                  <p className="text-sm text-ink-soft">
+                    Up <span className="font-semibold text-accent">+{visibility.delta} pts</span>{" "}
+                    since you connected your feed.
+                  </p>
+                  <div className="mt-3">
+                    <Sparkline data={visibility.trend} accent="accent" width={150} height={42} />
+                  </div>
+                  <p className="mt-1 text-xs text-ink-faint">12-week trend</p>
                 </div>
-                <p className="mt-1 text-xs text-ink-faint">12-week trend</p>
               </div>
-            </div>
-          </Card>
+            </Card>
+          )}
 
           {/* Needs attention */}
           <Card>

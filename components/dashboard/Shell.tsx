@@ -2,10 +2,11 @@
 
 import { useState, type ReactNode } from "react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import Logo from "@/components/Logo";
 import { cn } from "@/lib/cn";
-import { DEMO_DEALER } from "@/lib/dashboard/data";
+import { createClient } from "@/lib/supabase/client";
+import type { Dealer, Profile } from "@/lib/dashboard/types";
 import { DemoBadge } from "./ui";
 
 const NAV = [
@@ -49,7 +50,29 @@ function NavLinks({ onNavigate }: { onNavigate?: () => void }) {
   );
 }
 
-function SidebarInner({ onNavigate }: { onNavigate?: () => void }) {
+function initials(name: string) {
+  return name.split(" ").map((n) => n[0]).join("").slice(0, 2);
+}
+
+function SidebarInner({
+  dealer,
+  profile,
+  onNavigate,
+}: {
+  dealer: Dealer;
+  profile: Profile;
+  onNavigate?: () => void;
+}) {
+  const router = useRouter();
+
+  async function logout() {
+    const supabase = createClient();
+    await supabase.auth.signOut();
+    onNavigate?.();
+    router.push("/login");
+    router.refresh();
+  }
+
   return (
     <div className="flex h-full flex-col">
       <div className="px-2">
@@ -62,11 +85,11 @@ function SidebarInner({ onNavigate }: { onNavigate?: () => void }) {
       <div className="surface mt-5 rounded-xl p-3">
         <div className="flex items-center gap-2.5">
           <span className="grid h-9 w-9 place-items-center rounded-lg bg-white/[0.05] font-display text-gradient">
-            {DEMO_DEALER.name.charAt(0)}
+            {dealer.name.charAt(0)}
           </span>
           <div className="min-w-0">
-            <p className="truncate text-sm font-semibold text-ink">{DEMO_DEALER.name}</p>
-            <p className="truncate text-xs text-ink-muted">{DEMO_DEALER.metro}</p>
+            <p className="truncate text-sm font-semibold text-ink">{dealer.name}</p>
+            <p className="truncate text-xs text-ink-muted">{dealer.metro}</p>
           </div>
         </div>
         <div className="mt-3 flex items-center justify-between rounded-lg bg-white/[0.03] px-2.5 py-1.5">
@@ -74,7 +97,9 @@ function SidebarInner({ onNavigate }: { onNavigate?: () => void }) {
             <span className="h-1.5 w-1.5 rounded-full bg-accent shadow-[0_0_8px] shadow-accent" />
             Feed live
           </span>
-          <span className="text-xs text-ink-faint">{DEMO_DEALER.feedType} · {DEMO_DEALER.lastSync}</span>
+          <span className="text-xs text-ink-faint">
+            {dealer.feedType} · {dealer.lastSync}
+          </span>
         </div>
       </div>
 
@@ -89,19 +114,18 @@ function SidebarInner({ onNavigate }: { onNavigate?: () => void }) {
       <div className="mt-4 border-t border-line pt-4">
         <div className="flex items-center gap-2.5 px-1">
           <span className="grid h-8 w-8 place-items-center rounded-full bg-violet/20 text-xs font-semibold text-violet">
-            {DEMO_DEALER.contact.split(" ").map((n) => n[0]).join("")}
+            {initials(profile.fullName)}
           </span>
           <div className="min-w-0 flex-1">
-            <p className="truncate text-xs font-medium text-ink">{DEMO_DEALER.contact}</p>
-            <p className="truncate text-[11px] text-ink-faint">{DEMO_DEALER.role}</p>
+            <p className="truncate text-xs font-medium text-ink">{profile.fullName}</p>
+            <p className="truncate text-[11px] text-ink-faint">{profile.role}</p>
           </div>
-          <Link
-            href="/login"
-            onClick={onNavigate}
+          <button
+            onClick={logout}
             className="rounded-lg px-2 py-1 text-xs text-ink-muted hover:bg-white/[0.05] hover:text-ink"
           >
             Log out
-          </Link>
+          </button>
         </div>
       </div>
     </div>
@@ -111,10 +135,14 @@ function SidebarInner({ onNavigate }: { onNavigate?: () => void }) {
 export default function Shell({
   title,
   intro,
+  dealer,
+  profile,
   children,
 }: {
   title: string;
   intro?: string;
+  dealer: Dealer;
+  profile: Profile;
   children: ReactNode;
 }) {
   const [open, setOpen] = useState(false);
@@ -122,7 +150,7 @@ export default function Shell({
     <div className="min-h-screen lg:grid lg:grid-cols-[268px_1fr]">
       {/* desktop sidebar */}
       <aside className="sticky top-0 hidden h-screen flex-col border-r border-line bg-canvas-2/40 p-5 lg:flex">
-        <SidebarInner />
+        <SidebarInner dealer={dealer} profile={profile} />
       </aside>
 
       {/* mobile drawer */}
@@ -130,7 +158,7 @@ export default function Shell({
         <div className="fixed inset-0 z-50 lg:hidden">
           <div className="absolute inset-0 bg-black/60" onClick={() => setOpen(false)} />
           <aside className="absolute left-0 top-0 h-full w-[280px] border-r border-line bg-canvas p-5">
-            <SidebarInner onNavigate={() => setOpen(false)} />
+            <SidebarInner dealer={dealer} profile={profile} onNavigate={() => setOpen(false)} />
           </aside>
         </div>
       )}

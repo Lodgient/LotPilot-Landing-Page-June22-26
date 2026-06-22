@@ -1,0 +1,174 @@
+import { redirect } from "next/navigation";
+import { createClient } from "@/lib/supabase/server";
+import type {
+  ActivityEvent,
+  Dealer,
+  FunnelStage,
+  KPI,
+  Lead,
+  Pillar,
+  Profile,
+  RecommendedVin,
+  ShareSegment,
+  VisibilityQuery,
+  VisibilitySnapshot,
+  VsMarketplaceRow,
+} from "./types";
+
+export interface DealerContext {
+  dealer: Dealer;
+  profile: Profile;
+}
+
+/**
+ * Resolve the signed-in user's dealer + profile. Redirects to /login if there's
+ * no session or the user isn't linked to a dealer.
+ */
+export async function requireDealer(): Promise<DealerContext> {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) redirect("/login");
+
+  const { data: profile } = await supabase
+    .from("dp_profiles")
+    .select("full_name, role, dealer_id")
+    .eq("id", user.id)
+    .single();
+
+  if (!profile?.dealer_id) redirect("/login");
+
+  const { data: dealer } = await supabase
+    .from("dp_dealers")
+    .select("*")
+    .eq("id", profile.dealer_id)
+    .single();
+
+  if (!dealer) redirect("/login");
+
+  return {
+    dealer: {
+      id: dealer.id,
+      name: dealer.name,
+      metro: dealer.metro ?? "",
+      rooftops: dealer.rooftops ?? 1,
+      feedType: dealer.feed_type ?? "",
+      vehicles: dealer.vehicles ?? 0,
+      lastSync: dealer.last_sync ?? "",
+    },
+    profile: { fullName: profile.full_name ?? "", role: profile.role ?? "" },
+  };
+}
+
+/* eslint-disable @typescript-eslint/no-explicit-any */
+function toKpi(r: any): KPI {
+  return {
+    label: r.label,
+    value: r.value,
+    sub: r.sub ?? undefined,
+    trend: r.trend ?? undefined,
+    spark: r.spark ?? [],
+    accent: r.accent ?? "cyan",
+    invertTrend: r.invert_trend ?? false,
+  };
+}
+
+export async function getKpis(scope: "today" | "roi"): Promise<KPI[]> {
+  const supabase = await createClient();
+  const { data } = await supabase
+    .from("dp_kpis")
+    .select("*")
+    .eq("scope", scope)
+    .order("sort");
+  return (data ?? []).map(toKpi);
+}
+
+export async function getOvernightSummary(): Promise<Record<string, string>> {
+  const supabase = await createClient();
+  const { data } = await supabase.from("dp_kpis").select("label, value").eq("scope", "overnight");
+  const out: Record<string, string> = {};
+  (data ?? []).forEach((r: any) => (out[r.label] = r.value));
+  return out;
+}
+
+export async function getActivity(): Promise<ActivityEvent[]> {
+  const supabase = await createClient();
+  const { data } = await supabase
+    .from("dp_activity")
+    .select("*")
+    .order("sort");
+  return (data ?? []).map((r: any) => ({ type: r.type, time: r.time_label ?? "", text: r.body }));
+}
+
+export async function getVisibility(): Promise<VisibilitySnapshot | null> {
+  const supabase = await createClient();
+  const { data } = await supabase.from("dp_visibility").select("*").maybeSingle();
+  if (!data) return null;
+  return { score: data.score, delta: data.score_delta ?? 0, band: data.band ?? "developing", trend: data.trend ?? [] };
+}
+
+export async function getPillars(): Promise<Pillar[]> {
+  const supabase = await createClient();
+  const { data } = await supabase.from("dp_pillars").select("*").order("sort");
+  return (data ?? []).map((r: any) => ({ label: r.label, score: r.score, delta: r.delta ?? 0 }));
+}
+
+export async function getVisibilityQueries(): Promise<VisibilityQuery[]> {
+  const supabase = await createClient();
+  const { data } = await supabase.from("dp_visibility_queries").select("*").order("sort");
+  return (data ?? []).map((r: any) => ({ query: r.query, engines: r.engines }));
+}
+
+export async function getShareOfVoice(): Promise<ShareSegment[]> {
+  const supabase = await createClient();
+  const { data } = await supabase.from("dp_share_of_voice").select("*").order("sort");
+  return (data ?? []).map((r: any) => ({ name: r.name, value: r.value, color: r.color }));
+}
+
+export async function getRecommendedVins(): Promise<RecommendedVin[]> {
+  const supabase = await createClient();
+  const { data } = await supabase.from("dp_recommended_vins").select("*").order("sort");
+  return (data ?? []).map((r: any) => ({ vehicle: r.vehicle, engine: r.engine, leads: r.leads, price: r.price }));
+}
+
+export async function getLeads(): Promise<Lead[]> {
+  const supabase = await createClient();
+  const { data } = await supabase
+    .from("dp_leads")
+    .select("*, dp_messages(sender, body, time_label, sort)")
+    .order("sort");
+  return (data ?? []).map((r: any) => ({
+    id: r.id,
+    name: r.name,
+    vehicle: r.vehicle,
+    source: r.source,
+    status: r.status,
+    temp: r.temp,
+    firstReplySec: r.first_reply_sec ?? 0,
+    creditApp: r.credit_app ?? false,
+    time: r.time_label ?? "",
+    transcript: (r.dp_messages ?? [])
+      .sort((a: any, b: any) => a.sort - b.sort)
+      .map((m: any) => ({ from: m.sender, text: m.body, time: m.time_label ?? "" })),
+  }));
+}
+
+export async function getFunnel(): Promise<FunnelStage[]> {
+  const supabase = await createClient();
+  const { data } = await supabase.from("dp_funnel").select("*").order("sort");
+  return (data ?? []).map((r: any) => ({ stage: r.stage, value: r.value }));
+}
+
+export async function getVsMarketplace(): Promise<VsMarketplaceRow[]> {
+  const supabase = await createClient();
+  const { data } = await supabase.from("dp_vs_marketplace").select("*").order("sort");
+  return (data ?? []).map((r: any) => ({ metric: r.metric, lp: r.lp, mk: r.mk }));
+}
+
+export async function getCustomersOwned(): Promise<number> {
+  const supabase = await createClient();
+  const { data } = await supabase.from("dp_roi").select("customers_owned").maybeSingle();
+  return data?.customers_owned ?? 0;
+}
+/* eslint-enable @typescript-eslint/no-explicit-any */

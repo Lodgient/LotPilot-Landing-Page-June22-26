@@ -1,7 +1,7 @@
 import type { ReactNode } from "react";
 import { cn } from "@/lib/cn";
 import { Sparkline, TrendPill } from "./charts";
-import type { KPI } from "@/lib/dashboard/data";
+import type { KPI } from "@/lib/dashboard/types";
 
 export function Card({
   children,
@@ -39,12 +39,12 @@ export function PanelHeading({
   );
 }
 
-export function StatCard({ kpi, invertTrend = false }: { kpi: KPI; invertTrend?: boolean }) {
+export function StatCard({ kpi }: { kpi: KPI }) {
   return (
     <Card className="flex flex-col justify-between">
       <div className="flex items-start justify-between">
         <span className="text-sm text-ink-muted">{kpi.label}</span>
-        {typeof kpi.trend === "number" && <TrendPill value={kpi.trend} invert={invertTrend} />}
+        {typeof kpi.trend === "number" && <TrendPill value={kpi.trend} invert={kpi.invertTrend} />}
       </div>
       <div className="mt-3 flex items-end justify-between gap-3">
         <div>

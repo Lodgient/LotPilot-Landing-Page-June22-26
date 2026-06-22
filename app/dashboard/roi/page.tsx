@@ -2,40 +2,48 @@ import Shell from "@/components/dashboard/Shell";
 import { Card, PanelHeading, StatCard, Badge } from "@/components/dashboard/ui";
 import { Funnel } from "@/components/dashboard/charts";
 import {
-  ROI_KPIS,
-  ROI_VS_MARKETPLACE,
-  ROI_FUNNEL,
-  CUSTOMERS_OWNED,
-} from "@/lib/dashboard/data";
+  requireDealer,
+  getKpis,
+  getFunnel,
+  getVsMarketplace,
+  getCustomersOwned,
+} from "@/lib/dashboard/queries";
 
-export default function RoiPage() {
+export const dynamic = "force-dynamic";
+
+export default async function RoiPage() {
+  const { dealer, profile } = await requireDealer();
+  const [kpis, funnel, vsMarket, owned] = await Promise.all([
+    getKpis("roi"),
+    getFunnel(),
+    getVsMarketplace(),
+    getCustomersOwned(),
+  ]);
+
   return (
     <Shell
+      dealer={dealer}
+      profile={profile}
       title="ROI & Attribution"
       intro="What the AI channel is worth — and who owns the customer."
     >
-      {/* KPIs */}
       <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-        {ROI_KPIS.map((k) => (
-          <StatCard key={k.label} kpi={k} invertTrend={k.label === "Cost per lead"} />
+        {kpis.map((k) => (
+          <StatCard key={k.label} kpi={k} />
         ))}
       </div>
 
       <div className="mt-6 grid gap-6 lg:grid-cols-[1.3fr_1fr]">
-        {/* Funnel */}
         <Card>
           <PanelHeading title="AI revenue funnel" sub="This month, lead → sale" />
-          <Funnel stages={ROI_FUNNEL} />
+          <Funnel stages={funnel} />
         </Card>
 
-        {/* Ownership callout */}
         <Card glow className="relative flex flex-col justify-center overflow-hidden text-center">
           <div className="glow-accent pointer-events-none absolute -left-10 -top-10 h-48 w-48 opacity-50" />
           <div className="relative">
             <p className="text-sm text-ink-muted">Customers you own outright</p>
-            <div className="mt-2 text-6xl font-bold tracking-tight text-gradient">
-              {CUSTOMERS_OWNED}
-            </div>
+            <div className="mt-2 text-6xl font-bold tracking-tight text-gradient">{owned}</div>
             <p className="mt-2 text-sm text-ink-soft">
               Every AI-sourced lead this month is yours alone.
             </p>
@@ -46,12 +54,8 @@ export default function RoiPage() {
         </Card>
       </div>
 
-      {/* vs Marketplace */}
       <Card className="mt-6">
-        <PanelHeading
-          title="LotPilot vs marketplaces"
-          sub="The same spend, a very different deal"
-        />
+        <PanelHeading title="LotPilot vs marketplaces" sub="The same spend, a very different deal" />
         <div className="overflow-hidden rounded-xl border border-line">
           <div className="grid grid-cols-[1.4fr_1fr_1fr] bg-white/[0.02] text-xs text-ink-faint">
             <div className="p-3 sm:p-4">&nbsp;</div>
@@ -60,7 +64,7 @@ export default function RoiPage() {
             </div>
             <div className="border-l border-line p-3 text-center sm:p-4">Marketplaces</div>
           </div>
-          {ROI_VS_MARKETPLACE.map((r, i) => (
+          {vsMarket.map((r, i) => (
             <div
               key={r.metric}
               className={`grid grid-cols-[1.4fr_1fr_1fr] text-sm ${i % 2 ? "bg-white/[0.012]" : ""}`}

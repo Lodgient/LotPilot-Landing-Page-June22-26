@@ -1,4 +1,4 @@
-import type { ActivityEvent, ActivityType } from "@/lib/dashboard/data";
+import type { ActivityEvent, ActivityType } from "@/lib/dashboard/types";
 
 const META: Record<ActivityType, { icon: string; tone: string }> = {
   appointment: { icon: "📅", tone: "bg-violet/15 text-violet" },
