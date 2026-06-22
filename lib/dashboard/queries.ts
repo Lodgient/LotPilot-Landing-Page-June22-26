@@ -197,6 +197,8 @@ export async function getVehicles(): Promise<Vehicle[]> {
     blocker: r.blocker,
     engines: r.engines ?? {},
     citations: r.citations ?? [],
+    liveUrl: r.live_url ?? undefined,
+    liveImage: r.live_image ?? undefined,
   }));
 }
 

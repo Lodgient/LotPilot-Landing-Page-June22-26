@@ -133,6 +133,8 @@ export interface Vehicle {
   blocker: string;
   engines: Record<string, boolean>;
   citations: VehicleCitation[];
+  liveUrl?: string;
+  liveImage?: string;
 }
 
 export interface DemandRow {

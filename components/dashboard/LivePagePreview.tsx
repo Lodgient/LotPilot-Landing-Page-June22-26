@@ -3,7 +3,7 @@
 import { useState } from "react";
 import Icon from "@/components/Icon";
 import { ENGINES, type Dealer, type Vehicle } from "@/lib/dashboard/types";
-import { livePagePath, livePageUrl } from "@/lib/inventory/livePage";
+import { resolveLivePageUrl } from "@/lib/inventory/livePage";
 import { cn } from "@/lib/cn";
 
 const money = (n: number) => "$" + n.toLocaleString();
@@ -38,8 +38,9 @@ export default function LivePagePreview({
   onClose: () => void;
 }) {
   const [copied, setCopied] = useState(false);
-  const url = livePageUrl(dealer, vehicle);
-  const path = livePagePath(dealer, vehicle);
+  const url = resolveLivePageUrl(dealer, vehicle);
+  const path = url.replace(/^https?:\/\//, "");
+  const synced = !!vehicle.liveUrl;
   const name = `${vehicle.year} ${vehicle.make} ${vehicle.model}`;
   const qa = buildQA(dealer, vehicle);
   const citing = ENGINES.filter((e) => vehicle.engines[e]);
@@ -101,10 +102,27 @@ export default function LivePagePreview({
                 <p className="text-[11px] text-ink-faint">{dealer.metro}</p>
               </div>
             </div>
-            <span className="inline-flex items-center gap-1.5 rounded-full border border-accent/30 bg-accent/10 px-2.5 py-1 text-[11px] font-medium text-accent">
-              <Icon name="shield" size={12} /> AI-verified by LotPilot
+            <span
+              className={cn(
+                "inline-flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-[11px] font-medium",
+                synced
+                  ? "border-accent/30 bg-accent/10 text-accent"
+                  : "border-line bg-white/[0.04] text-ink-muted",
+              )}
+            >
+              <Icon name="shield" size={12} /> {synced ? "Live · AI-verified by LotPilot" : "Preview"}
             </span>
           </div>
+
+          {/* real listing photo when the VIN is synced from the page system */}
+          {vehicle.liveImage && (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img
+              src={vehicle.liveImage}
+              alt={`${name} at ${dealer.name}`}
+              className="h-52 w-full object-cover sm:h-64"
+            />
+          )}
 
           <div className="px-6 py-6 sm:px-8">
             {/* hero */}

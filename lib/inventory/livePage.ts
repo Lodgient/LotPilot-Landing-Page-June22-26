@@ -62,6 +62,15 @@ export function livePageUrl(
   return `${LOTPILOT_HOST}/inventory/${dealerSlug(dealer)}/${vehicleSlug(dealer, v)}`;
 }
 
+/**
+ * The URL the dashboard should link to. Prefers the canonical URL published by
+ * the page system (handles slug collisions/suffixes); reconstructs one only as a
+ * fallback for VINs that haven't been synced yet.
+ */
+export function resolveLivePageUrl(dealer: Pick<Dealer, "name" | "metro">, v: Vehicle): string {
+  return v.liveUrl?.trim() || livePageUrl(dealer, v);
+}
+
 /** The path shown in the browser-chrome of the in-dashboard preview. */
 export function livePagePath(
   dealer: Pick<Dealer, "name" | "metro">,

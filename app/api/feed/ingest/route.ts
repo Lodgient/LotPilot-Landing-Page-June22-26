@@ -28,6 +28,9 @@ function mapVehicle(dealerId: string, v: any) {
   set("mileage", v.mileage);
   set("days_on_lot", v.daysOnLot);
   set("est_gross", v.estGross);
+  // Canonical published AI page + hero photo from the LotPilot page system.
+  set("live_url", v.liveUrl);
+  set("live_image", v.liveImage);
   return row;
 }
 
