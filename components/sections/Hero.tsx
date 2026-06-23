@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Image from "next/image";
 import { motion } from "framer-motion";
 import { RUN_AUDIT_EVENT, type RunAuditDetail } from "@/components/audit/AuditTool";
 
@@ -20,24 +21,37 @@ export default function Hero() {
 
   function launch() {
     if (!url.trim()) {
-      // soft focus the field; still scroll to the tool
       document.getElementById("audit")?.scrollIntoView({ behavior: "smooth" });
       return;
     }
     const detail: RunAuditDetail = { url: url.trim(), city: city.trim() };
     document.getElementById("audit")?.scrollIntoView({ behavior: "smooth" });
-    // let the scroll start, then run
     window.setTimeout(() => {
       window.dispatchEvent(new CustomEvent(RUN_AUDIT_EVENT, { detail }));
     }, 350);
   }
 
   return (
-    <section className="relative overflow-hidden pt-28 pb-16 sm:pt-36 sm:pb-24">
-      {/* ambient background */}
-      <div className="bg-grid pointer-events-none absolute inset-0" />
-      <div className="glow-accent pointer-events-none absolute -top-40 left-1/4 h-[520px] w-[520px] -translate-x-1/2" />
-      <div className="glow-cyan pointer-events-none absolute -top-20 right-0 h-[480px] w-[480px]" />
+    <section className="relative overflow-hidden pt-28 pb-20 sm:pt-36 sm:pb-28">
+      {/* automotive-AI backdrop: glowing wireframe SUV dissolving into data */}
+      <div className="pointer-events-none absolute inset-0 -z-10 overflow-hidden">
+        <div className="bg-grid absolute inset-0 opacity-70" />
+        <Image
+          src="/hero-automotive.webp"
+          alt=""
+          fill
+          priority
+          sizes="100vw"
+          className="object-cover object-[center_72%] opacity-95"
+        />
+        {/* fade the top to white so the headline stays crisp */}
+        <div className="absolute inset-x-0 top-0 h-[60%] bg-gradient-to-b from-white via-white/92 to-transparent" />
+        {/* feather the bottom back to white for the engine marquee */}
+        <div className="absolute inset-x-0 bottom-0 h-[34%] bg-gradient-to-t from-white via-white/80 to-transparent" />
+        {/* soft brand blooms */}
+        <div className="glow-accent absolute -top-40 left-1/4 h-[520px] w-[520px] -translate-x-1/2" />
+        <div className="glow-cyan absolute -top-16 right-0 h-[460px] w-[460px]" />
+      </div>
 
       <div className="relative mx-auto max-w-5xl px-5 text-center sm:px-8">
         <motion.div
@@ -45,7 +59,7 @@ export default function Hero() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
         >
-          <span className="inline-flex items-center gap-2 rounded-full border border-line-strong bg-black/[0.03] px-4 py-1.5 text-xs text-ink-soft">
+          <span className="inline-flex items-center gap-2 rounded-full border border-line-strong bg-white/70 px-4 py-1.5 text-xs font-medium text-ink-soft shadow-sm backdrop-blur">
             <span className="pulse-dot h-1.5 w-1.5 rounded-full bg-accent" />
             Buyers now ask AI which car to buy
           </span>
@@ -55,7 +69,7 @@ export default function Hero() {
           initial={{ opacity: 0, y: 14 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.7, delay: 0.05, ease: [0.16, 1, 0.3, 1] }}
-          className="mx-auto mt-6 max-w-4xl text-balance text-4xl font-semibold leading-[1.05] tracking-tight sm:text-6xl"
+          className="mx-auto mt-6 max-w-4xl text-balance text-5xl font-semibold leading-[1.02] tracking-tight sm:text-6xl lg:text-7xl"
         >
           Your inventory,{" "}
           <span className="font-display text-gradient">recommended by AI.</span>
@@ -72,7 +86,7 @@ export default function Hero() {
           LotPilot makes every car you stock discoverable inside ChatGPT,
           Perplexity, Gemini and Google AI Overviews — then our AI agents work
           every lead in seconds: qualify, take credit apps, book the deal.
-          <span className="text-ink-soft"> You just send the feed.</span>
+          <span className="font-medium text-ink-soft"> You just send the feed.</span>
         </motion.p>
 
         {/* Hero audit launcher */}
@@ -82,7 +96,7 @@ export default function Hero() {
           transition={{ duration: 0.7, delay: 0.18, ease: [0.16, 1, 0.3, 1] }}
           className="mx-auto mt-10 max-w-2xl"
         >
-          <div className="surface rounded-2xl p-2 sm:p-2.5">
+          <div className="surface rounded-2xl p-2 shadow-xl ring-1 ring-black/[0.04] backdrop-blur-sm sm:p-2.5">
             <p className="px-3 pt-2 text-left text-sm font-medium text-ink-soft">
               See if AI can find your inventory —{" "}
               <span className="text-accent">free 60-second check</span>
@@ -96,7 +110,7 @@ export default function Hero() {
                 inputMode="url"
                 aria-label="Dealership website"
                 placeholder="yourdealership.com"
-                className="h-12 flex-[1.5] rounded-xl border border-line-strong bg-black/[0.03] px-4 text-sm text-ink placeholder:text-ink-faint focus:border-cyan/60 focus:outline-none"
+                className="h-12 flex-[1.5] rounded-xl border border-line-strong bg-canvas px-4 text-sm text-ink placeholder:text-ink-faint focus:border-cyan/60 focus:outline-none"
               />
               <input
                 value={city}
@@ -104,11 +118,11 @@ export default function Hero() {
                 onKeyDown={(e) => e.key === "Enter" && launch()}
                 aria-label="City or metro"
                 placeholder="City / metro"
-                className="h-12 flex-1 rounded-xl border border-line-strong bg-black/[0.03] px-4 text-sm text-ink placeholder:text-ink-faint focus:border-cyan/60 focus:outline-none"
+                className="h-12 flex-1 rounded-xl border border-line-strong bg-canvas px-4 text-sm text-ink placeholder:text-ink-faint focus:border-cyan/60 focus:outline-none"
               />
               <button
                 onClick={launch}
-                className="h-12 shrink-0 whitespace-nowrap rounded-xl bg-cyan px-6 text-sm font-semibold text-ink-inverse transition-all hover:-translate-y-0.5 hover:bg-cyan/90 cta-glow"
+                className="h-12 shrink-0 whitespace-nowrap rounded-xl bg-cyan px-6 text-sm font-semibold text-ink-inverse transition-all hover:-translate-y-0.5 hover:bg-cyan-dim cta-glow"
               >
                 Check now →
               </button>

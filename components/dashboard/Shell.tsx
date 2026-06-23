@@ -198,9 +198,15 @@ export default function Shell({
         </div>
       )}
 
-      <div className="min-w-0">
+      <div className="relative min-w-0">
+        {/* ambient backdrop — soft depth instead of flat white */}
+        <div className="pointer-events-none absolute inset-x-0 top-0 -z-10 h-[420px] overflow-hidden">
+          <div className="absolute inset-0 bg-gradient-to-b from-canvas-2 to-transparent" />
+          <div className="glow-cyan absolute -right-24 -top-28 h-80 w-80 opacity-50" />
+          <div className="glow-accent absolute -left-24 -top-32 h-72 w-72 opacity-40" />
+        </div>
         {/* topbar */}
-        <header className="no-print sticky top-0 z-40 flex h-16 items-center gap-3 border-b border-line bg-canvas/80 px-5 backdrop-blur-xl sm:px-8">
+        <header className="no-print sticky top-0 z-40 flex h-16 items-center gap-3 border-b border-line bg-canvas/70 px-5 backdrop-blur-xl sm:px-8">
           <button
             onClick={() => setOpen(true)}
             className="grid h-9 w-9 place-items-center rounded-lg border border-line text-ink lg:hidden"

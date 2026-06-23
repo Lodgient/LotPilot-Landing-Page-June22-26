@@ -64,7 +64,7 @@ export function PanelHeading({
 export function StatCard({ kpi }: { kpi: KPI }) {
   const accent = kpi.accent ?? "cyan";
   return (
-    <Card className="flex flex-col justify-between">
+    <Card className="surface-hover flex flex-col justify-between">
       <div className="flex items-start justify-between">
         <div className="flex items-center gap-2.5">
           <span
