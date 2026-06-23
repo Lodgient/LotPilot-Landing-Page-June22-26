@@ -243,6 +243,14 @@ body::before {
   .text-gradient { -webkit-text-fill-color: #0b7285 !important; color: #0b7285 !important; }
 }
 
+/* Lenis smooth scroll */
+html.lenis,
+html.lenis body { height: auto; }
+.lenis.lenis-smooth { scroll-behavior: auto !important; }
+.lenis.lenis-smooth [data-lenis-prevent] { overscroll-behavior: contain; }
+.lenis.lenis-stopped { overflow: hidden; }
+.lenis.lenis-smooth iframe { pointer-events: none; }
+
 .scroll-slim::-webkit-scrollbar { width: 8px; height: 8px; }
 .scroll-slim::-webkit-scrollbar-thumb {
   background: var(--color-line-strong);

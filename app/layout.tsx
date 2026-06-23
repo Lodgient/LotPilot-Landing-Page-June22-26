@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono, Instrument_Serif } from "next/font/google";
 import "./globals.css";
 import StructuredData from "@/components/StructuredData";
+import SmoothScroll from "@/components/SmoothScroll";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -85,7 +86,10 @@ export default function RootLayout({
         {/* JSON-LD emitted statically, server-side, in the initial HTML. */}
         <StructuredData />
       </head>
-      <body className="min-h-screen">{children}</body>
+      <body className="min-h-screen">
+        <SmoothScroll />
+        {children}
+      </body>
     </html>
   );
 }

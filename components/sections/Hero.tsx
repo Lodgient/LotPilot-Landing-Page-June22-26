@@ -1,8 +1,8 @@
 "use client";
 
-import { useState } from "react";
+import { useRef, useState } from "react";
 import Image from "next/image";
-import { motion } from "framer-motion";
+import { motion, useReducedMotion, useScroll, useTransform } from "framer-motion";
 import { RUN_AUDIT_EVENT, type RunAuditDetail } from "@/components/audit/AuditTool";
 
 const TRUST = ["Delaware C-Corp", "US data only", "FCRA-aligned", "No lead reselling"];
@@ -20,6 +20,10 @@ const ease = [0.16, 1, 0.3, 1] as const;
 export default function Hero() {
   const [url, setUrl] = useState("");
   const [city, setCity] = useState("");
+  const reduce = useReducedMotion();
+  const ref = useRef<HTMLElement>(null);
+  const { scrollYProgress } = useScroll({ target: ref, offset: ["start start", "end start"] });
+  const imgY = useTransform(scrollYProgress, [0, 1], ["0%", "14%"]);
 
   function launch() {
     if (!url.trim()) {
@@ -34,17 +38,22 @@ export default function Hero() {
   }
 
   return (
-    <section className="relative isolate overflow-hidden bg-[#0a0e16] text-white">
+    <section ref={ref} className="relative isolate overflow-hidden bg-[#0a0e16] text-white">
       {/* full-bleed cinematic backdrop — luxury dealership at dusk */}
-      <div className="absolute inset-0 -z-10">
-        <Image
-          src="/hero-car.webp"
-          alt="A modern luxury car dealership at dusk — LotPilot"
-          fill
-          priority
-          sizes="100vw"
-          className="object-cover object-center"
-        />
+      <div className="absolute inset-0 -z-10 overflow-hidden">
+        <motion.div
+          style={{ y: reduce ? 0 : imgY }}
+          className="absolute inset-x-0 -inset-y-[12%] will-change-transform"
+        >
+          <Image
+            src="/hero-car.webp"
+            alt="A modern luxury car dealership at dusk — LotPilot"
+            fill
+            priority
+            sizes="100vw"
+            className="object-cover object-center"
+          />
+        </motion.div>
         {/* darken left + bottom so the headline + form read crisply */}
         <div className="absolute inset-0 bg-gradient-to-r from-[#070b12]/90 via-[#070b12]/55 to-[#070b12]/20" />
         <div className="absolute inset-0 bg-gradient-to-t from-[#070b12]/85 via-transparent to-[#070b12]/35" />
