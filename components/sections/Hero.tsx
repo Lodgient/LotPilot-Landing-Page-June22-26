@@ -66,14 +66,14 @@ export default function Hero() {
             initial={{ opacity: 0, y: 14 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.7, delay: 0.05, ease }}
-            className="mt-6 text-balance text-5xl font-semibold leading-[1.02] tracking-tight drop-shadow-[0_2px_24px_rgba(0,0,0,0.45)] sm:text-6xl lg:text-7xl"
+            className="mt-6 text-5xl font-semibold leading-[1.07] tracking-tight drop-shadow-[0_2px_24px_rgba(0,0,0,0.4)] sm:text-6xl"
           >
-            Your inventory,{" "}
-            <span className="font-display bg-gradient-to-r from-accent via-cyan to-violet bg-clip-text text-transparent">
+            <span className="block">Your inventory,</span>
+            <span className="block font-display bg-gradient-to-r from-accent via-cyan to-violet bg-clip-text text-transparent">
               recommended by AI.
             </span>
-            <br className="hidden sm:block" /> Your leads,{" "}
-            <span className="font-display bg-gradient-to-r from-accent via-cyan to-violet bg-clip-text text-transparent">
+            <span className="mt-1 block">Your leads,</span>
+            <span className="block font-display bg-gradient-to-r from-accent via-cyan to-violet bg-clip-text text-transparent">
               worked by AI.
             </span>
           </motion.h1>
@@ -134,7 +134,7 @@ export default function Hero() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ duration: 0.8, delay: 0.3 }}
-            className="mt-8 flex flex-wrap items-center gap-x-5 gap-y-2 text-xs text-white/60"
+            className="mt-8 flex flex-wrap items-center gap-x-5 gap-y-2 text-xs font-medium text-white/75"
           >
             {TRUST.map((t) => (
               <span key={t} className="inline-flex items-center gap-1.5">
