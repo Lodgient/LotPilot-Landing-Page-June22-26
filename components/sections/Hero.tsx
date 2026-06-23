@@ -43,8 +43,10 @@ export default function Hero() {
           sizes="100vw"
           className="object-cover object-center"
         />
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_46%,transparent_18%,rgba(10,11,13,0.5)_64%,#0a0b0d_93%)]" />
-        <div className="absolute inset-0 bg-gradient-to-b from-[#0a0b0d]/85 via-transparent to-[#0a0b0d]" />
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_44%,transparent_16%,rgba(10,11,13,0.45)_60%,#0a0b0d_92%)]" />
+        <div className="absolute inset-0 bg-gradient-to-b from-[#0a0b0d]/80 via-[#0a0b0d]/10 to-[#0a0b0d]" />
+        {/* extra darkening behind the subhead + CTAs for legibility */}
+        <div className="absolute inset-x-0 bottom-0 h-1/2 bg-gradient-to-t from-[#0a0b0d] via-[#0a0b0d]/55 to-transparent" />
       </div>
 
       <div className="relative mx-auto flex w-full max-w-5xl flex-col items-center px-5 py-32 text-center sm:px-8 sm:py-40">

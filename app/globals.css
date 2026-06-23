@@ -243,6 +243,42 @@ body::before {
   .text-gradient { -webkit-text-fill-color: #0b7285 !important; color: #0b7285 !important; }
 }
 
+/* Custom cursor (desktop, fine pointer) */
+.cursor-dot,
+.cursor-ring {
+  position: fixed;
+  top: 0;
+  left: 0;
+  pointer-events: none;
+  z-index: 9999;
+  border-radius: 9999px;
+  will-change: transform;
+}
+.cursor-dot {
+  height: 7px;
+  width: 7px;
+  margin: -3.5px 0 0 -3.5px;
+  background: var(--color-cyan);
+}
+.cursor-ring {
+  height: 34px;
+  width: 34px;
+  margin: -17px 0 0 -17px;
+  border: 1.5px solid color-mix(in oklab, var(--color-cyan) 60%, transparent);
+  transition: height 0.2s ease, width 0.2s ease, margin 0.2s ease, background 0.2s ease, border-color 0.2s ease;
+}
+.cursor-ring--active {
+  height: 56px;
+  width: 56px;
+  margin: -28px 0 0 -28px;
+  background: color-mix(in oklab, var(--color-cyan) 12%, transparent);
+  border-color: transparent;
+}
+html.has-custom-cursor,
+html.has-custom-cursor * {
+  cursor: none !important;
+}
+
 /* Lenis smooth scroll */
 html.lenis,
 html.lenis body { height: auto; }
