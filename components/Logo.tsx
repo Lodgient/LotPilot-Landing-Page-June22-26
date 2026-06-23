@@ -10,14 +10,18 @@ export default function Logo({
 }) {
   return (
     <span className={cn("inline-flex items-center gap-3", className)}>
-      <Image
-        src="/lotpilot-icon.png"
-        alt="LotPilot"
-        width={20}
-        height={28}
-        priority
-        className="h-7 w-auto shrink-0"
-      />
+      {/* The brand mark is a light teal→lime line-art built for dark grounds,
+          so it sits on a small dark tile to stay vivid on light surfaces too. */}
+      <span className="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-[#0f1722] shadow-sm ring-1 ring-white/10">
+        <Image
+          src="/lotpilot-icon.png"
+          alt="LotPilot"
+          width={20}
+          height={28}
+          priority
+          className="h-6 w-auto"
+        />
+      </span>
       <span className="flex flex-col leading-none">
         <span
           className={cn(
