@@ -104,7 +104,7 @@ export default function FeedForm() {
           <select
             value={form.feedType}
             onChange={(e) => update("feedType")(e.target.value)}
-            className="h-12 w-full rounded-xl border border-line-strong bg-white/[0.03] px-3 text-sm text-ink focus:border-cyan/60 focus:outline-none"
+            className="h-12 w-full rounded-xl border border-line-strong bg-black/[0.03] px-3 text-sm text-ink focus:border-cyan/60 focus:outline-none"
           >
             {FEED_TYPES.map((t) => (
               <option key={t} value={t} className="bg-panel text-ink">
@@ -123,7 +123,7 @@ export default function FeedForm() {
             min={1}
             value={form.rooftops}
             onChange={(e) => update("rooftops")(e.target.value)}
-            className="h-12 w-full rounded-xl border border-line-strong bg-white/[0.03] px-4 text-sm text-ink focus:border-cyan/60 focus:outline-none sm:w-40"
+            className="h-12 w-full rounded-xl border border-line-strong bg-black/[0.03] px-4 text-sm text-ink focus:border-cyan/60 focus:outline-none sm:w-40"
           />
         </label>
       </div>
@@ -161,7 +161,7 @@ function Input(props: {
         value={props.value}
         onChange={(e) => props.onChange(e.target.value)}
         placeholder={props.placeholder}
-        className="h-12 w-full rounded-xl border border-line-strong bg-white/[0.03] px-4 text-sm text-ink placeholder:text-ink-faint focus:border-cyan/60 focus:outline-none"
+        className="h-12 w-full rounded-xl border border-line-strong bg-black/[0.03] px-4 text-sm text-ink placeholder:text-ink-faint focus:border-cyan/60 focus:outline-none"
       />
     </label>
   );

@@ -83,12 +83,12 @@ export default async function RoiPage() {
         {/* mobile cards */}
         <div className="space-y-3 sm:hidden">
           {byEngine.map((e) => (
-            <div key={e.engine} className="rounded-xl border border-line bg-white/[0.02] p-3">
+            <div key={e.engine} className="rounded-xl border border-line bg-black/[0.02] p-3">
               <div className="flex items-center justify-between gap-3">
                 <p className="text-sm font-medium text-ink">{e.engine}</p>
                 <span className="text-sm font-semibold tabular-nums text-ink-soft">{money(e.gross)}</span>
               </div>
-              <div className="mt-2.5 h-2.5 overflow-hidden rounded-full bg-white/[0.06]">
+              <div className="mt-2.5 h-2.5 overflow-hidden rounded-full bg-black/[0.06]">
                 <div
                   className="h-full rounded-full bg-gradient-to-r from-cyan to-violet"
                   style={{ width: `${(e.gross / maxGross) * 100}%` }}
@@ -132,7 +132,7 @@ export default async function RoiPage() {
                   <td className="px-3 py-3 text-center text-sm tabular-nums text-ink-soft">{e.sales}</td>
                   <td className="px-3 py-3">
                     <div className="flex items-center gap-3">
-                      <div className="h-2.5 flex-1 overflow-hidden rounded-full bg-white/[0.06]">
+                      <div className="h-2.5 flex-1 overflow-hidden rounded-full bg-black/[0.06]">
                         <div
                           className="h-full rounded-full bg-gradient-to-r from-cyan to-violet"
                           style={{ width: `${(e.gross / maxGross) * 100}%` }}
@@ -154,7 +154,7 @@ export default async function RoiPage() {
         <PanelHeading title="LotPilot vs marketplaces" sub="The same spend, a very different deal" />
         <div className="-mx-1 overflow-x-auto scroll-slim sm:mx-0">
           <div className="min-w-[460px] overflow-hidden rounded-xl border border-line sm:min-w-0">
-            <div className="grid grid-cols-[1.4fr_1fr_1fr] bg-white/[0.02] text-xs text-ink-faint">
+            <div className="grid grid-cols-[1.4fr_1fr_1fr] bg-black/[0.02] text-xs text-ink-faint">
               <div className="p-3 sm:p-4">&nbsp;</div>
               <div className="border-l border-line p-3 text-center font-semibold text-gradient sm:p-4">
                 LotPilot
@@ -164,7 +164,7 @@ export default async function RoiPage() {
             {vsMarket.map((r, i) => (
               <div
                 key={r.metric}
-                className={`grid grid-cols-[1.4fr_1fr_1fr] text-sm ${i % 2 ? "bg-white/[0.012]" : ""}`}
+                className={`grid grid-cols-[1.4fr_1fr_1fr] text-sm ${i % 2 ? "bg-black/[0.012]" : ""}`}
               >
                 <div className="flex items-center p-3 text-ink-soft sm:p-4">{r.metric}</div>
                 <div className="flex items-center justify-center gap-1.5 border-l border-line p-3 text-center sm:p-4">

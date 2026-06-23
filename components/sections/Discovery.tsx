@@ -42,9 +42,9 @@ export default function Discovery() {
         <Reveal delay={0.1}>
           <div className="surface overflow-hidden rounded-2xl">
             <div className="flex items-center gap-2 border-b border-line px-4 py-3">
-              <span className="h-2.5 w-2.5 rounded-full bg-white/15" />
-              <span className="h-2.5 w-2.5 rounded-full bg-white/15" />
-              <span className="h-2.5 w-2.5 rounded-full bg-white/15" />
+              <span className="h-2.5 w-2.5 rounded-full bg-black/15" />
+              <span className="h-2.5 w-2.5 rounded-full bg-black/15" />
+              <span className="h-2.5 w-2.5 rounded-full bg-black/15" />
               <span className="ml-2 font-mono text-xs text-ink-faint">
                 AI answer engine
               </span>

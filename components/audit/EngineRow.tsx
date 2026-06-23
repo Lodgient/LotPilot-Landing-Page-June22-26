@@ -13,10 +13,10 @@ const ENGINE_GLYPH: Record<string, string> = {
 
 export default function EngineRow({ result }: { result: EngineQueryResult }) {
   return (
-    <div className="rounded-xl border border-line bg-white/[0.02] p-4">
+    <div className="rounded-xl border border-line bg-black/[0.02] p-4">
       <div className="flex items-center justify-between gap-3">
         <div className="flex items-center gap-2.5">
-          <span className="grid h-7 w-7 place-items-center rounded-md bg-white/[0.06] text-sm text-cyan">
+          <span className="grid h-7 w-7 place-items-center rounded-md bg-black/[0.06] text-sm text-cyan">
             {ENGINE_GLYPH[result.engine] ?? "•"}
           </span>
           <span className="text-sm font-semibold">{result.engine}</span>
@@ -52,7 +52,7 @@ export default function EngineRow({ result }: { result: EngineQueryResult }) {
                   ? "border-accent/40 bg-accent/15 font-medium text-accent"
                   : s.type === "competitor"
                     ? "border-danger/30 bg-danger/10 text-danger"
-                    : "border-line-strong bg-white/[0.04] text-ink-soft",
+                    : "border-line-strong bg-black/[0.04] text-ink-soft",
               )}
             >
               {s.name}

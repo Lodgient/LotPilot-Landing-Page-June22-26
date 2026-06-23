@@ -90,7 +90,7 @@ export default async function VisibilityPage() {
         <PanelHeading title="Where you show up" sub="Real buyer queries in your market, by engine" />
 
         <div className="mb-5 grid grid-cols-1 gap-3 sm:grid-cols-3">
-          <div className="rounded-xl border border-line bg-white/[0.02] p-3.5">
+          <div className="rounded-xl border border-line bg-black/[0.02] p-3.5">
             <p className="text-xs text-ink-faint">Monthly buyer demand</p>
             <p className="mt-1 text-2xl font-semibold tabular-nums text-ink">
               {monthlyDemand.toLocaleString()}
@@ -118,7 +118,7 @@ export default async function VisibilityPage() {
         {/* mobile cards */}
         <div className="space-y-3 sm:hidden">
           {queries.map((q) => (
-            <div key={q.query} className="rounded-xl border border-line bg-white/[0.02] p-3">
+            <div key={q.query} className="rounded-xl border border-line bg-black/[0.02] p-3">
               <p className="text-sm font-medium text-ink">{q.query}</p>
               <p className="mt-0.5 text-xs text-ink-muted">
                 {q.volume.toLocaleString()} searches/mo
@@ -136,7 +136,7 @@ export default async function VisibilityPage() {
                     className={
                       q.engines[e]
                         ? "inline-flex items-center gap-1 rounded-md border border-accent/30 bg-accent/10 px-2 py-0.5 text-[11px] text-accent"
-                        : "inline-flex items-center gap-1 rounded-md border border-line bg-white/[0.02] px-2 py-0.5 text-[11px] text-ink-faint"
+                        : "inline-flex items-center gap-1 rounded-md border border-line bg-black/[0.02] px-2 py-0.5 text-[11px] text-ink-faint"
                     }
                   >
                     {q.engines[e] ? "✓" : "✕"}{" "}
@@ -231,7 +231,7 @@ export default async function VisibilityPage() {
             {vins.map((v) => (
               <li
                 key={v.vehicle}
-                className="flex items-center gap-3 rounded-xl border border-line bg-white/[0.02] p-3"
+                className="flex items-center gap-3 rounded-xl border border-line bg-black/[0.02] p-3"
               >
                 <span className="grid h-9 w-9 shrink-0 place-items-center rounded-lg bg-accent/12 text-accent">
                   ★

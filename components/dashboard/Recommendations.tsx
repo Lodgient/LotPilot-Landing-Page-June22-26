@@ -34,7 +34,7 @@ function StatusChip({ done }: { done: boolean }) {
 function Item({ r }: { r: Recommendation }) {
   const done = r.status === "applied";
   return (
-    <li className="rounded-xl border border-line bg-white/[0.02] p-4">
+    <li className="rounded-xl border border-line bg-black/[0.02] p-4">
       <div className="flex flex-wrap items-center gap-2">
         <StatusChip done={done} />
         <span className="text-xs text-ink-faint">{r.category}</span>

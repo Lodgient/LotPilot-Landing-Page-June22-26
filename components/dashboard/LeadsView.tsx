@@ -48,7 +48,7 @@ export default function LeadsView({ leads }: { leads: Lead[] }) {
                 "rounded-full border px-3 py-2 text-xs font-medium transition-colors sm:py-1.5",
                 filter === f
                   ? "border-cyan/50 bg-cyan/10 text-cyan"
-                  : "border-line bg-white/[0.02] text-ink-muted hover:text-ink",
+                  : "border-line bg-black/[0.02] text-ink-muted hover:text-ink",
               )}
             >
               {f}
@@ -68,7 +68,7 @@ export default function LeadsView({ leads }: { leads: Lead[] }) {
                 "w-full rounded-xl border p-3 text-left transition-colors",
                 l.id === active.id
                   ? "border-cyan/50 bg-cyan/[0.06]"
-                  : "border-line bg-white/[0.02] hover:border-line-strong hover:bg-white/[0.04]",
+                  : "border-line bg-black/[0.02] hover:border-line-strong hover:bg-black/[0.04]",
               )}
             >
               <div className="flex items-center gap-2.5">
@@ -91,7 +91,7 @@ export default function LeadsView({ leads }: { leads: Lead[] }) {
             </button>
           ))}
           {list.length === 0 && (
-            <p className="rounded-xl border border-line bg-white/[0.02] p-4 text-sm text-ink-muted">
+            <p className="rounded-xl border border-line bg-black/[0.02] p-4 text-sm text-ink-muted">
               No leads match this filter.
             </p>
           )}
@@ -130,7 +130,7 @@ export default function LeadsView({ leads }: { leads: Lead[] }) {
                     className={cn(
                       "rounded-2xl px-4 py-2.5 text-sm",
                       m.from === "buyer" &&
-                        "rounded-tl-sm border border-line bg-white/[0.04] text-ink-soft",
+                        "rounded-tl-sm border border-line bg-black/[0.04] text-ink-soft",
                       m.from === "agent" &&
                         "rounded-tr-sm border border-cyan/30 bg-cyan/[0.08] text-ink",
                       m.from === "rep" &&
@@ -154,7 +154,7 @@ export default function LeadsView({ leads }: { leads: Lead[] }) {
             <div className="flex items-center gap-2">
               <input
                 placeholder="Type a message to the buyer…"
-                className="h-11 flex-1 rounded-xl border border-line-strong bg-white/[0.03] px-4 text-sm text-ink placeholder:text-ink-faint focus:border-cyan/60 focus:outline-none"
+                className="h-11 flex-1 rounded-xl border border-line-strong bg-black/[0.03] px-4 text-sm text-ink placeholder:text-ink-faint focus:border-cyan/60 focus:outline-none"
               />
               <button className="h-11 rounded-xl bg-cyan px-5 text-sm font-semibold text-ink-inverse hover:bg-cyan/90">
                 Send
@@ -174,7 +174,7 @@ export default function LeadsView({ leads }: { leads: Lead[] }) {
               </span>
               <button
                 onClick={() => setTookOver(true)}
-                className="h-10 rounded-full border border-line-strong px-4 text-sm font-medium text-ink transition-colors hover:border-cyan/50 hover:bg-white/[0.04]"
+                className="h-10 rounded-full border border-line-strong px-4 text-sm font-medium text-ink transition-colors hover:border-cyan/50 hover:bg-black/[0.04]"
               >
                 Take over
               </button>

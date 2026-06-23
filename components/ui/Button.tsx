@@ -12,8 +12,8 @@ const variants: Record<Variant, string> = {
   primary:
     "bg-cyan text-ink-inverse font-semibold hover:bg-cyan/90 cta-glow hover:-translate-y-0.5",
   secondary:
-    "bg-white/[0.04] text-ink border border-line-strong hover:border-cyan/50 hover:bg-white/[0.07]",
-  ghost: "text-ink-soft hover:text-ink hover:bg-white/[0.05]",
+    "bg-black/[0.04] text-ink border border-line-strong hover:border-cyan/50 hover:bg-black/[0.07]",
+  ghost: "text-ink-soft hover:text-ink hover:bg-black/[0.05]",
 };
 
 const sizes: Record<Size, string> = {

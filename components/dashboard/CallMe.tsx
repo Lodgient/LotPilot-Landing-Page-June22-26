@@ -60,7 +60,7 @@ export default function CallMe() {
             </p>
           </div>
         ) : state === "unavailable" ? (
-          <div className="flex items-center gap-3 rounded-xl border border-line-strong bg-white/[0.02] p-4">
+          <div className="flex items-center gap-3 rounded-xl border border-line-strong bg-black/[0.02] p-4">
             <Icon name="shield" size={18} className="text-ink-muted" />
             <p className="text-sm text-ink-muted">
               Live calling isn&apos;t switched on in this demo yet. Ask your LotPilot rep to

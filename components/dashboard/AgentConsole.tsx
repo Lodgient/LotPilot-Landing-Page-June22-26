@@ -175,7 +175,7 @@ export default function AgentConsole({
             <span
               className={cn(
                 "grid h-14 w-14 shrink-0 place-items-center rounded-2xl ring-1 ring-inset",
-                live ? "bg-accent/15 text-accent ring-accent/25" : "bg-white/[0.05] text-ink-muted ring-line",
+                live ? "bg-accent/15 text-accent ring-accent/25" : "bg-black/[0.05] text-ink-muted ring-line",
               )}
             >
               <Icon name="bolt" size={26} />
@@ -208,7 +208,7 @@ export default function AgentConsole({
             className={cn(
               "inline-flex h-11 items-center gap-2 rounded-full px-5 text-sm font-semibold transition-all hover:-translate-y-0.5 disabled:opacity-60",
               live
-                ? "border border-line-strong text-ink hover:border-warn/50 hover:bg-white/[0.04]"
+                ? "border border-line-strong text-ink hover:border-warn/50 hover:bg-black/[0.04]"
                 : "bg-cyan text-ink-inverse cta-glow hover:bg-cyan/90",
             )}
           >
@@ -286,7 +286,7 @@ export default function AgentConsole({
                         "flex items-center gap-2 rounded-xl border px-3 py-2.5 text-sm transition-colors",
                         on
                           ? "border-accent/30 bg-accent/[0.06] text-ink"
-                          : "border-line bg-white/[0.02] text-ink-muted hover:text-ink",
+                          : "border-line bg-black/[0.02] text-ink-muted hover:text-ink",
                       )}
                     >
                       <Icon name={c.icon} size={15} className={on ? "text-accent" : ""} />
@@ -383,7 +383,7 @@ export default function AgentConsole({
               { icon: "handoff" as IconName, t: "Hands off cleanly", d: cfg.handoffPhone ? `Loops in your team at ${cfg.handoffPhone} the moment a human should take over.` : "Loops in your team the moment a human should take over — add a handoff number to enable." },
               { icon: "chart" as IconName, t: "Attributes the sale", d: "Every booked appointment and sold car is credited back on your ROI page." },
             ].map((s, i) => (
-              <li key={i} className="flex gap-3 rounded-xl border border-line bg-white/[0.02] p-3">
+              <li key={i} className="flex gap-3 rounded-xl border border-line bg-black/[0.02] p-3">
                 <span className="grid h-8 w-8 shrink-0 place-items-center rounded-lg bg-violet/15 text-violet ring-1 ring-inset ring-violet/20">
                   <Icon name={s.icon} size={16} />
                 </span>

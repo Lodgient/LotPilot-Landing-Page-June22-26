@@ -177,7 +177,7 @@ export default function AuditTool({ compactHeader = false }: { compactHeader?: b
             >
               {!compactHeader && (
                 <div className="mb-6">
-                  <span className="inline-flex items-center gap-2 rounded-full border border-line-strong bg-white/[0.03] px-3 py-1 text-xs font-mono uppercase tracking-wider text-cyan">
+                  <span className="inline-flex items-center gap-2 rounded-full border border-line-strong bg-black/[0.03] px-3 py-1 text-xs font-mono uppercase tracking-wider text-cyan">
                     <span className="pulse-dot h-1.5 w-1.5 rounded-full bg-cyan" />
                     Free · 60-second check
                   </span>
@@ -324,7 +324,7 @@ function Field(props: {
         onChange={(e) => props.onChange(e.target.value)}
         onKeyDown={(e) => e.key === "Enter" && props.onEnter?.()}
         placeholder={props.placeholder}
-        className="h-[52px] w-full rounded-xl border border-line-strong bg-white/[0.03] px-4 text-sm text-ink placeholder:text-ink-faint focus:border-cyan/60 focus:bg-white/[0.05] focus:outline-none"
+        className="h-[52px] w-full rounded-xl border border-line-strong bg-black/[0.03] px-4 text-sm text-ink placeholder:text-ink-faint focus:border-cyan/60 focus:bg-black/[0.05] focus:outline-none"
       />
     </label>
   );
@@ -355,7 +355,7 @@ function ScanningView({ idx, city, url }: { idx: number; city: string; url: stri
               key={step}
               className={cn(
                 "flex items-center gap-3 rounded-lg px-3 py-2 text-sm transition-colors",
-                active ? "bg-white/[0.04] text-ink" : "text-ink-faint",
+                active ? "bg-black/[0.04] text-ink" : "text-ink-faint",
               )}
             >
               <span
@@ -435,7 +435,7 @@ function ResultView(props: {
       </div>
 
       {/* TEASER — always visible */}
-      <div className="grid gap-6 rounded-xl border border-line bg-white/[0.02] p-5 sm:grid-cols-[auto_1fr] sm:items-center">
+      <div className="grid gap-6 rounded-xl border border-line bg-black/[0.02] p-5 sm:grid-cols-[auto_1fr] sm:items-center">
         <ScoreRing score={report.score} band={report.scoreBand} />
         <div>
           <p className="text-sm text-ink-soft">
@@ -488,11 +488,11 @@ function ResultView(props: {
           </div>
 
           <div className="grid gap-6 md:grid-cols-2">
-            <div className="rounded-xl border border-line bg-white/[0.02] p-5">
+            <div className="rounded-xl border border-line bg-black/[0.02] p-5">
               <p className="mb-4 text-sm font-semibold">AI Visibility Score breakdown</p>
               <PillarBars pillars={report.pillars} />
             </div>
-            <div className="rounded-xl border border-line bg-white/[0.02] p-5">
+            <div className="rounded-xl border border-line bg-black/[0.02] p-5">
               <p className="mb-4 text-sm font-semibold">Diagnosed gaps</p>
               <ul className="space-y-3">
                 {report.gaps.map((g) => (
@@ -533,7 +533,7 @@ function ResultView(props: {
                   value={gateName}
                   onChange={(e) => setGateName(e.target.value)}
                   placeholder="Dealership name"
-                  className="w-full rounded-xl border border-line-strong bg-white/[0.03] px-4 py-3 text-sm focus:border-cyan/60 focus:outline-none"
+                  className="w-full rounded-xl border border-line-strong bg-black/[0.03] px-4 py-3 text-sm focus:border-cyan/60 focus:outline-none"
                 />
                 <input
                   value={gateEmail}
@@ -541,7 +541,7 @@ function ResultView(props: {
                   onKeyDown={(e) => e.key === "Enter" && submitGate()}
                   type="email"
                   placeholder="Work email"
-                  className="w-full rounded-xl border border-line-strong bg-white/[0.03] px-4 py-3 text-sm focus:border-cyan/60 focus:outline-none"
+                  className="w-full rounded-xl border border-line-strong bg-black/[0.03] px-4 py-3 text-sm focus:border-cyan/60 focus:outline-none"
                 />
                 {gateError && <p className="text-sm text-danger">{gateError}</p>}
                 <button

@@ -8,7 +8,7 @@ export default function FinalCTA() {
 
       <div className="relative mx-auto max-w-3xl px-5 text-center sm:px-8">
         <Reveal>
-          <span className="inline-flex items-center gap-2 rounded-full border border-line-strong bg-white/[0.03] px-4 py-1.5 text-xs text-ink-soft">
+          <span className="inline-flex items-center gap-2 rounded-full border border-line-strong bg-black/[0.03] px-4 py-1.5 text-xs text-ink-soft">
             <span className="pulse-dot h-1.5 w-1.5 rounded-full bg-cyan" />
             Two minutes to start
           </span>
@@ -30,7 +30,7 @@ export default function FinalCTA() {
             </a>
             <a
               href="#feed"
-              className="inline-flex h-14 w-full items-center justify-center rounded-full border border-line-strong px-8 text-base font-medium text-ink transition-colors hover:border-cyan/50 hover:bg-white/[0.04] sm:w-auto"
+              className="inline-flex h-14 w-full items-center justify-center rounded-full border border-line-strong px-8 text-base font-medium text-ink transition-colors hover:border-cyan/50 hover:bg-black/[0.04] sm:w-auto"
             >
               Connect your feed / book a demo
             </a>

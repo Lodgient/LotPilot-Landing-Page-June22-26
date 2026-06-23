@@ -87,7 +87,7 @@ export default async function DemandPage() {
           {demand.map((d) => {
             const meta = STATUS[d.status];
             return (
-              <div key={d.query} className="rounded-xl border border-line bg-white/[0.02] p-3">
+              <div key={d.query} className="rounded-xl border border-line bg-black/[0.02] p-3">
                 <div className="flex items-start justify-between gap-3">
                   <div className="min-w-0">
                     <p className="text-sm font-medium text-ink">{d.query}</p>

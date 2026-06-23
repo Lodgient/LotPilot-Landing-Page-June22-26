@@ -90,7 +90,7 @@ export function ProgressBar({
       aria-valuemin={0}
       aria-valuemax={100}
       aria-label={label}
-      className="h-2 w-full overflow-hidden rounded-full bg-white/[0.07]"
+      className="h-2 w-full overflow-hidden rounded-full bg-black/[0.07]"
     >
       <div
         className="h-full rounded-full"
@@ -167,7 +167,7 @@ export function Funnel({ stages }: { stages: { stage: string; value: number }[] 
         return (
           <div key={s.stage} className="flex items-center gap-3">
             <span className="w-20 shrink-0 text-right text-xs text-ink-muted sm:w-36">{s.stage}</span>
-            <div className="relative h-8 flex-1 overflow-hidden rounded-lg bg-white/[0.04]">
+            <div className="relative h-8 flex-1 overflow-hidden rounded-lg bg-black/[0.04]">
               <div
                 className="flex h-full items-center rounded-lg bg-gradient-to-r from-cyan/70 to-violet/60 px-3 text-xs font-semibold text-ink-inverse"
                 style={{ width: `${Math.max(pct, 14)}%` }}

@@ -22,7 +22,7 @@ export default function Benchmarks({ items }: { items: Benchmark[] }) {
               </span>
             </div>
             {/* percentile track */}
-            <div className="relative h-2.5 w-full rounded-full bg-white/[0.06]">
+            <div className="relative h-2.5 w-full rounded-full bg-black/[0.06]">
               <div
                 className="absolute inset-y-0 left-0 rounded-full bg-gradient-to-r from-cyan to-accent"
                 style={{ width: `${b.percentile}%` }}

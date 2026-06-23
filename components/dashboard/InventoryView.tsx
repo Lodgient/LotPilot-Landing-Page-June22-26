@@ -39,7 +39,7 @@ function EngineDots({ v }: { v: Vehicle }) {
           key={e}
           className={cn(
             "h-2 w-2 rounded-full",
-            v.engines[e] ? "bg-accent" : "bg-white/12",
+            v.engines[e] ? "bg-accent" : "bg-black/12",
           )}
         />
       ))}
@@ -133,8 +133,9 @@ export default function InventoryView({ vehicles, dealer }: { vehicles: Vehicle[
         <Card className="mt-6 border-danger/30 bg-danger/[0.04]">
           <div className="flex flex-wrap items-center justify-between gap-3">
             <div>
-              <p className="text-sm font-semibold text-ink">
-                🕳️ {summary.darkCount} cars match real demand but AI never shows them
+              <p className="flex items-center gap-2 text-sm font-semibold text-ink">
+                <Icon name="radar" size={16} className="shrink-0 text-danger" />
+                {summary.darkCount} cars match real demand but AI never shows them
               </p>
               <p className="mt-1 text-sm text-ink-muted">
                 That&apos;s roughly{" "}
@@ -162,7 +163,7 @@ export default function InventoryView({ vehicles, dealer }: { vehicles: Vehicle[
               "rounded-full border px-3 py-2 text-xs font-medium transition-colors sm:py-1.5",
               filter === f.key
                 ? "border-cyan/50 bg-cyan/10 text-cyan"
-                : "border-line bg-white/[0.02] text-ink-muted hover:text-ink",
+                : "border-line bg-black/[0.02] text-ink-muted hover:text-ink",
             )}
           >
             {f.label}
@@ -173,12 +174,12 @@ export default function InventoryView({ vehicles, dealer }: { vehicles: Vehicle[
             value={q}
             onChange={(e) => setQ(e.target.value)}
             placeholder="Search VIN / model…"
-            className="h-9 w-full rounded-lg border border-line-strong bg-white/[0.03] px-3 text-sm text-ink placeholder:text-ink-faint focus:border-cyan/60 focus:outline-none sm:w-44"
+            className="h-9 w-full rounded-lg border border-line-strong bg-black/[0.03] px-3 text-sm text-ink placeholder:text-ink-faint focus:border-cyan/60 focus:outline-none sm:w-44"
           />
           <select
             value={sort}
             onChange={(e) => setSort(e.target.value as SortKey)}
-            className="h-9 rounded-lg border border-line-strong bg-white/[0.03] px-2 text-sm text-ink focus:border-cyan/60 focus:outline-none"
+            className="h-9 rounded-lg border border-line-strong bg-black/[0.03] px-2 text-sm text-ink focus:border-cyan/60 focus:outline-none"
           >
             <option value="ai" className="bg-panel">Sort: AI score</option>
             <option value="dol" className="bg-panel">Sort: Days on lot</option>
@@ -187,9 +188,17 @@ export default function InventoryView({ vehicles, dealer }: { vehicles: Vehicle[
           </select>
           <button
             onClick={copyView}
-            className="inline-flex h-9 items-center gap-1.5 rounded-lg border border-line-strong bg-white/[0.03] px-3 text-sm text-ink-soft transition-colors hover:border-cyan/50 hover:text-ink"
+            className="inline-flex h-9 items-center gap-1.5 rounded-lg border border-line-strong bg-black/[0.03] px-3 text-sm text-ink-soft transition-colors hover:border-cyan/50 hover:text-ink"
           >
-            {copied ? "✓ Link copied" : "🔗 Save view"}
+            {copied ? (
+              <>
+                <Icon name="check" size={14} /> Link copied
+              </>
+            ) : (
+              <>
+                <Icon name="link" size={14} /> Save view
+              </>
+            )}
           </button>
           <ExportCsv
             filename="lotpilot-inventory-ai.csv"
@@ -229,7 +238,7 @@ export default function InventoryView({ vehicles, dealer }: { vehicles: Vehicle[
           <div
             key={v.id}
             onClick={() => setActive(v)}
-            className="surface cursor-pointer rounded-2xl p-4 transition-colors hover:bg-white/[0.03]"
+            className="surface cursor-pointer rounded-2xl p-4 transition-colors hover:bg-black/[0.03]"
           >
             <div className="flex items-start justify-between gap-3">
               <div className="min-w-0">
@@ -297,7 +306,7 @@ export default function InventoryView({ vehicles, dealer }: { vehicles: Vehicle[
                 <tr
                   key={v.id}
                   onClick={() => setActive(v)}
-                  className="cursor-pointer border-t border-line transition-colors hover:bg-white/[0.03]"
+                  className="cursor-pointer border-t border-line transition-colors hover:bg-black/[0.03]"
                 >
                   <td className="px-4 py-3">
                     <p className="text-sm font-medium text-ink">
@@ -424,7 +433,7 @@ function VehicleDetail({
 
         <div className="mt-6">
           <p className="mb-2 text-xs uppercase tracking-wider text-ink-faint">90-day AI trend</p>
-          <div className="rounded-xl border border-line bg-white/[0.02] p-3">
+          <div className="rounded-xl border border-line bg-black/[0.02] p-3">
             <Sparkline data={v.trend} accent={scoreTone(v.aiScore)} width={420} height={56} />
           </div>
         </div>
@@ -435,7 +444,7 @@ function VehicleDetail({
           </p>
           <div className="space-y-3">
             {v.citations.map((c, i) => (
-              <div key={i} className="rounded-xl border border-line bg-white/[0.02] p-3">
+              <div key={i} className="rounded-xl border border-line bg-black/[0.02] p-3">
                 <p className="font-mono text-xs text-ink-muted">&ldquo;{c.query}&rdquo;</p>
                 <div className="mt-2 flex flex-wrap items-center gap-1.5">
                   {ENGINES.map((e) => (
@@ -445,7 +454,7 @@ function VehicleDetail({
                         "rounded-md border px-2 py-0.5 text-[11px]",
                         c.engines[e]
                           ? "border-accent/30 bg-accent/10 text-accent"
-                          : "border-line bg-white/[0.02] text-ink-faint line-through",
+                          : "border-line bg-black/[0.02] text-ink-faint line-through",
                       )}
                     >
                       {e.replace(" AI Overviews", " AIO").replace("Bing ", "")}
@@ -483,7 +492,7 @@ function VehicleDetail({
 
 function Metric({ label, value, color }: { label: string; value: string; color?: string }) {
   return (
-    <div className="rounded-xl border border-line bg-white/[0.02] p-3 text-center">
+    <div className="rounded-xl border border-line bg-black/[0.02] p-3 text-center">
       <p className="text-xl font-bold tabular-nums" style={color ? { color } : undefined}>
         {value}
       </p>

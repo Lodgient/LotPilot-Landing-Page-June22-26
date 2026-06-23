@@ -27,7 +27,7 @@ export default function DateRange() {
       aria-label="Date range"
       value={current}
       onChange={(e) => set(e.target.value)}
-      className="hidden h-9 rounded-lg border border-line-strong bg-white/[0.03] px-2.5 text-sm text-ink-soft focus:border-cyan/60 focus:outline-none sm:block"
+      className="hidden h-9 rounded-lg border border-line-strong bg-black/[0.03] px-2.5 text-sm text-ink-soft focus:border-cyan/60 focus:outline-none sm:block"
     >
       {RANGES.map(([v, label]) => (
         <option key={v} value={v} className="bg-panel text-ink">

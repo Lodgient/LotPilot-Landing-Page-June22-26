@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import Logo from "./Logo";
+import Icon from "./Icon";
 import { cn } from "@/lib/cn";
 
 const LINKS = [
@@ -71,7 +72,7 @@ export default function Nav() {
           aria-expanded={open}
           onClick={() => setOpen((v) => !v)}
         >
-          <span className="text-lg">{open ? "✕" : "☰"}</span>
+          <Icon name={open ? "close" : "menu"} size={20} />
         </button>
       </nav>
 
@@ -83,7 +84,7 @@ export default function Nav() {
                 key={l.href}
                 href={l.href}
                 onClick={() => setOpen(false)}
-                className="rounded-lg px-2 py-2.5 text-sm text-ink-soft hover:bg-white/[0.04]"
+                className="rounded-lg px-2 py-2.5 text-sm text-ink-soft hover:bg-black/[0.04]"
               >
                 {l.label}
               </a>

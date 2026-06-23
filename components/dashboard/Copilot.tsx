@@ -84,7 +84,7 @@ export default function Copilot({ dealerName }: { dealerName: string }) {
       {open && (
         <div className="no-print fixed bottom-24 right-5 z-50 flex h-[min(560px,calc(100vh-7rem))] w-[min(400px,calc(100vw-2.5rem))] flex-col overflow-hidden rounded-2xl border border-line bg-canvas-2 shadow-2xl">
           {/* header */}
-          <div className="flex items-center gap-3 border-b border-line bg-white/[0.02] px-4 py-3">
+          <div className="flex items-center gap-3 border-b border-line bg-black/[0.02] px-4 py-3">
             <span className="grid h-9 w-9 place-items-center rounded-lg bg-cyan/15 text-cyan ring-1 ring-inset ring-cyan/20">
               <Icon name="sparkles" size={18} />
             </span>
@@ -94,7 +94,7 @@ export default function Copilot({ dealerName }: { dealerName: string }) {
             </div>
             <button
               onClick={() => setOpen(false)}
-              className="ml-auto grid h-7 w-7 place-items-center rounded-md text-ink-muted hover:bg-white/[0.05] hover:text-ink"
+              className="ml-auto grid h-7 w-7 place-items-center rounded-md text-ink-muted hover:bg-black/[0.05] hover:text-ink"
               aria-label="Close"
             >
               <Icon name="close" size={16} />
@@ -114,7 +114,7 @@ export default function Copilot({ dealerName }: { dealerName: string }) {
                     <button
                       key={s}
                       onClick={() => send(s)}
-                      className="rounded-lg border border-line bg-white/[0.02] px-3 py-2 text-left text-xs text-ink-soft transition-colors hover:border-cyan/40 hover:text-ink"
+                      className="rounded-lg border border-line bg-black/[0.02] px-3 py-2 text-left text-xs text-ink-soft transition-colors hover:border-cyan/40 hover:text-ink"
                     >
                       {s}
                     </button>
@@ -129,7 +129,7 @@ export default function Copilot({ dealerName }: { dealerName: string }) {
                     "max-w-[85%] whitespace-pre-wrap rounded-2xl px-3.5 py-2.5 text-sm",
                     m.role === "user"
                       ? "bg-cyan text-ink-inverse"
-                      : "border border-line bg-white/[0.02] text-ink-soft",
+                      : "border border-line bg-black/[0.02] text-ink-soft",
                   )}
                 >
                   {m.content || (busy && i === messages.length - 1 ? "…" : "")}
@@ -144,7 +144,7 @@ export default function Copilot({ dealerName }: { dealerName: string }) {
               e.preventDefault();
               send(input);
             }}
-            className="border-t border-line bg-white/[0.02] p-3"
+            className="border-t border-line bg-black/[0.02] p-3"
           >
             <div className="flex items-end gap-2">
               <textarea

@@ -14,7 +14,7 @@ export default function Forecast({ items }: { items: ForecastRow[] }) {
         const delta = f.projected - f.current;
         const pct = f.current ? Math.round((delta / f.current) * 100) : 0;
         return (
-          <div key={f.metric} className="rounded-xl border border-line bg-white/[0.02] p-4">
+          <div key={f.metric} className="rounded-xl border border-line bg-black/[0.02] p-4">
             <p className="text-xs text-ink-muted">{f.metric}</p>
             <div className="mt-2 flex items-baseline gap-1.5">
               <span className="text-sm text-ink-faint tabular-nums">{fmt(f.current, f.unit)}</span>

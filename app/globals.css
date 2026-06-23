@@ -2,35 +2,34 @@
 
 /* ============================================================
    LotPilot for Dealers — Design System
-   Dark, but alive: layered color, depth and motion.
-   Brand-consistent with lotpilot.com (green + cyan on near-black).
+   LIGHT trademark: crisp white surfaces, near-black text,
+   deepened brand accents (green + cyan + violet) tuned for contrast.
    ============================================================ */
 
 @theme {
-  /* Surfaces — note: NOT named "base" (that collides with the text-base
-     font-size utility in Tailwind v4 and silently recolors text). */
-  --color-canvas: #0b0f17;
-  --color-canvas-2: #0e1422;
-  --color-panel: #141b2c;
-  --color-panel-2: #19223a;
-  --color-line: rgba(255, 255, 255, 0.09);
-  --color-line-strong: rgba(255, 255, 255, 0.16);
+  /* Surfaces — light. canvas = page, panel = elevated card (white). */
+  --color-canvas: #ffffff;
+  --color-canvas-2: #f7f9fc;
+  --color-panel: #ffffff;
+  --color-panel-2: #f4f7fb;
+  --color-line: rgba(13, 17, 23, 0.1);
+  --color-line-strong: rgba(13, 17, 23, 0.16);
 
-  /* Text — brighter muted tones for readability on dark panels */
-  --color-ink: #f1f4fa;
-  --color-ink-soft: #cdd5e3;
-  --color-ink-muted: #9aa4ba;
-  --color-ink-faint: #6b7592;
+  /* Text — near-black headings down to soft muted greys on white */
+  --color-ink: #0d1117;
+  --color-ink-soft: #2b3342;
+  --color-ink-muted: #586173;
+  --color-ink-faint: #8b93a4;
 
-  /* Brand accents */
-  --color-accent: #8af671; /* signal green */
-  --color-accent-dim: #6fd95a;
-  --color-cyan: #00c4ff; /* CTA cyan */
-  --color-cyan-dim: #06a7da;
-  --color-violet: #a78bfa; /* ambient third accent — life, not branding */
-  --color-magenta: #f472b6;
-  --color-danger: #ff6b79;
-  --color-warn: #ffc24b;
+  /* Brand accents — deepened so they read on white (fills + text) */
+  --color-accent: #15a34a; /* signal green */
+  --color-accent-dim: #0f8a3e;
+  --color-cyan: #0891b2; /* CTA cyan / links */
+  --color-cyan-dim: #0e7490;
+  --color-violet: #7c3aed; /* ambient third accent */
+  --color-magenta: #db2777;
+  --color-danger: #dc2626;
+  --color-warn: #d97706;
 
   /* Fonts */
   --font-sans: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
@@ -46,7 +45,7 @@
 }
 
 :root {
-  color-scheme: dark;
+  color-scheme: light;
 }
 
 * {
@@ -67,7 +66,7 @@ body {
   overflow-x: hidden;
 }
 
-/* Page-wide colored bloom mesh so the dark never reads as flat black. */
+/* Subtle page-wide colored bloom so crisp white never reads as sterile. */
 body::before {
   content: "";
   position: fixed;
@@ -75,15 +74,15 @@ body::before {
   z-index: -1;
   pointer-events: none;
   background:
-    radial-gradient(55% 45% at 10% -5%, color-mix(in oklab, var(--color-accent) 13%, transparent), transparent 60%),
-    radial-gradient(50% 45% at 92% 4%, color-mix(in oklab, var(--color-cyan) 15%, transparent), transparent 55%),
-    radial-gradient(55% 55% at 85% 102%, color-mix(in oklab, var(--color-violet) 15%, transparent), transparent 60%),
-    radial-gradient(45% 45% at 2% 98%, color-mix(in oklab, var(--color-accent) 9%, transparent), transparent 60%);
+    radial-gradient(55% 45% at 10% -5%, color-mix(in oklab, var(--color-accent) 6%, transparent), transparent 60%),
+    radial-gradient(50% 45% at 92% 4%, color-mix(in oklab, var(--color-cyan) 7%, transparent), transparent 55%),
+    radial-gradient(55% 55% at 85% 102%, color-mix(in oklab, var(--color-violet) 6%, transparent), transparent 60%),
+    radial-gradient(45% 45% at 2% 98%, color-mix(in oklab, var(--color-accent) 5%, transparent), transparent 60%);
 }
 
 ::selection {
-  background: color-mix(in oklab, var(--color-accent) 32%, transparent);
-  color: #fff;
+  background: color-mix(in oklab, var(--color-cyan) 22%, transparent);
+  color: var(--color-ink);
 }
 
 /* Display serif accent — Instrument Serif italic */
@@ -94,34 +93,34 @@ body::before {
   letter-spacing: -0.01em;
 }
 
-/* Ambient grid + glows */
+/* Ambient grid + glows — dark hairlines on white, soft pastel blooms. */
 .bg-grid {
   background-image:
-    linear-gradient(to right, rgba(255, 255, 255, 0.04) 1px, transparent 1px),
-    linear-gradient(to bottom, rgba(255, 255, 255, 0.04) 1px, transparent 1px);
+    linear-gradient(to right, rgba(13, 17, 23, 0.045) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(13, 17, 23, 0.045) 1px, transparent 1px);
   background-size: 56px 56px;
   mask-image: radial-gradient(ellipse 90% 60% at 50% 0%, #000 35%, transparent 100%);
 }
 
 .glow-accent {
-  background: radial-gradient(50% 50% at 50% 50%, color-mix(in oklab, var(--color-accent) 26%, transparent) 0%, transparent 100%);
-  filter: blur(8px);
+  background: radial-gradient(50% 50% at 50% 50%, color-mix(in oklab, var(--color-accent) 16%, transparent) 0%, transparent 100%);
+  filter: blur(10px);
 }
 .glow-cyan {
-  background: radial-gradient(50% 50% at 50% 50%, color-mix(in oklab, var(--color-cyan) 26%, transparent) 0%, transparent 100%);
-  filter: blur(8px);
+  background: radial-gradient(50% 50% at 50% 50%, color-mix(in oklab, var(--color-cyan) 16%, transparent) 0%, transparent 100%);
+  filter: blur(10px);
 }
 .glow-violet {
-  background: radial-gradient(50% 50% at 50% 50%, color-mix(in oklab, var(--color-violet) 26%, transparent) 0%, transparent 100%);
-  filter: blur(8px);
+  background: radial-gradient(50% 50% at 50% 50%, color-mix(in oklab, var(--color-violet) 16%, transparent) 0%, transparent 100%);
+  filter: blur(10px);
 }
 
-/* Dark text for use on the bright cyan/accent CTA fills. */
+/* White text for use on the saturated cyan/accent CTA fills. */
 .text-ink-inverse {
-  color: #06111d;
+  color: #ffffff;
 }
 
-/* Gradient text helper — three-stop for more life */
+/* Gradient text helper — deepened three-stop, readable on white */
 .text-gradient {
   background: linear-gradient(100deg, var(--color-accent), var(--color-cyan) 55%, var(--color-violet));
   -webkit-background-clip: text;
@@ -129,18 +128,19 @@ body::before {
   color: transparent;
 }
 
-/* Card surface + interactive lift */
+/* Card surface + interactive lift — white with hairline + soft shadow */
 .surface {
-  background:
-    linear-gradient(180deg, rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0)),
-    var(--color-panel);
+  background: var(--color-panel);
   border: 1px solid var(--color-line);
+  box-shadow:
+    0 1px 2px rgba(13, 17, 23, 0.04),
+    0 12px 28px -20px rgba(13, 17, 23, 0.18);
   transition: border-color 0.25s ease, transform 0.25s var(--ease-out-expo), box-shadow 0.25s ease;
 }
 .surface-hover:hover {
   border-color: color-mix(in oklab, var(--color-cyan) 45%, transparent);
   transform: translateY(-3px);
-  box-shadow: 0 20px 50px -24px color-mix(in oklab, var(--color-cyan) 60%, transparent);
+  box-shadow: 0 22px 48px -26px color-mix(in oklab, var(--color-cyan) 45%, transparent);
 }
 .input {
   width: 100%;
@@ -180,8 +180,8 @@ body::before {
 /* Elevated CTA glow */
 .cta-glow {
   box-shadow:
-    0 0 0 1px color-mix(in oklab, var(--color-cyan) 40%, transparent),
-    0 18px 50px -12px color-mix(in oklab, var(--color-cyan) 55%, transparent);
+    0 0 0 1px color-mix(in oklab, var(--color-cyan) 30%, transparent),
+    0 16px 40px -14px color-mix(in oklab, var(--color-cyan) 45%, transparent);
 }
 
 /* Scanning shimmer for the audit tool */
@@ -230,7 +230,7 @@ body::before {
   border-radius: 4px;
 }
 
-/* Board-ready print: drop the dark chrome, print legible on white. */
+/* Board-ready print */
 @media print {
   .no-print { display: none !important; }
   body::before { display: none !important; }

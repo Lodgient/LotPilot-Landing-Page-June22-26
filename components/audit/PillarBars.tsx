@@ -23,7 +23,7 @@ export default function PillarBars({ pillars }: { pillars: PillarScore[] }) {
               {p.score}
             </span>
           </div>
-          <div className="h-2 w-full overflow-hidden rounded-full bg-white/[0.06]">
+          <div className="h-2 w-full overflow-hidden rounded-full bg-black/[0.06]">
             <motion.div
               className="h-full rounded-full"
               style={{ background: barColor(p.score) }}

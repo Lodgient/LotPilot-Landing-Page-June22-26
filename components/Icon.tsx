@@ -31,7 +31,10 @@ export type IconName =
   | "download"
   | "printer"
   | "phone"
-  | "play";
+  | "play"
+  | "search"
+  | "clock"
+  | "link";
 
 const PATHS: Record<IconName, React.ReactNode> = {
   // layout-dashboard — Command Center
@@ -170,6 +173,24 @@ const PATHS: Record<IconName, React.ReactNode> = {
     <path d="M6.5 3h-2A1.5 1.5 0 0 0 3 4.5 16.5 16.5 0 0 0 19.5 21a1.5 1.5 0 0 0 1.5-1.5v-2a1.5 1.5 0 0 0-1.3-1.49l-2.5-.34a1.5 1.5 0 0 0-1.45.64l-.7 1a12 12 0 0 1-5.66-5.66l1-.7a1.5 1.5 0 0 0 .64-1.45l-.34-2.5A1.5 1.5 0 0 0 6.5 3Z" />
   ),
   play: <path d="M7 4.5v15l13-7.5-13-7.5Z" />,
+  search: (
+    <>
+      <circle cx="11" cy="11" r="7" />
+      <path d="m20 20-3.6-3.6" />
+    </>
+  ),
+  clock: (
+    <>
+      <circle cx="12" cy="12" r="9" />
+      <path d="M12 7.5V12l3.2 2" />
+    </>
+  ),
+  link: (
+    <>
+      <path d="M10 13.5a3.5 3.5 0 0 0 5 0l3-3a3.5 3.5 0 0 0-5-5l-1.2 1.2" />
+      <path d="M14 10.5a3.5 3.5 0 0 0-5 0l-3 3a3.5 3.5 0 0 0 5 5l1.2-1.2" />
+    </>
+  ),
 };
 
 export default function Icon({

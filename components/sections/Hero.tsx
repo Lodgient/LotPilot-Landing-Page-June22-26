@@ -45,7 +45,7 @@ export default function Hero() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
         >
-          <span className="inline-flex items-center gap-2 rounded-full border border-line-strong bg-white/[0.03] px-4 py-1.5 text-xs text-ink-soft">
+          <span className="inline-flex items-center gap-2 rounded-full border border-line-strong bg-black/[0.03] px-4 py-1.5 text-xs text-ink-soft">
             <span className="pulse-dot h-1.5 w-1.5 rounded-full bg-accent" />
             Buyers now ask AI which car to buy
           </span>
@@ -96,7 +96,7 @@ export default function Hero() {
                 inputMode="url"
                 aria-label="Dealership website"
                 placeholder="yourdealership.com"
-                className="h-12 flex-[1.5] rounded-xl border border-line-strong bg-white/[0.03] px-4 text-sm text-ink placeholder:text-ink-faint focus:border-cyan/60 focus:outline-none"
+                className="h-12 flex-[1.5] rounded-xl border border-line-strong bg-black/[0.03] px-4 text-sm text-ink placeholder:text-ink-faint focus:border-cyan/60 focus:outline-none"
               />
               <input
                 value={city}
@@ -104,7 +104,7 @@ export default function Hero() {
                 onKeyDown={(e) => e.key === "Enter" && launch()}
                 aria-label="City or metro"
                 placeholder="City / metro"
-                className="h-12 flex-1 rounded-xl border border-line-strong bg-white/[0.03] px-4 text-sm text-ink placeholder:text-ink-faint focus:border-cyan/60 focus:outline-none"
+                className="h-12 flex-1 rounded-xl border border-line-strong bg-black/[0.03] px-4 text-sm text-ink placeholder:text-ink-faint focus:border-cyan/60 focus:outline-none"
               />
               <button
                 onClick={launch}

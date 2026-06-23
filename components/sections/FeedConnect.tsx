@@ -30,7 +30,7 @@ export default function FeedConnect() {
               {FEEDS.map((f) => (
                 <span
                   key={f}
-                  className="rounded-xl border border-line-strong bg-white/[0.03] px-4 py-2.5 text-sm font-medium text-ink-soft"
+                  className="rounded-xl border border-line-strong bg-black/[0.03] px-4 py-2.5 text-sm font-medium text-ink-soft"
                 >
                   {f}
                 </span>

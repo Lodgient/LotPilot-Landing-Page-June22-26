@@ -62,7 +62,7 @@ export default async function CommandCenter() {
               </Link>
               <Link
                 href="/#audit"
-                className="inline-flex h-12 items-center rounded-full border border-line-strong px-6 text-sm font-medium text-ink transition-colors hover:border-cyan/50 hover:bg-white/[0.04]"
+                className="inline-flex h-12 items-center rounded-full border border-line-strong px-6 text-sm font-medium text-ink transition-colors hover:border-cyan/50 hover:bg-black/[0.04]"
               >
                 Run a free AI audit
               </Link>
@@ -199,7 +199,7 @@ export default async function CommandCenter() {
           <Card>
             <PanelHeading title="Hot buyers to review" sub={`${hot.length} ready for a human close`} />
             {hot.length === 0 ? (
-              <p className="rounded-xl border border-line bg-white/[0.02] px-4 py-6 text-center text-sm text-ink-muted">
+              <p className="rounded-xl border border-line bg-black/[0.02] px-4 py-6 text-center text-sm text-ink-muted">
                 No hot buyers right now — your AI is working every lead. We&apos;ll flag any that are
                 ready for your team here.
               </p>
@@ -209,7 +209,7 @@ export default async function CommandCenter() {
                 <li key={l.id}>
                   <Link
                     href="/dashboard/leads"
-                    className="flex items-center gap-3 rounded-xl border border-line bg-white/[0.02] p-3 transition-colors hover:border-cyan/40 hover:bg-white/[0.04]"
+                    className="flex items-center gap-3 rounded-xl border border-line bg-black/[0.02] p-3 transition-colors hover:border-cyan/40 hover:bg-black/[0.04]"
                   >
                     <span className="grid h-9 w-9 shrink-0 place-items-center rounded-full bg-violet/20 text-xs font-semibold text-violet">
                       {l.name.split(" ").map((n) => n[0]).join("")}

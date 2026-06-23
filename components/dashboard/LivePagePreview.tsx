@@ -59,9 +59,9 @@ export default function LivePagePreview({
         {/* browser chrome */}
         <div className="flex items-center gap-2 border-b border-line bg-canvas-2 px-3 py-2.5">
           <div className="flex gap-1.5 pl-1">
-            <span className="h-3 w-3 rounded-full bg-white/15" />
-            <span className="h-3 w-3 rounded-full bg-white/15" />
-            <span className="h-3 w-3 rounded-full bg-white/15" />
+            <span className="h-3 w-3 rounded-full bg-black/15" />
+            <span className="h-3 w-3 rounded-full bg-black/15" />
+            <span className="h-3 w-3 rounded-full bg-black/15" />
           </div>
           <div className="ml-1 flex min-w-0 flex-1 items-center gap-2 rounded-lg border border-line bg-canvas px-3 py-1.5">
             <Icon name="shield" size={13} className="shrink-0 text-accent" />
@@ -83,7 +83,7 @@ export default function LivePagePreview({
           </a>
           <button
             onClick={onClose}
-            className="grid h-8 w-8 place-items-center rounded-lg text-ink-muted hover:bg-white/[0.05] hover:text-ink"
+            className="grid h-8 w-8 place-items-center rounded-lg text-ink-muted hover:bg-black/[0.05] hover:text-ink"
             aria-label="Close preview"
           >
             <Icon name="close" size={16} />
@@ -108,7 +108,7 @@ export default function LivePagePreview({
                 "inline-flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-[11px] font-medium",
                 synced
                   ? "border-accent/30 bg-accent/10 text-accent"
-                  : "border-line bg-white/[0.04] text-ink-muted",
+                  : "border-line bg-black/[0.04] text-ink-muted",
               )}
             >
               <Icon name="shield" size={12} /> {synced ? "Live · AI-verified by LotPilot" : "Preview"}
@@ -158,7 +158,7 @@ export default function LivePagePreview({
               </div>
               <div className="space-y-2.5">
                 {qa.map((item, i) => (
-                  <div key={i} className="rounded-xl border border-line bg-white/[0.02] p-4">
+                  <div key={i} className="rounded-xl border border-line bg-black/[0.02] p-4">
                     <p className="text-sm font-semibold text-ink">{item.q}</p>
                     <p className="mt-1.5 text-sm leading-relaxed text-ink-muted">{item.a}</p>
                   </div>
@@ -191,7 +191,7 @@ export default function LivePagePreview({
 
             {/* schema + citations proof */}
             <section className="mt-7 grid gap-4 sm:grid-cols-2">
-              <div className="rounded-xl border border-line bg-white/[0.02] p-4">
+              <div className="rounded-xl border border-line bg-black/[0.02] p-4">
                 <p className="mb-2.5 text-xs font-semibold uppercase tracking-wide text-ink-faint">
                   Structured data live
                 </p>
@@ -203,7 +203,7 @@ export default function LivePagePreview({
                   ))}
                 </ul>
               </div>
-              <div className="rounded-xl border border-line bg-white/[0.02] p-4">
+              <div className="rounded-xl border border-line bg-black/[0.02] p-4">
                 <p className="mb-2.5 text-xs font-semibold uppercase tracking-wide text-ink-faint">
                   {citing.length ? "Cited by" : "Not yet cited"}
                 </p>

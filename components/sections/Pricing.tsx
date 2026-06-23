@@ -65,7 +65,7 @@ export default function Pricing() {
                 </a>
                 <a
                   href="#audit"
-                  className="inline-flex h-13 flex-1 items-center justify-center rounded-full border border-line-strong px-7 py-4 text-sm font-medium text-ink transition-colors hover:border-cyan/50 hover:bg-white/[0.04]"
+                  className="inline-flex h-13 flex-1 items-center justify-center rounded-full border border-line-strong px-7 py-4 text-sm font-medium text-ink transition-colors hover:border-cyan/50 hover:bg-black/[0.04]"
                 >
                   Run the free audit first
                 </a>

@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import Logo from "@/components/Logo";
+import Icon, { type IconName } from "@/components/Icon";
 import LoginForm from "@/components/auth/LoginForm";
 
 export const metadata: Metadata = {
@@ -8,10 +9,10 @@ export const metadata: Metadata = {
   robots: { index: false, follow: false },
 };
 
-const WINS = [
-  { icon: "📅", text: "Booked 2 appointments overnight" },
-  { icon: "📄", text: "Captured 3 credit applications" },
-  { icon: "◎", text: "Now cited by ChatGPT for ‘best used SUV near Austin’" },
+const WINS: { icon: IconName; text: string }[] = [
+  { icon: "calendar", text: "Booked 2 appointments overnight" },
+  { icon: "file", text: "Captured 3 credit applications" },
+  { icon: "radar", text: "Now cited by ChatGPT for ‘best used SUV near San Jose’" },
 ];
 
 export default function LoginPage() {
@@ -43,10 +44,10 @@ export default function LoginPage() {
             {WINS.map((w) => (
               <li
                 key={w.text}
-                className="flex items-center gap-3 rounded-xl border border-line bg-white/[0.03] p-3.5"
+                className="flex items-center gap-3 rounded-xl border border-line bg-black/[0.03] p-3.5"
               >
-                <span className="grid h-9 w-9 place-items-center rounded-lg bg-white/[0.05] text-base">
-                  {w.icon}
+                <span className="grid h-9 w-9 place-items-center rounded-lg bg-black/[0.05] text-cyan">
+                  <Icon name={w.icon} size={18} />
                 </span>
                 <span className="text-sm text-ink-soft">{w.text}</span>
               </li>

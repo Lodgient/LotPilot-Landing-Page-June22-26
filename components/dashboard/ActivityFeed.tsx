@@ -6,13 +6,13 @@ const META: Record<ActivityType, { icon: IconName; tone: string }> = {
   creditapp: { icon: "file", tone: "bg-warn/15 text-warn ring-warn/20" },
   reply: { icon: "reply", tone: "bg-cyan/15 text-cyan ring-cyan/20" },
   visibility: { icon: "radar", tone: "bg-accent/15 text-accent ring-accent/20" },
-  handoff: { icon: "handoff", tone: "bg-white/10 text-ink-soft ring-white/15" },
+  handoff: { icon: "handoff", tone: "bg-black/10 text-ink-soft ring-black/15" },
 };
 
 export default function ActivityFeed({ events }: { events: ActivityEvent[] }) {
   if (events.length === 0) {
     return (
-      <p className="rounded-xl border border-line bg-white/[0.02] px-4 py-6 text-center text-sm text-ink-muted">
+      <p className="rounded-xl border border-line bg-black/[0.02] px-4 py-6 text-center text-sm text-ink-muted">
         No activity yet — your AI agent&apos;s actions will show up here as leads come in.
       </p>
     );

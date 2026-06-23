@@ -39,7 +39,7 @@ export function ExportCsv({
   return (
     <button
       onClick={run}
-      className="inline-flex h-9 items-center gap-1.5 rounded-lg border border-line-strong bg-white/[0.03] px-3 text-sm text-ink-soft transition-colors hover:border-cyan/50 hover:text-ink"
+      className="inline-flex h-9 items-center gap-1.5 rounded-lg border border-line-strong bg-black/[0.03] px-3 text-sm text-ink-soft transition-colors hover:border-cyan/50 hover:text-ink"
     >
       <Icon name="download" size={14} /> {label}
     </button>
@@ -50,7 +50,7 @@ export function PrintButton({ label = "Print / PDF" }: { label?: string }) {
   return (
     <button
       onClick={() => window.print()}
-      className="no-print inline-flex h-9 items-center gap-1.5 rounded-lg border border-line-strong bg-white/[0.03] px-3 text-sm text-ink-soft transition-colors hover:border-cyan/50 hover:text-ink"
+      className="no-print inline-flex h-9 items-center gap-1.5 rounded-lg border border-line-strong bg-black/[0.03] px-3 text-sm text-ink-soft transition-colors hover:border-cyan/50 hover:text-ink"
     >
       <Icon name="printer" size={14} /> {label}
     </button>

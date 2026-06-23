@@ -61,8 +61,8 @@ function NavLinks({ onNavigate }: { onNavigate?: () => void }) {
                 className={cn(
                   "group flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm transition-colors",
                   active
-                    ? "bg-white/[0.06] text-ink"
-                    : "text-ink-muted hover:bg-white/[0.03] hover:text-ink",
+                    ? "bg-black/[0.06] text-ink"
+                    : "text-ink-muted hover:bg-black/[0.03] hover:text-ink",
                 )}
               >
                 <span
@@ -70,7 +70,7 @@ function NavLinks({ onNavigate }: { onNavigate?: () => void }) {
                     "grid h-8 w-8 place-items-center rounded-lg transition-colors",
                     active
                       ? "bg-cyan/15 text-cyan ring-1 ring-inset ring-cyan/20"
-                      : "bg-white/[0.04] text-ink-muted group-hover:text-ink",
+                      : "bg-black/[0.04] text-ink-muted group-hover:text-ink",
                   )}
                 >
                   <Icon name={item.icon} size={17} />
@@ -122,7 +122,7 @@ function SidebarInner({
       {/* dealer card */}
       <div className="surface mt-5 rounded-xl p-3">
         <div className="flex items-center gap-2.5">
-          <span className="grid h-9 w-9 place-items-center rounded-lg bg-white/[0.05] font-display text-gradient">
+          <span className="grid h-9 w-9 place-items-center rounded-lg bg-black/[0.05] font-display text-gradient">
             {dealer.name.charAt(0)}
           </span>
           <div className="min-w-0">
@@ -130,7 +130,7 @@ function SidebarInner({
             <p className="truncate text-xs text-ink-muted">{dealer.metro}</p>
           </div>
         </div>
-        <div className="mt-3 flex items-center justify-between rounded-lg bg-white/[0.03] px-2.5 py-1.5">
+        <div className="mt-3 flex items-center justify-between rounded-lg bg-black/[0.03] px-2.5 py-1.5">
           <span className="flex items-center gap-1.5 text-xs text-ink-muted">
             <span className="h-1.5 w-1.5 rounded-full bg-accent shadow-[0_0_8px] shadow-accent" />
             Feed live
@@ -157,7 +157,7 @@ function SidebarInner({
           </div>
           <button
             onClick={logout}
-            className="rounded-lg px-2 py-1 text-xs text-ink-muted hover:bg-white/[0.05] hover:text-ink"
+            className="rounded-lg px-2 py-1 text-xs text-ink-muted hover:bg-black/[0.05] hover:text-ink"
           >
             Log out
           </button>

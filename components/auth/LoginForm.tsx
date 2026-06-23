@@ -68,7 +68,7 @@ export default function LoginForm() {
             onChange={(e) => setEmail(e.target.value)}
             onKeyDown={(e) => e.key === "Enter" && signIn()}
             placeholder="you@dealership.com"
-            className="h-12 w-full rounded-xl border border-line-strong bg-white/[0.03] px-4 text-sm text-ink placeholder:text-ink-faint focus:border-cyan/60 focus:outline-none"
+            className="h-12 w-full rounded-xl border border-line-strong bg-black/[0.03] px-4 text-sm text-ink placeholder:text-ink-faint focus:border-cyan/60 focus:outline-none"
           />
         </label>
         <label className="block">
@@ -87,7 +87,7 @@ export default function LoginForm() {
             onChange={(e) => setPassword(e.target.value)}
             onKeyDown={(e) => e.key === "Enter" && signIn()}
             placeholder="••••••••"
-            className="h-12 w-full rounded-xl border border-line-strong bg-white/[0.03] px-4 text-sm text-ink placeholder:text-ink-faint focus:border-cyan/60 focus:outline-none"
+            className="h-12 w-full rounded-xl border border-line-strong bg-black/[0.03] px-4 text-sm text-ink placeholder:text-ink-faint focus:border-cyan/60 focus:outline-none"
           />
         </label>
       </div>
@@ -97,7 +97,7 @@ export default function LoginForm() {
       <button
         onClick={() => signIn()}
         disabled={busy}
-        className="mt-5 inline-flex h-12 w-full items-center justify-center rounded-xl border border-line-strong text-sm font-semibold text-ink transition-colors hover:bg-white/[0.04] disabled:opacity-60"
+        className="mt-5 inline-flex h-12 w-full items-center justify-center rounded-xl border border-line-strong text-sm font-semibold text-ink transition-colors hover:bg-black/[0.04] disabled:opacity-60"
       >
         Sign in
       </button>

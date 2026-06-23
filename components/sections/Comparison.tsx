@@ -31,7 +31,7 @@ export default function Comparison() {
       <Reveal>
         <div className="surface overflow-hidden rounded-2xl">
           {/* header */}
-          <div className="grid grid-cols-[1.4fr_1fr_1fr] border-b border-line bg-white/[0.02] text-sm">
+          <div className="grid grid-cols-[1.4fr_1fr_1fr] border-b border-line bg-black/[0.02] text-sm">
             <div className="p-4 font-medium text-ink-muted sm:p-5">&nbsp;</div>
             <div className="border-l border-line p-4 text-center sm:p-5">
               <span className="text-base font-semibold text-gradient">LotPilot</span>
@@ -50,7 +50,7 @@ export default function Comparison() {
             <div
               key={r.feature}
               className={`grid grid-cols-[1.4fr_1fr_1fr] text-sm ${
-                i % 2 ? "bg-white/[0.012]" : ""
+                i % 2 ? "bg-black/[0.012]" : ""
               }`}
             >
               <div className="flex items-center p-4 text-ink-soft sm:p-5">
