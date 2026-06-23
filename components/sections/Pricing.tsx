@@ -72,19 +72,39 @@ export default function Pricing() {
                     $499
                   </span>
                   <span className="pb-1.5 text-lg font-medium text-ink-muted">/mo</span>
+                  <span className="mb-2 ml-1 rounded-full bg-cyan/10 px-2.5 py-1 text-[11px] font-semibold uppercase tracking-wider text-cyan">
+                    First 3 months
+                  </span>
                 </div>
                 <p className="mt-2 text-sm font-semibold text-ink">
-                  First 3 months · everything included
+                  Everything included — Discovery + Conversion
                 </p>
-                <p className="mt-1 text-sm font-medium text-ink-muted">
-                  Discovery + Conversion. Month-to-month after.
-                </p>
+
+                {/* transparent after-price — no bait-and-switch */}
+                <div className="mt-4 flex items-start gap-3 rounded-xl border border-line-strong bg-black/[0.02] px-4 py-3">
+                  <Icon
+                    name="check"
+                    size={16}
+                    strokeWidth={2.5}
+                    className="mt-0.5 shrink-0 text-accent"
+                  />
+                  <p className="text-sm text-ink-soft">
+                    Then <span className="font-semibold text-ink">$999/mo</span>,
+                    month-to-month —{" "}
+                    <span className="font-medium text-cyan">
+                      founding rate, locked for life
+                    </span>{" "}
+                    (standard rate $1,499). Cancel anytime.
+                  </p>
+                </div>
 
                 <p className="mt-5 max-w-md text-sm leading-relaxed text-ink-soft">
                   AI search rewards the stores that show up consistently — exactly
-                  like Google SEO did. The difference: LotPilot compounds in about
-                  90 days instead of a year, and the AI agent is answering and
-                  booking your leads the entire time.
+                  like Google SEO did. LotPilot compounds in about 90 days instead
+                  of a year, with the AI agent booking your leads the whole time. By
+                  month three you&apos;ll have real results in hand — and $999/mo is
+                  less than a single marketplace subscription, and a fraction of one
+                  BDC hire.
                 </p>
 
                 <div className="mt-8 flex flex-col gap-3 sm:flex-row">
@@ -185,7 +205,7 @@ export default function Pricing() {
               </p>
               <ul className="mt-3 space-y-2 text-sm text-ink-soft">
                 <li className="flex gap-2.5"><Icon name="check" size={15} strokeWidth={2.5} className="mt-0.5 shrink-0 text-accent" /> ~90 days to compound in AI answers — where buyers actually ask now</li>
-                <li className="flex gap-2.5"><Icon name="check" size={15} strokeWidth={2.5} className="mt-0.5 shrink-0 text-accent" /> Flat $499/mo — no per-lead meter, no surprises</li>
+                <li className="flex gap-2.5"><Icon name="check" size={15} strokeWidth={2.5} className="mt-0.5 shrink-0 text-accent" /> $499/mo to launch, then a flat $999 founding rate — no per-lead meter, no surprises</li>
                 <li className="flex gap-2.5"><Icon name="check" size={15} strokeWidth={2.5} className="mt-0.5 shrink-0 text-accent" /> The AI agent works your leads from day one — and you own every customer</li>
               </ul>
             </div>
