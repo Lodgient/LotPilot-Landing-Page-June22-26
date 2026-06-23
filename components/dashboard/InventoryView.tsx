@@ -364,7 +364,7 @@ export default function InventoryView({ vehicles, dealer }: { vehicles: Vehicle[
       <Card className="mt-4 hidden p-0 lg:block">
         <div className="overflow-x-auto scroll-slim">
           <table className="w-full min-w-[940px] border-collapse">
-            <thead className="[&_th]:sticky [&_th]:top-16 [&_th]:z-10 [&_th]:border-b [&_th]:border-line [&_th]:bg-panel">
+            <thead>
               <tr className="text-xs text-ink-faint">
                 <th className="px-4 py-3 text-left font-medium">Vehicle</th>
                 <th className="px-3 py-3 text-right font-medium">Price</th>
