@@ -138,11 +138,11 @@ export default async function CommandCenter() {
         ))}
       </div>
 
-      {/* Recommended actions */}
+      {/* What LotPilot handled */}
       <Card className="mt-6">
         <PanelHeading
-          title="Recommended actions"
-          sub="Prioritized by projected revenue impact"
+          title="What LotPilot handled"
+          sub="Revenue-impacting fixes applied automatically — for your review"
           action={
             <Link href="/dashboard/inventory" className="text-xs text-cyan hover:underline">
               See inventory

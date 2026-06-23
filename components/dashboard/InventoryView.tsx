@@ -139,7 +139,7 @@ export default function InventoryView({ vehicles, dealer }: { vehicles: Vehicle[
               <p className="mt-1 text-sm text-ink-muted">
                 That&apos;s roughly{" "}
                 <span className="font-semibold text-danger">{money(summary.darkGross)}</span> in
-                front gross AI can&apos;t route to you. Most are one fix away.
+                front gross AI can&apos;t route to you yet — LotPilot is already fixing these.
               </p>
             </div>
             <button
@@ -465,14 +465,14 @@ function VehicleDetail({
 
         <div className="mt-6 rounded-xl border border-cyan/30 bg-cyan/[0.06] p-4">
           <p className="text-sm font-semibold text-ink">
-            {v.blocker === "None" ? "✓ This unit is fully optimized" : `Recommended fix · ${v.blocker}`}
+            {v.blocker === "None" ? "✓ This unit is fully optimized" : `LotPilot is fixing this · ${v.blocker}`}
           </p>
           {v.blocker !== "None" && (
             <>
               <p className="mt-1 text-sm text-ink-muted">{fixCopy(v.blocker)}</p>
-              <button className="mt-3 inline-flex h-10 items-center rounded-full bg-cyan px-5 text-sm font-semibold text-ink-inverse transition-colors hover:bg-cyan/90">
-                Apply fix with LotPilot →
-              </button>
+              <span className="mt-3 inline-flex h-9 items-center gap-1.5 rounded-full border border-cyan/40 bg-cyan/10 px-4 text-xs font-semibold text-cyan">
+                <Icon name="bolt" size={13} strokeWidth={2.25} /> Auto-applying — nothing for you to do
+              </span>
             </>
           )}
         </div>

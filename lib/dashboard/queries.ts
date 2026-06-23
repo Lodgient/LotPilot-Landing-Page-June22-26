@@ -145,7 +145,14 @@ export async function getVisibility(): Promise<VisibilitySnapshot | null> {
   const supabase = await createClient();
   const { data } = await supabase.from("dp_visibility").select("*").maybeSingle();
   if (!data) return null;
-  return { score: data.score, delta: data.score_delta ?? 0, band: data.band ?? "developing", trend: data.trend ?? [] };
+  return {
+    score: data.score,
+    delta: data.score_delta ?? 0,
+    band: data.band ?? "developing",
+    trend: data.trend ?? [],
+    grossAtRisk: data.gross_at_risk ?? "",
+    projectedLeads: data.projected_leads ?? "",
+  };
 }
 
 export async function getPillars(): Promise<Pillar[]> {
@@ -157,7 +164,12 @@ export async function getPillars(): Promise<Pillar[]> {
 export async function getVisibilityQueries(): Promise<VisibilityQuery[]> {
   const supabase = await createClient();
   const { data } = await supabase.from("dp_visibility_queries").select("*").order("sort");
-  return (data ?? []).map((r: any) => ({ query: r.query, engines: r.engines }));
+  return (data ?? []).map((r: any) => ({
+    query: r.query,
+    engines: r.engines,
+    volume: r.volume ?? 0,
+    competitor: r.competitor ?? null,
+  }));
 }
 
 export async function getShareOfVoice(): Promise<ShareSegment[]> {

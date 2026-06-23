@@ -58,6 +58,8 @@ export interface VisibilitySnapshot {
   delta: number;
   band: "critical" | "weak" | "developing" | "strong";
   trend: number[];
+  grossAtRisk: string;
+  projectedLeads: string;
 }
 
 export interface Pillar {
@@ -69,6 +71,10 @@ export interface Pillar {
 export interface VisibilityQuery {
   query: string;
   engines: Record<EngineName, boolean>;
+  /** Estimated monthly buyer searches for this query in-market. */
+  volume: number;
+  /** Who AI recommends instead when your inventory isn't the cited source. */
+  competitor: string | null;
 }
 
 export interface ShareSegment {

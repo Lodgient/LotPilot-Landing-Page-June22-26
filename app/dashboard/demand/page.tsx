@@ -34,11 +34,11 @@ export default async function DemandPage() {
           <Badge tone="violet">● Market signal</Badge>
           <h2 className="mt-3 text-pretty text-2xl font-semibold tracking-tight text-ink sm:text-3xl">
             <span className="text-gradient">{totalGapVolume.toLocaleString()} buyers/week</span> are
-            asking AI for cars you could be selling — and a competitor is getting the answer.
+            asking AI for cars you could be selling — LotPilot is winning back the answer.
           </h2>
           <p className="mt-2 text-sm text-ink-muted">
-            {gaps.length} demand clusters where you&apos;re under-cited. Close them and the leads
-            route to you.
+            {gaps.length} demand clusters where you&apos;re under-cited. LotPilot is closing them so
+            the leads route to you — automatically.
           </p>
         </div>
       </Card>
@@ -47,7 +47,7 @@ export default async function DemandPage() {
         <div className="p-5 sm:p-6">
           <PanelHeading
             title="Buyer demand vs your coverage"
-            sub="Weekly query volume in Austin, TX"
+            sub="Weekly query volume in San Jose, CA"
             action={
               <ExportCsv
                 filename="lotpilot-demand.csv"
@@ -164,7 +164,8 @@ export default async function DemandPage() {
           </table>
         </div>
         <p className="px-5 pb-5 pt-3 text-xs text-ink-faint">
-          Gaps = high demand where you&apos;re under-cited. These are the fastest wins.
+          Gaps = high demand where you&apos;re under-cited. LotPilot prioritizes these first — no
+          action needed from your team.
         </p>
       </Card>
     </Shell>

@@ -28,6 +28,11 @@ export default async function VisibilityPage() {
 
   const you = sov.find((s) => s.value === Math.max(...sov.map((x) => x.value)));
 
+  const monthlyDemand = queries.reduce((sum, q) => sum + (q.volume ?? 0), 0);
+  const gapDemand = queries
+    .filter((q) => q.competitor)
+    .reduce((sum, q) => sum + (q.volume ?? 0), 0);
+
   return (
     <Shell
       dealer={dealer}
@@ -83,11 +88,46 @@ export default async function VisibilityPage() {
       <Card className="mt-6">
         <PanelHeading title="Where you show up" sub="Real buyer queries in your market, by engine" />
 
+        <div className="mb-5 grid grid-cols-1 gap-3 sm:grid-cols-3">
+          <div className="rounded-xl border border-line bg-white/[0.02] p-3.5">
+            <p className="text-xs text-ink-faint">Monthly buyer demand</p>
+            <p className="mt-1 text-2xl font-semibold tabular-nums text-ink">
+              {monthlyDemand.toLocaleString()}
+            </p>
+            <p className="text-xs text-ink-muted">searches across these queries</p>
+          </div>
+          <div className="rounded-xl border border-danger/25 bg-danger/[0.06] p-3.5">
+            <p className="text-xs text-ink-faint">Gross at risk</p>
+            <p className="mt-1 text-2xl font-semibold tabular-nums text-danger">
+              {visibility?.grossAtRisk ?? "—"}
+            </p>
+            <p className="text-xs text-ink-muted">
+              {gapDemand.toLocaleString()} searches AI sends elsewhere
+            </p>
+          </div>
+          <div className="rounded-xl border border-accent/25 bg-accent/[0.06] p-3.5">
+            <p className="text-xs text-ink-faint">Projected upside</p>
+            <p className="mt-1 text-base font-semibold leading-snug text-accent">
+              {visibility?.projectedLeads ?? "—"}
+            </p>
+            <p className="text-xs text-ink-muted">as LotPilot closes these gaps</p>
+          </div>
+        </div>
+
         {/* mobile cards */}
         <div className="space-y-3 sm:hidden">
           {queries.map((q) => (
             <div key={q.query} className="rounded-xl border border-line bg-white/[0.02] p-3">
               <p className="text-sm font-medium text-ink">{q.query}</p>
+              <p className="mt-0.5 text-xs text-ink-muted">
+                {q.volume.toLocaleString()} searches/mo
+                {q.competitor && (
+                  <>
+                    {" · "}
+                    <span className="text-danger">AI names {q.competitor}</span>
+                  </>
+                )}
+              </p>
               <div className="mt-2.5 flex flex-wrap gap-1.5">
                 {ENGINES.map((e) => (
                   <span
@@ -112,17 +152,22 @@ export default async function VisibilityPage() {
             <thead>
               <tr className="text-xs text-ink-faint">
                 <th className="px-2 pb-3 text-left font-medium">Buyer query</th>
+                <th className="px-2 pb-3 text-right font-medium">Searches/mo</th>
                 {ENGINES.map((e) => (
                   <th key={e} className="px-2 pb-3 text-center font-medium">
                     {e.replace(" AI Overviews", " AIO").replace("Bing ", "")}
                   </th>
                 ))}
+                <th className="px-2 pb-3 text-left font-medium">AI recommends</th>
               </tr>
             </thead>
             <tbody>
               {queries.map((q) => (
                 <tr key={q.query} className="border-t border-line">
                   <td className="px-2 py-3 text-sm text-ink-soft">{q.query}</td>
+                  <td className="px-2 py-3 text-right text-sm tabular-nums text-ink-muted">
+                    {q.volume.toLocaleString()}
+                  </td>
                   {ENGINES.map((e) => (
                     <td key={e} className="px-2 py-3 text-center">
                       {q.engines[e] ? (
@@ -136,13 +181,21 @@ export default async function VisibilityPage() {
                       )}
                     </td>
                   ))}
+                  <td className="px-2 py-3 text-sm">
+                    {q.competitor ? (
+                      <span className="text-danger">{q.competitor}</span>
+                    ) : (
+                      <span className="text-accent">You</span>
+                    )}
+                  </td>
                 </tr>
               ))}
             </tbody>
           </table>
         </div>
         <p className="mt-3 text-xs text-ink-faint">
-          ✓ = your inventory cited · ✕ = gap to close. Citation presence is where we focus next.
+          ✓ = your inventory cited · ✕ = gap LotPilot is already working to close. Nothing for your
+          team to do.
         </p>
       </Card>
 
