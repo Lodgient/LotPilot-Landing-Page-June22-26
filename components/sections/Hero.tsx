@@ -40,10 +40,14 @@ export default function Hero() {
 
           <motion.h1
             {...fade(0.06)}
-            className="mt-5 text-balance text-4xl font-bold leading-[1.05] tracking-tight text-ink sm:text-5xl lg:text-6xl"
+            className="mt-5 text-4xl font-bold leading-[1.1] tracking-tight text-ink sm:text-5xl"
           >
-            Your inventory, <span className="text-gradient">recommended by AI.</span>{" "}
-            Your leads, <span className="text-gradient">worked by AI.</span>
+            <span className="block">
+              Your inventory, <span className="text-gradient">recommended by AI.</span>
+            </span>
+            <span className="mt-2 block">
+              Your leads, <span className="text-gradient">worked by AI.</span>
+            </span>
           </motion.h1>
 
           <motion.p
