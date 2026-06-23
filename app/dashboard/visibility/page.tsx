@@ -15,6 +15,28 @@ import { ENGINES } from "@/lib/dashboard/types";
 
 export const dynamic = "force-dynamic";
 
+// Turn the score band into a plain verdict a dealer reads instantly.
+const BAND_VERDICT: Record<
+  string,
+  { label: string; tone: "danger" | "warn" | "cyan" | "accent" }
+> = {
+  critical: { label: "Critical — AI rarely surfaces you", tone: "danger" },
+  weak: { label: "Weak — surfaced inconsistently", tone: "warn" },
+  developing: { label: "Developing — gaining ground", tone: "cyan" },
+  strong: { label: "Strong — top-tier AI visibility", tone: "accent" },
+};
+
+// Plain-English translation of each technical pillar — so it makes sense to a dealer.
+const PILLAR_HELP: Record<string, string> = {
+  Crawlability: "Can AI bots actually read your vehicle pages?",
+  "Structured-data fidelity":
+    "Are your listings tagged so AI gets price, trim & specs right?",
+  Freshness: "Do sold units drop and price changes reach AI fast?",
+  "Citation presence": "How often AI quotes your store as the source.",
+  "Entity consistency":
+    "Does your name, address & phone match everywhere AI looks?",
+};
+
 export default async function VisibilityPage() {
   const { dealer, profile } = await requireDealer();
   const [visibility, pillars, queries, sov, vins, benchmarks] = await Promise.all([
@@ -33,6 +55,10 @@ export default async function VisibilityPage() {
     .filter((q) => q.competitor)
     .reduce((sum, q) => sum + (q.volume ?? 0), 0);
 
+  const totalQueries = queries.length;
+  const citedQueries = queries.filter((q) => !q.competitor).length;
+  const verdict = visibility ? BAND_VERDICT[visibility.band] : null;
+
   return (
     <Shell
       dealer={dealer}
@@ -43,10 +69,29 @@ export default async function VisibilityPage() {
       <div className="grid gap-6 lg:grid-cols-[1fr_1.6fr]">
         <Card glow className="flex flex-col items-center justify-center text-center">
           <p className="text-sm text-ink-muted">AI Visibility Score</p>
-          <div className="mt-3 text-7xl font-bold tracking-tight text-ink">
+          <div className="mt-3 text-7xl font-bold leading-none tracking-tight text-ink">
             {visibility?.score ?? "—"}
+            <span className="align-top text-2xl font-semibold text-ink-faint">/100</span>
           </div>
-          <p className="mt-1 text-xs text-ink-faint">out of 100</p>
+          {verdict && (
+            <Badge tone={verdict.tone} className="mt-3">
+              {verdict.label}
+            </Badge>
+          )}
+          {you && (
+            <p className="mt-4 text-sm leading-relaxed text-ink-soft">
+              You&apos;re the{" "}
+              <span className="font-semibold text-ink">#1 store AI recommends</span> in{" "}
+              {dealer.metro} — {you.value}% share of voice.
+            </p>
+          )}
+          <p className="mt-1.5 text-xs text-ink-muted">
+            Cited as the answer in{" "}
+            <span className="font-semibold text-ink">
+              {citedQueries} of {totalQueries}
+            </span>{" "}
+            buyer questions we track.
+          </p>
           {visibility && (
             <Badge tone="accent" className="mt-4">
               ▲ +{visibility.delta} pts since feed connect
@@ -81,6 +126,11 @@ export default async function VisibilityPage() {
                 label={`${p.label}: ${p.score} out of 100`}
                 accent={p.score >= 75 ? "accent" : p.score >= 55 ? "cyan" : "warn"}
               />
+              {PILLAR_HELP[p.label] && (
+                <p className="mt-1.5 text-xs leading-snug text-ink-faint">
+                  {PILLAR_HELP[p.label]}
+                </p>
+              )}
             </div>
           ))}
         </div>
