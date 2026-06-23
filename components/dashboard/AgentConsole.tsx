@@ -3,6 +3,7 @@
 import { useRef, useState } from "react";
 import Icon, { type IconName } from "@/components/Icon";
 import { Card, PanelHeading } from "@/components/dashboard/ui";
+import CallMe from "@/components/dashboard/CallMe";
 import { createClient } from "@/lib/supabase/client";
 import { cn } from "@/lib/cn";
 import type { AgentConfig, AgentPerformance } from "@/lib/dashboard/types";
@@ -237,6 +238,9 @@ export default function AgentConsole({
           </Card>
         ))}
       </div>
+
+      {/* live call demo */}
+      <CallMe />
 
       <div className="grid gap-6 lg:grid-cols-[1.1fr_1fr]">
         {/* configuration */}
