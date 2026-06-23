@@ -13,48 +13,74 @@ import DateRange from "./DateRange";
 import { PrintButton } from "./Exports";
 import Copilot from "./Copilot";
 
-const NAV: { href: string; label: string; icon: IconName; exact?: boolean }[] = [
-  { href: "/dashboard", label: "Command Center", icon: "command", exact: true },
-  { href: "/dashboard/visibility", label: "AI Visibility", icon: "radar" },
-  { href: "/dashboard/inventory", label: "Inventory AI", icon: "car" },
-  { href: "/dashboard/demand", label: "Demand Intelligence", icon: "trending" },
-  { href: "/dashboard/leads", label: "Leads & Conversations", icon: "messages" },
-  { href: "/dashboard/assistant", label: "AI Sales Assistant", icon: "bolt" },
-  { href: "/dashboard/roi", label: "ROI & Attribution", icon: "chart" },
+type NavItem = { href: string; label: string; icon: IconName; exact?: boolean };
+
+// Grouped so the two jobs are unmistakable: LotPilot gets the dealer FOUND by AI,
+// then WINS the leads that creates. Command Center = overview, ROI = proof.
+const NAV_GROUPS: { heading?: string; items: NavItem[] }[] = [
+  { items: [{ href: "/dashboard", label: "Command Center", icon: "command", exact: true }] },
+  {
+    heading: "Get found by AI",
+    items: [
+      { href: "/dashboard/visibility", label: "AI Visibility", icon: "radar" },
+      { href: "/dashboard/inventory", label: "Inventory AI", icon: "car" },
+      { href: "/dashboard/demand", label: "Demand Intelligence", icon: "trending" },
+    ],
+  },
+  {
+    heading: "Win the lead",
+    items: [
+      { href: "/dashboard/leads", label: "Leads & Conversations", icon: "messages" },
+      { href: "/dashboard/assistant", label: "AI Sales Assistant", icon: "bolt" },
+    ],
+  },
+  {
+    heading: "Prove it",
+    items: [{ href: "/dashboard/roi", label: "ROI & Attribution", icon: "chart" }],
+  },
 ];
 
 function NavLinks({ onNavigate }: { onNavigate?: () => void }) {
   const pathname = usePathname();
   return (
-    <nav className="flex flex-col gap-1">
-      {NAV.map((item) => {
-        const active = item.exact ? pathname === item.href : pathname.startsWith(item.href);
-        return (
-          <Link
-            key={item.href}
-            href={item.href}
-            onClick={onNavigate}
-            className={cn(
-              "group flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm transition-colors",
-              active
-                ? "bg-white/[0.06] text-ink"
-                : "text-ink-muted hover:bg-white/[0.03] hover:text-ink",
-            )}
-          >
-            <span
-              className={cn(
-                "grid h-8 w-8 place-items-center rounded-lg transition-colors",
-                active
-                  ? "bg-cyan/15 text-cyan ring-1 ring-inset ring-cyan/20"
-                  : "bg-white/[0.04] text-ink-muted group-hover:text-ink",
-              )}
-            >
-              <Icon name={item.icon} size={17} />
-            </span>
-            {item.label}
-          </Link>
-        );
-      })}
+    <nav className="flex flex-col gap-4">
+      {NAV_GROUPS.map((group, gi) => (
+        <div key={group.heading ?? gi} className="flex flex-col gap-1">
+          {group.heading && (
+            <p className="px-3 pb-1 text-[10px] font-mono uppercase tracking-wider text-ink-faint">
+              {group.heading}
+            </p>
+          )}
+          {group.items.map((item) => {
+            const active = item.exact ? pathname === item.href : pathname.startsWith(item.href);
+            return (
+              <Link
+                key={item.href}
+                href={item.href}
+                onClick={onNavigate}
+                className={cn(
+                  "group flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm transition-colors",
+                  active
+                    ? "bg-white/[0.06] text-ink"
+                    : "text-ink-muted hover:bg-white/[0.03] hover:text-ink",
+                )}
+              >
+                <span
+                  className={cn(
+                    "grid h-8 w-8 place-items-center rounded-lg transition-colors",
+                    active
+                      ? "bg-cyan/15 text-cyan ring-1 ring-inset ring-cyan/20"
+                      : "bg-white/[0.04] text-ink-muted group-hover:text-ink",
+                  )}
+                >
+                  <Icon name={item.icon} size={17} />
+                </span>
+                {item.label}
+              </Link>
+            );
+          })}
+        </div>
+      ))}
     </nav>
   );
 }
@@ -88,6 +114,9 @@ function SidebarInner({
         <Link href="/dashboard" onClick={onNavigate} aria-label="LotPilot dashboard">
           <Logo />
         </Link>
+        <p className="mt-2 px-1 text-[11px] leading-snug text-ink-faint">
+          Get your cars recommended by AI — then win every lead it creates.
+        </p>
       </div>
 
       {/* dealer card */}
@@ -113,9 +142,6 @@ function SidebarInner({
       </div>
 
       <div className="mt-6 flex-1">
-        <p className="px-3 pb-2 text-[11px] font-mono uppercase tracking-wider text-ink-faint">
-          Workspace
-        </p>
         <NavLinks onNavigate={onNavigate} />
       </div>
 
