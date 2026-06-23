@@ -47,7 +47,7 @@ function NavLinks({ onNavigate }: { onNavigate?: () => void }) {
       {NAV_GROUPS.map((group, gi) => (
         <div key={group.heading ?? gi} className="flex flex-col gap-1">
           {group.heading && (
-            <p className="px-3 pb-1 text-[10px] font-mono uppercase tracking-wider text-ink-faint">
+            <p className="px-3 pb-1 text-[10px] font-mono font-medium uppercase tracking-[0.14em] text-ink-muted">
               {group.heading}
             </p>
           )}
@@ -58,19 +58,23 @@ function NavLinks({ onNavigate }: { onNavigate?: () => void }) {
                 key={item.href}
                 href={item.href}
                 onClick={onNavigate}
+                aria-current={active ? "page" : undefined}
                 className={cn(
-                  "group flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm transition-colors",
+                  "group relative flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition-all",
                   active
-                    ? "bg-black/[0.06] text-ink"
-                    : "text-ink-muted hover:bg-black/[0.03] hover:text-ink",
+                    ? "bg-cyan/10 text-cyan ring-1 ring-inset ring-cyan/20"
+                    : "text-ink-soft hover:bg-ink/[0.05] hover:text-ink",
                 )}
               >
+                {active && (
+                  <span className="absolute left-0 top-1/2 h-5 w-1 -translate-y-1/2 rounded-r-full bg-cyan" />
+                )}
                 <span
                   className={cn(
                     "grid h-8 w-8 place-items-center rounded-lg transition-colors",
                     active
-                      ? "bg-cyan/15 text-cyan ring-1 ring-inset ring-cyan/20"
-                      : "bg-black/[0.04] text-ink-muted group-hover:text-ink",
+                      ? "bg-cyan text-white shadow-[0_4px_12px_-4px_rgba(37,99,235,0.65)]"
+                      : "bg-ink/[0.05] text-ink-soft group-hover:bg-ink/[0.09] group-hover:text-ink",
                   )}
                 >
                   <Icon name={item.icon} size={17} />
@@ -114,7 +118,7 @@ function SidebarInner({
         <Link href="/dashboard" onClick={onNavigate} aria-label="LotPilot dashboard">
           <Logo />
         </Link>
-        <p className="mt-2 px-1 text-[11px] leading-snug text-ink-faint">
+        <p className="mt-2 px-1 text-[11px] leading-snug text-ink-muted">
           Get your cars recommended by AI — then win every lead it creates.
         </p>
       </div>
@@ -184,7 +188,7 @@ export default function Shell({
   return (
     <div className="min-h-screen lg:grid lg:grid-cols-[268px_1fr]">
       {/* desktop sidebar */}
-      <aside className="no-print sticky top-0 hidden h-screen flex-col border-r border-line bg-canvas-2/40 p-5 lg:flex">
+      <aside className="no-print sticky top-0 hidden h-screen flex-col border-r border-line-strong bg-canvas-2/70 p-5 lg:flex">
         <SidebarInner dealer={dealer} profile={profile} />
       </aside>
 
