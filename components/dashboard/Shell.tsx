@@ -8,6 +8,7 @@ import Icon, { type IconName } from "@/components/Icon";
 import { cn } from "@/lib/cn";
 import { createClient } from "@/lib/supabase/client";
 import type { Dealer, Profile } from "@/lib/dashboard/types";
+import { deriveOEMs } from "@/lib/dashboard/oem";
 import { DemoBadge } from "./ui";
 import DateRange from "./DateRange";
 import { PrintButton } from "./Exports";
@@ -103,6 +104,7 @@ function SidebarInner({
   onNavigate?: () => void;
 }) {
   const router = useRouter();
+  const oems = deriveOEMs(dealer.name);
 
   async function logout() {
     const supabase = createClient();
@@ -134,6 +136,21 @@ function SidebarInner({
             <p className="truncate text-xs text-ink-muted">{dealer.metro}</p>
           </div>
         </div>
+
+        {/* OEM franchise badge(s) — derived from the dealer name */}
+        {oems.length > 0 && (
+          <div className="mt-2.5 flex flex-wrap items-center gap-1.5">
+            {oems.map((o) => (
+              <span
+                key={o}
+                className="inline-flex items-center gap-1 rounded-md border border-cyan/25 bg-cyan/[0.07] px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-cyan"
+              >
+                <Icon name="shield" size={10} strokeWidth={2.5} />
+                {o}
+              </span>
+            ))}
+          </div>
+        )}
         <div className="mt-3 flex items-center justify-between rounded-lg bg-black/[0.03] px-2.5 py-1.5">
           <span className="flex items-center gap-1.5 text-xs text-ink-muted">
             <span className="h-1.5 w-1.5 rounded-full bg-accent shadow-[0_0_8px] shadow-accent" />

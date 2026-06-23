@@ -25,7 +25,7 @@ export default function Logo({
       <span className="flex flex-col leading-none">
         <span
           className={cn(
-            "font-serif text-[21px] font-medium uppercase tracking-[0.12em] transition-colors",
+            "font-serif text-[22px] font-semibold tracking-[-0.01em] transition-colors",
             onDark ? "text-[#f8fafc]" : "text-ink",
           )}
         >
