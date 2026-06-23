@@ -13,14 +13,14 @@ const STEPS = [
     n: "02",
     title: "We make every vehicle AI-discoverable",
     body: "LotPilot structures, publishes and keeps your inventory fresh in the formats AI answer engines read and cite — so your cars start showing up when buyers ask.",
-    tag: "Discovery layer",
+    tag: "Get found by AI",
     tagColor: "text-accent",
   },
   {
     n: "03",
     title: "Our AI agent works the leads",
     body: "Every inbound is answered in seconds over SMS and voice. The agent qualifies the buyer, captures the credit application, books the appointment and pushes the deal forward — 24/7.",
-    tag: "Conversion layer",
+    tag: "Win the lead",
     tagColor: "text-accent",
   },
 ];

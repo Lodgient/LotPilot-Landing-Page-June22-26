@@ -14,7 +14,7 @@ export default function Discovery() {
       id="discovery"
       glow="violet"
       glowSide="right"
-      eyebrow="Discovery layer"
+      eyebrow="Get found by AI"
       title={
         <>
           Get found by buyers asking AI{" "}

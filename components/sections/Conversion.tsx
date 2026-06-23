@@ -23,14 +23,14 @@ export default function Conversion() {
       glow="cyan"
       glowSide="left"
       tinted
-      eyebrow="Conversion layer"
+      eyebrow="Win the lead"
       title={
         <>
           An AI agent that works every lead{" "}
           <span className="font-display text-gradient">instantly.</span>
         </>
       }
-      intro="Discovery brings the buyer. The agent closes the gap — responding in seconds, taking the credit app, and booking the deal, so nothing leaks while your team sleeps."
+      intro="Getting found brings the buyer in. The agent closes the gap — responding in seconds, taking the credit app, and booking the deal, so nothing leaks while your team sleeps."
     >
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
         {CAPS.map((c, i) => (
