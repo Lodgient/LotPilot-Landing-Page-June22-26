@@ -55,7 +55,7 @@ async function resolveContext(supabase: any): Promise<DealerCtx | null> {
   return { dealerId: DEMO_DEALER_ID, userId: null };
 }
 
-async function buildSnapshot(supabase: any, ctx: DealerCtx): Promise<string> {
+async function buildSnapshot(supabase: any, ctx: DealerCtx) {
   // Everything below is RLS-scoped to the caller's dealer (anon → demo dealer).
   // Identify the user by id when signed in, else take the dealer's profile row.
   const { data: profile } = ctx.userId
@@ -71,13 +71,14 @@ async function buildSnapshot(supabase: any, ctx: DealerCtx): Promise<string> {
         .limit(1)
         .maybeSingle();
 
-  const [dealer, vis, kpis, recos, leads, agent] = await Promise.all([
+  const [dealer, vis, kpis, recos, leads, agent, vehicles] = await Promise.all([
     supabase.from("dp_dealers").select("name, metro, vehicles, feed_type").eq("id", ctx.dealerId).single(),
     supabase.from("dp_visibility").select("score, score_delta, band").maybeSingle(),
     supabase.from("dp_kpis").select("label, value, sub").eq("scope", "today").order("sort"),
     supabase.from("dp_recommendations").select("title, priority, impact, status").order("sort"),
     supabase.from("dp_leads").select("temp, status"),
     supabase.from("dp_agent").select("status, display_name, channels, speed_to_lead_sec").maybeSingle(),
+    supabase.from("dp_vehicles").select("year, make, model, engines_citing, est_gross"),
   ]);
 
   const d = dealer.data ?? {};
@@ -86,47 +87,102 @@ async function buildSnapshot(supabase: any, ctx: DealerCtx): Promise<string> {
   const rc = (recos.data ?? []) as any[];
   const ld = (leads.data ?? []) as any[];
   const ag = agent.data;
+  const vh = (vehicles.data ?? []) as any[];
 
   const hot = ld.filter((l) => l.temp === "Hot").length;
   const openRecos = rc.filter((r) => (r.status ?? "open") !== "applied");
   const ch = ag?.channels ?? {};
   const channels = ["sms", "voice", "chat"].filter((c) => ch?.[c]).join(", ") || "none";
 
-  return [
-    `Dealer: ${d.name ?? "—"} (${d.metro ?? "—"}) · ${d.vehicles ?? 0} vehicles · feed: ${d.feed_type ?? "—"}`,
-    `User: ${profile?.full_name ?? "—"} (${profile?.role ?? "—"})`,
-    v ? `AI Visibility score: ${v.score}/100 (${v.score >= 0 ? "+" : ""}${v.score_delta ?? 0} trend, band "${v.band ?? "—"}")` : "AI Visibility: not yet computed",
-    kp.length ? `Today's KPIs: ${kp.map((k) => `${k.label} ${k.value}${k.sub ? ` (${k.sub})` : ""}`).join("; ")}` : "Today's KPIs: none yet",
-    `Leads worked: ${ld.length} (${hot} hot)`,
-    rc.length ? `Recommended actions: ${openRecos.length} open of ${rc.length}. Top: ${openRecos.slice(0, 3).map((r) => `"${r.title}" [${r.priority}, ${r.impact}]`).join("; ") || "all applied"}` : "Recommended actions: none",
-    ag ? `AI Sales Assistant "${ag.display_name}": ${ag.status}, channels: ${channels}, speed-to-lead ~${ag.speed_to_lead_sec}s` : "AI Sales Assistant: not configured",
-  ].join("\n");
+  const invisible = vh.filter((x) => !x.engines_citing);
+  const invisibleGross = invisible.reduce((s, x) => s + (Number(x.est_gross) || 0), 0);
+  const invisibleExamples = invisible
+    .slice(0, 3)
+    .map((x) => [x.year, x.make, x.model].filter(Boolean).join(" "))
+    .filter(Boolean);
+
+  return {
+    dealerName: d.name ?? "your store",
+    metro: d.metro ?? "",
+    vehicles: d.vehicles ?? 0,
+    feedType: d.feed_type ?? "",
+    userName: profile?.full_name ?? "",
+    userRole: profile?.role ?? "",
+    vis: v ? { score: v.score, delta: v.score_delta ?? 0, band: v.band ?? "" } : null,
+    kpis: kp.map((k) => ({ label: k.label, value: k.value, sub: k.sub ?? "" })),
+    leadsWorked: ld.length,
+    hotLeads: hot,
+    openRecos: openRecos.length,
+    totalRecos: rc.length,
+    topRecos: openRecos.slice(0, 3).map((r) => ({ title: r.title, priority: r.priority, impact: r.impact })),
+    agent: ag ? { name: ag.display_name, status: ag.status, channels, speed: ag.speed_to_lead_sec } : null,
+    scoredVehicles: vh.length,
+    invisibleCount: invisible.length,
+    invisibleGross,
+    invisibleExamples,
+  };
 }
 
-function fallbackReply(question: string, snapshot: string): string {
+type Snapshot = Awaited<ReturnType<typeof buildSnapshot>>;
+
+const fmtGross = (n: number) => (n >= 1000 ? `$${(n / 1000).toFixed(n >= 10000 ? 0 : 1)}k` : `$${n}`);
+
+// The grounding block handed to Claude as system context (live mode).
+function snapshotToPrompt(s: Snapshot): string {
+  return [
+    `Dealer: ${s.dealerName} (${s.metro || "—"}) · ${s.vehicles} vehicles · feed: ${s.feedType || "—"}`,
+    `User: ${s.userName || "—"} (${s.userRole || "—"})`,
+    s.vis ? `AI Visibility score: ${s.vis.score}/100 (${s.vis.delta >= 0 ? "+" : ""}${s.vis.delta} trend, band "${s.vis.band}")` : "AI Visibility: not yet computed",
+    s.kpis.length ? `Today's KPIs: ${s.kpis.map((k) => `${k.label} ${k.value}${k.sub ? ` (${k.sub})` : ""}`).join("; ")}` : "Today's KPIs: none yet",
+    `Leads worked: ${s.leadsWorked} (${s.hotLeads} hot)`,
+    s.scoredVehicles ? `Inventory: ${s.invisibleCount} of ${s.scoredVehicles} VINs invisible to AI (~${fmtGross(s.invisibleGross)} gross sitting dark)` : "",
+    s.topRecos.length ? `Recommended actions: ${s.openRecos} open of ${s.totalRecos}. Top: ${s.topRecos.map((r) => `"${r.title}" [${r.priority}, ${r.impact}]`).join("; ")}` : "Recommended actions: none",
+    s.agent ? `AI Sales Assistant "${s.agent.name}": ${s.agent.status}, channels: ${s.agent.channels}, speed-to-lead ~${s.agent.speed}s` : "AI Sales Assistant: not configured",
+  ]
+    .filter(Boolean)
+    .join("\n");
+}
+
+// Deterministic, snapshot-grounded answers when no ANTHROPIC_API_KEY is set.
+// Conversational and self-contained — weaves in live numbers, no raw data dump.
+function fallbackReply(question: string, s: Snapshot): string {
   const q = question.toLowerCase();
   const pick = (re: RegExp) => re.test(q);
-  let body: string;
-  if (pick(/visib|score|rank|cited|engine/)) {
-    body =
-      "Your AI Visibility score measures how often the AI answer engines (ChatGPT, Gemini, Perplexity, Copilot) cite your store when local shoppers ask buying questions. Open **AI Visibility** to see the score, the six ranking pillars, and which buyer questions you're winning. Anything not cited is lost reach — the Recommended actions target those first.";
-  } else if (pick(/invisible|inventory|vin|vehicle|stock/)) {
-    body =
-      "Open **Inventory AI** and use the *Invisible to AI* filter — those VINs aren't cited by any engine yet, which is pure lost opportunity. Each row shows the vehicle's AI score, citing engines, AI-sourced leads, and the blocker keeping it from being fully optimized.";
-  } else if (pick(/lead|conversation|reply|sms|text|speed/)) {
-    body =
-      "Your **AI Sales Assistant** handles every inbound AI lead over SMS, voice, and chat — replying in about 10 seconds, 24/7 — and works them to a booked appointment or credit app. See full transcripts and speed-to-lead on **Leads & Conversations**.";
-  } else if (pick(/roi|attribut|sale|gross|report|revenue/)) {
-    body =
-      "**ROI & Attribution** credits sold cars and gross to the specific AI engine that produced them, plus your funnel, forecast, and a board-ready monthly report. That's where you prove the program's return.";
-  } else if (pick(/deploy|assistant|agent|turn on|activate|persona/)) {
-    body =
-      "Open the **AI Sales Assistant** page to deploy or pause the agent, set its name, persona, channels, greeting, and human-handoff. It comes with every subscription and exclusively handles all of your AI traffic.";
-  } else {
-    body =
-      "I'm your LotPilot Copilot — I can explain any page, your AI Visibility score, invisible inventory, your leads, or your ROI. Try asking \"what's my visibility score mean?\" or \"which cars are invisible to AI?\"";
+
+  if (pick(/invisible|inventory|vin|vehicle|stock|dark/)) {
+    if (s.invisibleCount > 0) {
+      const eg = s.invisibleExamples.length ? ` — like the ${s.invisibleExamples.join(", ")}` : "";
+      return `Right now **${s.invisibleCount} of ${s.scoredVehicles}** of your vehicles are invisible to AI${eg}. No answer engine cites them yet, so that's roughly **${fmtGross(s.invisibleGross)} in gross sitting dark**. Open **Inventory AI** and use the *Invisible to AI* filter to see each one and the blocker holding it back — the Recommended actions tackle these first.`;
+    }
+    return `Good news — every vehicle we've scored is cited by at least one AI engine right now. Open **Inventory AI** for per-VIN scores, which engines cite each car, and AI-sourced leads.`;
   }
-  return `${body}\n\n— Here's your current snapshot:\n${snapshot}`;
+  if (pick(/visib|score|rank|cited|engine|pillar/)) {
+    const sc = s.vis ? `Yours is **${s.vis.score}/100** (${s.vis.delta >= 0 ? "+" : ""}${s.vis.delta} lately, "${s.vis.band}").` : "It isn't computed yet.";
+    return `Your AI Visibility score is how often the answer engines — ChatGPT, Gemini, Perplexity, Copilot — cite ${s.dealerName} when local shoppers ask buying questions. ${sc} Open **AI Visibility** for the six ranking pillars and the buyer questions you're winning or losing.`;
+  }
+  if (pick(/lead|conversation|reply|sms|text|speed|appoint/)) {
+    const a = s.agent ? `**${s.agent.name}** (${s.agent.status}, ~${s.agent.speed}s first reply)` : "Your AI Sales Assistant";
+    const worked = `**${s.leadsWorked} lead${s.leadsWorked === 1 ? "" : "s"}${s.hotLeads ? `, ${s.hotLeads} hot` : ""}**`;
+    return `${a} works every inbound AI lead over ${s.agent?.channels ?? "SMS, voice, chat"}, 24/7 — answering questions and booking appointments or credit apps. You've worked ${worked}. See full transcripts and speed-to-lead on **Leads & Conversations**.`;
+  }
+  if (pick(/roi|attribut|sale|gross|report|revenue|cost/)) {
+    const dark = s.invisibleCount > 0 ? ` It also quantifies the ~${fmtGross(s.invisibleGross)} in gross sitting dark on invisible inventory.` : "";
+    return `**ROI & Attribution** credits sold cars and gross to the exact AI engine that produced them, with your funnel, forecast, and a board-ready monthly report.${dark} That's where you prove the program's return.`;
+  }
+  if (pick(/recommend|action|fix|priorit|to.?do|next step/)) {
+    if (s.topRecos.length) {
+      const list = s.topRecos.map((r) => `“${r.title}” (${r.impact})`).join(", ");
+      return `You have **${s.openRecos} open recommended actions** of ${s.totalRecos}. Top priorities: ${list}. Open the **Command Center** to review and approve them.`;
+    }
+    return `You're all caught up — no open recommended actions right now. New ones appear on the **Command Center** as the engine finds opportunities.`;
+  }
+  if (pick(/deploy|assistant|agent|turn on|activate|persona|channel/)) {
+    const st = s.agent ? ` Yours is **${s.agent.status}** on ${s.agent.channels}.` : "";
+    return `Open the **AI Sales Assistant** page to deploy or pause the agent and set its name, persona, channels, greeting, and human-handoff.${st} It's included with every subscription and exclusively handles your AI traffic.`;
+  }
+
+  const hi = s.vis ? ` Right now your visibility is ${s.vis.score}/100${s.invisibleCount ? ` and ${s.invisibleCount} vehicles are invisible to AI` : ""}.` : "";
+  return `I'm your LotPilot Copilot — I can explain any page or your live numbers: AI Visibility, invisible inventory, leads, ROI, or the AI Sales Assistant.${hi} Try “which cars are invisible to AI?” or “what does my visibility score mean?”`;
 }
 
 export async function POST(req: Request) {
@@ -151,7 +207,7 @@ export async function POST(req: Request) {
   }
 
   const snapshot = await buildSnapshot(supabase, ctx);
-  const system = `${LOTPILOT_KNOWLEDGE}\n\n# This dealer's live snapshot (use it to ground answers)\n${snapshot}`;
+  const system = `${LOTPILOT_KNOWLEDGE}\n\n# This dealer's live snapshot (use it to ground answers)\n${snapshotToPrompt(snapshot)}`;
 
   const apiKey = process.env.ANTHROPIC_API_KEY;
 
