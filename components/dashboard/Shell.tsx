@@ -8,7 +8,7 @@ import Icon, { type IconName } from "@/components/Icon";
 import { cn } from "@/lib/cn";
 import { createClient } from "@/lib/supabase/client";
 import type { Dealer, Profile } from "@/lib/dashboard/types";
-import { deriveOEMs, OEM_DOMAINS } from "@/lib/dashboard/oem";
+import { deriveOEMs } from "@/lib/dashboard/oem";
 import { DemoBadge } from "./ui";
 import DateRange from "./DateRange";
 import { PrintButton } from "./Exports";
@@ -94,33 +94,11 @@ function initials(name: string) {
   return name.split(" ").map((n) => n[0]).join("").slice(0, 2);
 }
 
-/** OEM franchise badge with the brand's real logo, loaded live with fallbacks. */
+/** OEM franchise badge — clean shield mark + brand name (no external assets). */
 function OemBadge({ name }: { name: string }) {
-  const domain = OEM_DOMAINS[name];
-  const sources = domain
-    ? [
-        `https://logo.clearbit.com/${domain}`,
-        `https://www.google.com/s2/favicons?sz=64&domain=${domain}`,
-      ]
-    : [];
-  const [idx, setIdx] = useState(0);
-  const showLogo = idx < sources.length;
   return (
-    <span className="inline-flex items-center gap-1.5 rounded-md border border-line-strong bg-white px-2 py-1 text-[11px] font-semibold text-ink-soft shadow-sm">
-      {showLogo ? (
-        // eslint-disable-next-line @next/next/no-img-element
-        <img
-          src={sources[idx]}
-          alt=""
-          width={14}
-          height={14}
-          loading="lazy"
-          className="h-3.5 w-3.5 shrink-0 object-contain"
-          onError={() => setIdx((i) => i + 1)}
-        />
-      ) : (
-        <Icon name="shield" size={11} strokeWidth={2.5} className="text-cyan" />
-      )}
+    <span className="inline-flex items-center gap-1.5 rounded-md border border-cyan/25 bg-cyan/[0.07] px-2 py-1 text-[11px] font-semibold text-cyan">
+      <Icon name="shield" size={11} strokeWidth={2.5} />
       {name}
     </span>
   );
