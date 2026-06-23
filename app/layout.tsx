@@ -5,8 +5,7 @@ import StructuredData from "@/components/StructuredData";
 import SmoothScroll from "@/components/SmoothScroll";
 import CustomCursor from "@/components/CustomCursor";
 
-// Luxury-editorial system (matches the Lodgient marketing site):
-// Cormorant Garamond display serif + Jost geometric sans.
+// Luxury-editorial system: Cormorant Garamond display serif + Jost geometric sans.
 const sans = Jost({
   variable: "--font-geist-sans",
   subsets: ["latin"],

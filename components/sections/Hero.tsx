@@ -37,9 +37,9 @@ export default function Hero() {
 
   return (
     <section className="relative flex min-h-[100svh] items-center overflow-hidden bg-[#0c3b2f]">
-      {/* cinematic estate photo + Ken Burns */}
+      {/* cinematic dealership showroom photo + Ken Burns */}
       <div className="absolute inset-[-6%] z-0">
-        <div className="kenburns absolute inset-0 bg-[url('/media/hero-estate.webp')] bg-cover bg-center [filter:saturate(1.15)_brightness(1.04)]" />
+        <div className="kenburns absolute inset-0 bg-[url('/media/hero-dealership.webp')] bg-cover bg-center [filter:saturate(1.15)_brightness(1.04)]" />
       </div>
       {/* legibility overlays (vertical + diagonal-left) */}
       <div className="absolute inset-0 z-[2] bg-[linear-gradient(180deg,rgba(21,48,42,0.34)_0%,rgba(21,48,42,0.04)_36%,rgba(15,35,31,0.2)_62%,rgba(12,30,26,0.9)_100%)]" />
