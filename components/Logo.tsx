@@ -33,11 +33,11 @@ export default function Logo({
         </span>
         <span
           className={cn(
-            "mt-1 text-[9px] font-medium uppercase tracking-[0.28em] transition-colors",
-            onDark ? "text-[#f8fafc]/85" : "text-cyan",
+            "mt-1 text-[9px] font-semibold uppercase leading-[1.5] tracking-[0.16em] transition-colors",
+            onDark ? "text-[#f8fafc]/80" : "text-cyan",
           )}
         >
-          AI visibility for dealers
+          AI visibility for automotive dealers
         </span>
       </span>
     </span>
