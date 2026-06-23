@@ -3,11 +3,11 @@
 import { useMemo, useState } from "react";
 import { usePathname, useSearchParams } from "next/navigation";
 import Icon from "@/components/Icon";
-import { Card } from "@/components/dashboard/ui";
+import { Card, StatCard } from "@/components/dashboard/ui";
 import { Sparkline } from "@/components/dashboard/charts";
 import { ExportCsv } from "@/components/dashboard/Exports";
 import LivePagePreview from "@/components/dashboard/LivePagePreview";
-import { ENGINES, type Dealer, type Vehicle } from "@/lib/dashboard/types";
+import { ENGINES, type Dealer, type Vehicle, type KPI } from "@/lib/dashboard/types";
 import { cn } from "@/lib/cn";
 
 const money = (n: number) => "$" + n.toLocaleString();
@@ -19,6 +19,72 @@ function scoreColor(s: number) {
 }
 function scoreTone(s: number): "danger" | "warn" | "accent" {
   return s < 40 ? "danger" : s < 70 ? "warn" : "accent";
+}
+
+// Build a gently-rising (or falling) series ending at the current value, for KPI sparklines.
+function rampUp(end: number, n = 9, factor = 0.8) {
+  const start = Math.max(0, Math.round(end * factor));
+  return Array.from({ length: n }, (_, i) => Math.round(start + (end - start) * (i / (n - 1))));
+}
+function rampDown(end: number, n = 9, factor = 1.55) {
+  const start = Math.round(end * factor);
+  return Array.from({ length: n }, (_, i) => Math.round(start + (end - start) * (i / (n - 1))));
+}
+function trendPct(series: number[]) {
+  const a = series[0] || 1;
+  const b = series[series.length - 1];
+  return Math.round(((b - a) / Math.max(1, a)) * 100);
+}
+
+/** Compact ring gauge for an AI score (0–100) — CSS conic-gradient, cheap per-row. */
+function ScoreGauge({ score, size = 36 }: { score: number; size?: number }) {
+  const c = scoreColor(score);
+  const inner = size - 8;
+  return (
+    <span
+      className="relative grid shrink-0 place-items-center rounded-full"
+      style={{
+        width: size,
+        height: size,
+        background: `conic-gradient(${c} ${score}%, color-mix(in oklab, ${c} 16%, transparent) 0)`,
+      }}
+      title={`AI score ${score}/100`}
+    >
+      <span
+        className="grid place-items-center rounded-full bg-panel text-[13px] font-bold tabular-nums"
+        style={{ width: inner, height: inner, color: c }}
+      >
+        {score}
+      </span>
+    </span>
+  );
+}
+
+/** Vehicle thumbnail — uses the live image if it loads, else a clean car-icon tile. */
+function Thumb({ v, className }: { v: Vehicle; className?: string }) {
+  const [err, setErr] = useState(false);
+  const show = v.liveImage && !err;
+  return (
+    <span
+      className={cn(
+        "grid h-10 w-14 shrink-0 place-items-center overflow-hidden rounded-md border border-line bg-canvas-2",
+        className,
+      )}
+    >
+      {show ? (
+        // eslint-disable-next-line @next/next/no-img-element
+        <img
+          src={v.liveImage}
+          alt=""
+          loading="lazy"
+          className="h-full w-full object-cover"
+          onError={() => setErr(true)}
+        />
+      ) : (
+        <Icon name="car" size={18} className="text-ink-faint" />
+      )}
+    </span>
+  );
 }
 
 type Filter = "all" | "invisible" | "aged" | "strong";
@@ -33,10 +99,11 @@ const FILTERS: { key: Filter; label: string }[] = [
 
 function EngineDots({ v }: { v: Vehicle }) {
   return (
-    <div className="flex items-center gap-1" title={`${v.enginesCiting} of 5 engines`}>
+    <div className="flex items-center gap-1" aria-label={`${v.enginesCiting} of 5 engines`}>
       {ENGINES.map((e) => (
         <span
           key={e}
+          title={`${e}: ${v.engines[e] ? "cited ✓" : "not cited"}`}
           className={cn(
             "h-2 w-2 rounded-full",
             v.engines[e] ? "bg-accent" : "bg-black/12",
@@ -78,6 +145,26 @@ export default function InventoryView({ vehicles, dealer }: { vehicles: Vehicle[
     return { total, visible, pctVisible: total ? Math.round((visible / total) * 100) : 0, avg, leads, darkCount: dark.length, darkGross };
   }, [vehicles]);
 
+  const kpiCards = useMemo<KPI[]>(() => {
+    const len = vehicles[0]?.trend?.length ?? 0;
+    const avgSpark = len
+      ? Array.from({ length: len }, (_, i) =>
+          Math.round(
+            vehicles.reduce((s, v) => s + (v.trend[i] ?? v.aiScore), 0) /
+              Math.max(1, vehicles.length),
+          ))
+      : rampUp(summary.avg);
+    const visSpark = rampUp(summary.pctVisible);
+    const leadSpark = rampUp(summary.leads);
+    const darkSpark = rampDown(summary.darkGross);
+    return [
+      { label: "Inventory AI-visible", value: `${summary.pctVisible}%`, sub: `${summary.visible} of ${summary.total} units surfaced`, accent: "cyan", trend: trendPct(visSpark), spark: visSpark },
+      { label: "Avg AI score", value: String(summary.avg), sub: "across the lot", accent: summary.avg >= 70 ? "accent" : "warn", trend: trendPct(avgSpark), spark: avgSpark },
+      { label: "AI-sourced leads", value: String(summary.leads), sub: "attributed to inventory", accent: "violet", trend: trendPct(leadSpark), spark: leadSpark },
+      { label: "Gross sitting dark", value: money(summary.darkGross), sub: `${summary.darkCount} units invisible to AI`, accent: "warn", invertTrend: true, trend: trendPct(darkSpark), spark: darkSpark },
+    ];
+  }, [vehicles, summary]);
+
   const rows = useMemo(() => {
     let list = vehicles;
     if (filter === "invisible") list = list.filter((v) => v.aiScore < 40);
@@ -100,32 +187,11 @@ export default function InventoryView({ vehicles, dealer }: { vehicles: Vehicle[
 
   return (
     <div>
-      {/* summary */}
+      {/* summary KPIs — trend + sparkline parity with the Command Center */}
       <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-        <Card>
-          <p className="text-sm text-ink-muted">Inventory AI-visible</p>
-          <p className="mt-2 text-3xl font-bold text-ink">
-            {summary.pctVisible}%
-          </p>
-          <p className="mt-0.5 text-xs text-ink-muted">{summary.visible} of {summary.total} units surfaced</p>
-        </Card>
-        <Card>
-          <p className="text-sm text-ink-muted">Avg AI score</p>
-          <p className="mt-2 text-3xl font-bold" style={{ color: scoreColor(summary.avg) }}>
-            {summary.avg}
-          </p>
-          <p className="mt-0.5 text-xs text-ink-muted">across the lot</p>
-        </Card>
-        <Card>
-          <p className="text-sm text-ink-muted">AI-sourced leads</p>
-          <p className="mt-2 text-3xl font-bold text-ink">{summary.leads}</p>
-          <p className="mt-0.5 text-xs text-ink-muted">attributed to inventory</p>
-        </Card>
-        <Card className="ring-gradient">
-          <p className="text-sm text-ink-muted">Gross sitting dark</p>
-          <p className="mt-2 text-3xl font-bold text-danger">{money(summary.darkGross)}</p>
-          <p className="mt-0.5 text-xs text-ink-muted">{summary.darkCount} units invisible to AI</p>
-        </Card>
+        {kpiCards.map((k) => (
+          <StatCard key={k.label} kpi={k} />
+        ))}
       </div>
 
       {/* invisible inventory callout */}
@@ -232,8 +298,20 @@ export default function InventoryView({ vehicles, dealer }: { vehicles: Vehicle[
         </div>
       </div>
 
+      {/* row count */}
+      <p className="mt-4 px-1 text-xs text-ink-faint">
+        Showing <span className="font-medium text-ink-soft">{rows.length}</span> of{" "}
+        {summary.total} units
+        {summary.darkCount > 0 && (
+          <>
+            {" · "}
+            <span className="text-danger">{summary.darkCount} invisible to AI</span>
+          </>
+        )}
+      </p>
+
       {/* mobile cards */}
-      <div className="mt-4 space-y-3 lg:hidden">
+      <div className="mt-3 space-y-3 lg:hidden">
         {rows.map((v) => (
           <div
             key={v.id}
@@ -241,20 +319,18 @@ export default function InventoryView({ vehicles, dealer }: { vehicles: Vehicle[
             className="surface cursor-pointer rounded-2xl p-4 transition-colors hover:bg-black/[0.03]"
           >
             <div className="flex items-start justify-between gap-3">
-              <div className="min-w-0">
-                <p className="text-sm font-medium text-ink">
-                  {v.year} {v.make} {v.model} <span className="text-ink-muted">{v.trim}</span>
-                </p>
-                <p className="mt-0.5 text-xs text-ink-faint">
-                  {v.stockType} · {v.mileage.toLocaleString()} mi · {v.vin}
-                </p>
+              <div className="flex min-w-0 items-center gap-3">
+                <Thumb v={v} />
+                <div className="min-w-0">
+                  <p className="text-sm font-medium text-ink">
+                    {v.year} {v.make} {v.model} <span className="text-ink-muted">{v.trim}</span>
+                  </p>
+                  <p className="mt-0.5 text-xs text-ink-faint">
+                    {v.stockType} · {v.mileage.toLocaleString()} mi · {v.vin}
+                  </p>
+                </div>
               </div>
-              <span
-                className="inline-grid h-9 w-9 shrink-0 place-items-center rounded-lg text-sm font-bold tabular-nums"
-                style={{ color: scoreColor(v.aiScore), background: "color-mix(in oklab," + scoreColor(v.aiScore) + " 14%, transparent)" }}
-              >
-                {v.aiScore}
-              </span>
+              <ScoreGauge score={v.aiScore} />
             </div>
             <div className="mt-3 flex items-center justify-between gap-3">
               <span className="text-sm tabular-nums text-ink-soft">{money(v.price)}</span>
@@ -263,7 +339,7 @@ export default function InventoryView({ vehicles, dealer }: { vehicles: Vehicle[
             <div className="mt-2.5 flex flex-wrap items-center justify-between gap-2">
               {v.blocker === "None" ? (
                 <span className="inline-flex items-center gap-1 text-xs text-accent">
-                  <Icon name="check" size={13} strokeWidth={2.25} /> Fully optimized
+                  <Icon name="check" size={13} strokeWidth={2.25} /> Cited in {v.enginesCiting}/5 engines
                 </span>
               ) : (
                 <span className="text-xs text-ink-muted">Top fix: {v.blocker}</span>
@@ -288,15 +364,20 @@ export default function InventoryView({ vehicles, dealer }: { vehicles: Vehicle[
       <Card className="mt-4 hidden p-0 lg:block">
         <div className="overflow-x-auto scroll-slim">
           <table className="w-full min-w-[940px] border-collapse">
-            <thead>
+            <thead className="[&_th]:sticky [&_th]:top-16 [&_th]:z-10 [&_th]:border-b [&_th]:border-line [&_th]:bg-panel">
               <tr className="text-xs text-ink-faint">
                 <th className="px-4 py-3 text-left font-medium">Vehicle</th>
                 <th className="px-3 py-3 text-right font-medium">Price</th>
                 <th className="px-3 py-3 text-center font-medium">Days</th>
-                <th className="px-3 py-3 text-center font-medium">AI score</th>
+                <th
+                  className="cursor-help px-3 py-3 text-center font-medium"
+                  title="0–100: how discoverable this car is in AI answers. Green ≥70 · amber 40–69 · red <40."
+                >
+                  AI score
+                </th>
                 <th className="px-3 py-3 text-center font-medium">Engines</th>
                 <th className="px-3 py-3 text-center font-medium">AI leads</th>
-                <th className="px-3 py-3 text-left font-medium">Top fix</th>
+                <th className="px-3 py-3 text-left font-medium">Status</th>
                 <th className="px-3 py-3 text-center font-medium">Trend</th>
                 <th className="px-3 py-3 text-center font-medium">AI page</th>
               </tr>
@@ -309,32 +390,34 @@ export default function InventoryView({ vehicles, dealer }: { vehicles: Vehicle[
                   className="cursor-pointer border-t border-line transition-colors hover:bg-black/[0.03]"
                 >
                   <td className="px-4 py-3">
-                    <p className="text-sm font-medium text-ink">
-                      {v.year} {v.make} {v.model} <span className="text-ink-muted">{v.trim}</span>
-                    </p>
-                    <p className="text-xs text-ink-faint">
-                      {v.stockType} · {v.mileage.toLocaleString()} mi · {v.vin}
-                    </p>
+                    <div className="flex items-center gap-3">
+                      <Thumb v={v} />
+                      <div className="min-w-0">
+                        <p className="text-sm font-medium text-ink">
+                          {v.year} {v.make} {v.model} <span className="text-ink-muted">{v.trim}</span>
+                        </p>
+                        <p className="text-xs text-ink-faint">
+                          {v.stockType} · {v.mileage.toLocaleString()} mi · {v.vin}
+                        </p>
+                      </div>
+                    </div>
                   </td>
                   <td className="px-3 py-3 text-right text-sm tabular-nums text-ink-soft">{money(v.price)}</td>
                   <td className="px-3 py-3 text-center text-sm tabular-nums">
                     <span className={v.daysOnLot >= 45 ? "text-warn" : "text-ink-muted"}>{v.daysOnLot}</span>
                   </td>
-                  <td className="px-3 py-3 text-center">
-                    <span
-                      className="inline-grid h-8 w-8 place-items-center rounded-lg text-sm font-bold tabular-nums"
-                      style={{ color: scoreColor(v.aiScore), background: "color-mix(in oklab," + scoreColor(v.aiScore) + " 14%, transparent)" }}
-                    >
-                      {v.aiScore}
-                    </span>
+                  <td className="px-3 py-3">
+                    <div className="flex justify-center">
+                      <ScoreGauge score={v.aiScore} />
+                    </div>
                   </td>
                   <td className="px-3 py-3"><div className="flex justify-center"><EngineDots v={v} /></div></td>
                   <td className="px-3 py-3 text-center text-sm tabular-nums text-ink-soft">{v.aiLeads}</td>
                   <td className="px-3 py-3">
                     {v.blocker === "None" ? (
-                      <span className="inline-flex items-center gap-1 text-xs text-accent"><Icon name="check" size={13} strokeWidth={2.25} /> Fully optimized</span>
+                      <span className="inline-flex items-center gap-1 text-xs text-accent"><Icon name="check" size={13} strokeWidth={2.25} /> Cited in {v.enginesCiting}/5 engines</span>
                     ) : (
-                      <span className="text-xs text-ink-muted">{v.blocker}</span>
+                      <span className="inline-flex items-center gap-1 text-xs text-warn"><Icon name="bolt" size={12} strokeWidth={2.25} /> {v.blocker}</span>
                     )}
                   </td>
                   <td className="px-3 py-3"><div className="flex justify-center"><Sparkline data={v.trend} accent={scoreTone(v.aiScore)} width={72} height={26} /></div></td>
