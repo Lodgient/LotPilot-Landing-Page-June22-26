@@ -7,29 +7,31 @@
    ============================================================ */
 
 @theme {
-  /* Surfaces — light. canvas = page, panel = elevated card (white). */
-  --color-canvas: #ffffff;
-  --color-canvas-2: #f7f9fc;
+  /* Luxury-editorial palette (matches the Lodgient marketing site):
+     warm paper, ink, living emerald, luminous brass. */
+  --color-canvas: #fcfaf5; /* paper */
+  --color-canvas-2: #f1ebde; /* paper2 */
   --color-panel: #ffffff;
-  --color-panel-2: #f4f7fb;
-  --color-line: rgba(13, 17, 23, 0.1);
-  --color-line-strong: rgba(13, 17, 23, 0.16);
+  --color-panel-2: #f1ebde;
+  --color-line: rgba(28, 24, 19, 0.1);
+  --color-line-strong: rgba(28, 24, 19, 0.18);
 
-  /* Text — near-black headings down to soft muted greys on white */
-  --color-ink: #0d1117;
-  --color-ink-soft: #2b3342;
-  --color-ink-muted: #586173;
-  --color-ink-faint: #8b93a4;
+  /* Text — warm near-black down to soft taupes */
+  --color-ink: #1a1610;
+  --color-ink-soft: #544b40;
+  --color-ink-muted: #897f71;
+  --color-ink-faint: #a89c8a;
 
-  /* Brand accents — deepened so they read on white (fills + text) */
-  --color-accent: #15a34a; /* signal green */
-  --color-accent-dim: #0f8a3e;
-  --color-cyan: #0891b2; /* CTA cyan / links */
-  --color-cyan-dim: #0e7490;
-  --color-violet: #7c3aed; /* ambient third accent */
-  --color-magenta: #db2777;
-  --color-danger: #dc2626;
-  --color-warn: #d97706;
+  /* Brand: brass-gold primary, living emerald secondary.
+     (Token names kept so existing bg-cyan CTAs become gold, text-accent emerald.) */
+  --color-cyan: #c89a47; /* brass — primary CTA / links */
+  --color-cyan-dim: #a67f33;
+  --color-accent: #176a55; /* emerald */
+  --color-accent-dim: #114f3f;
+  --color-violet: #176a55; /* fold the third accent into emerald for cohesion */
+  --color-magenta: #c89a47;
+  --color-danger: #b23b3b;
+  --color-warn: #c89a47;
 
   /* Fonts */
   --font-sans: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
@@ -120,12 +122,31 @@ body::before {
   color: #ffffff;
 }
 
-/* Gradient text helper — deepened three-stop, readable on white */
+/* Accent text — warm brass-gold (luxury-editorial). */
 .text-gradient {
-  background: linear-gradient(100deg, var(--color-accent), var(--color-cyan) 55%, var(--color-violet));
+  background: linear-gradient(100deg, #c89a47, #e6c57e 55%, #c89a47);
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
+}
+
+/* Cinematic hero photo drift */
+@keyframes kenburns {
+  0% { transform: scale(1) translate3d(0, 0, 0); }
+  100% { transform: scale(1.08) translate3d(-1.5%, -1.5%, 0); }
+}
+.kenburns { animation: kenburns 26s ease-in-out infinite alternate; }
+
+/* Subtle film grain for editorial richness */
+body::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  pointer-events: none;
+  opacity: 0.035;
+  mix-blend-mode: multiply;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
 }
 
 /* Card surface + interactive lift — white with hairline + soft shadow */

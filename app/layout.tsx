@@ -1,13 +1,16 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono, Instrument_Serif } from "next/font/google";
+import { Geist_Mono, Cormorant_Garamond, Jost } from "next/font/google";
 import "./globals.css";
 import StructuredData from "@/components/StructuredData";
 import SmoothScroll from "@/components/SmoothScroll";
 import CustomCursor from "@/components/CustomCursor";
 
-const geistSans = Geist({
+// Luxury-editorial system (matches the Lodgient marketing site):
+// Cormorant Garamond display serif + Jost geometric sans.
+const sans = Jost({
   variable: "--font-geist-sans",
   subsets: ["latin"],
+  weight: ["300", "400", "500"],
   display: "swap",
 });
 
@@ -17,11 +20,11 @@ const geistMono = Geist_Mono({
   display: "swap",
 });
 
-const instrument = Instrument_Serif({
+const instrument = Cormorant_Garamond({
   variable: "--font-instrument",
   subsets: ["latin"],
-  weight: "400",
-  style: ["italic", "normal"],
+  weight: ["400", "500", "600"],
+  style: ["normal", "italic"],
   display: "swap",
 });
 
@@ -81,7 +84,7 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${geistSans.variable} ${geistMono.variable} ${instrument.variable} antialiased`}
+      className={`${sans.variable} ${geistMono.variable} ${instrument.variable} antialiased`}
     >
       <head>
         {/* JSON-LD emitted statically, server-side, in the initial HTML. */}

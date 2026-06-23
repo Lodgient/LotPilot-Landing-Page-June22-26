@@ -3,7 +3,6 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import Logo from "./Logo";
-import Icon from "./Icon";
 import { cn } from "@/lib/cn";
 
 const LINKS = [
@@ -25,83 +24,86 @@ export default function Nav() {
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
-  // Light site — nav is dark-on-light (transparent at top, solid white on scroll).
-  const onDark = false;
+  const onDark = !scrolled && !open;
 
   return (
     <header
       className={cn(
-        "fixed inset-x-0 top-0 z-50 transition-all duration-300",
+        "fixed inset-x-0 top-0 z-50 transition-all duration-500",
         scrolled || open
-          ? "border-b border-line bg-white/80 shadow-[0_1px_0_rgba(13,17,23,0.04)] backdrop-blur-xl"
-          : "border-b border-transparent",
+          ? "border-b border-line bg-[#fcfaf5]/92 py-3.5 backdrop-blur-xl saturate-150"
+          : "border-b border-transparent py-6",
       )}
     >
-      {/* legibility scrim while floating over the dark hero */}
-      {onDark && (
-        <div className="pointer-events-none absolute inset-x-0 top-0 -z-10 h-24 bg-gradient-to-b from-black/40 to-transparent" />
-      )}
-
-      <nav className="mx-auto flex h-16 max-w-7xl items-center justify-between px-5 sm:px-8">
+      <nav className="mx-auto flex max-w-[1240px] items-center justify-between gap-4 px-7 sm:px-10">
         <Link href="/" aria-label="LotPilot home">
           <Logo onDark={onDark} />
         </Link>
 
-        <div className="hidden items-center gap-8 lg:flex">
-          {LINKS.map((l) => (
-            <a
-              key={l.href}
-              href={l.href}
-              className={cn(
-                "text-sm font-medium transition-colors",
-                onDark ? "text-white/80 hover:text-white" : "text-ink-muted hover:text-ink",
+        <ul className="hidden items-center gap-1 lg:flex">
+          {LINKS.map((l, i) => (
+            <li key={l.href} className="relative">
+              {i > 0 && (
+                <span className="absolute left-0 top-1/2 h-3 w-px -translate-y-1/2 bg-current opacity-25" />
               )}
-            >
-              {l.label}
-            </a>
+              <a
+                href={l.href}
+                className={cn(
+                  "px-3.5 py-2 text-[11.5px] font-normal uppercase tracking-[0.06em] transition-opacity",
+                  onDark ? "text-[#fcfaf5]/90 hover:text-[#fcfaf5]" : "text-ink-soft hover:text-ink",
+                )}
+              >
+                {l.label}
+              </a>
+            </li>
           ))}
-        </div>
+        </ul>
 
-        <div className="hidden items-center gap-4 lg:flex">
+        <div className="hidden items-center gap-5 lg:flex">
           <Link
             href="/login"
             className={cn(
-              "text-sm font-medium transition-colors",
-              onDark ? "text-white/80 hover:text-white" : "text-ink-muted hover:text-ink",
+              "text-[11.5px] font-normal uppercase tracking-[0.06em] transition-opacity",
+              onDark ? "text-[#fcfaf5]/90 hover:text-[#fcfaf5]" : "text-ink-soft hover:text-ink",
             )}
           >
-            Dealer login
+            Login
           </Link>
           <Link
             href="/#demo"
-            className="inline-flex h-10 items-center rounded-full bg-cyan px-5 text-sm font-semibold text-ink-inverse shadow-sm transition-all hover:-translate-y-0.5 hover:bg-cyan-dim cta-glow"
+            className={cn(
+              "inline-flex items-center rounded-sm border px-5 py-2.5 text-[11.5px] font-medium uppercase tracking-[0.1em] transition-all duration-500 hover:-translate-y-0.5",
+              onDark
+                ? "border-[#fcfaf5]/50 text-[#fcfaf5] hover:bg-[#c89a47] hover:border-[#c89a47]"
+                : "border-cyan/60 text-cyan hover:bg-cyan hover:text-white",
+            )}
           >
-            Book a demo
+            Speak with us
           </Link>
         </div>
 
         <button
           className={cn(
-            "grid h-10 w-10 place-items-center rounded-lg border transition-colors lg:hidden",
-            onDark ? "border-white/25 text-white" : "border-line text-ink",
+            "text-2xl leading-none transition-colors lg:hidden",
+            onDark ? "text-[#fcfaf5]" : "text-ink",
           )}
           aria-label="Toggle menu"
           aria-expanded={open}
           onClick={() => setOpen((v) => !v)}
         >
-          <Icon name={open ? "close" : "menu"} size={20} />
+          {open ? "✕" : "☰"}
         </button>
       </nav>
 
       {open && (
-        <div className="border-t border-line bg-white/95 px-5 py-4 backdrop-blur-xl lg:hidden">
+        <div className="border-t border-line bg-[#fcfaf5]/97 px-7 py-5 backdrop-blur-xl lg:hidden">
           <div className="flex flex-col gap-1">
             {LINKS.map((l) => (
               <a
                 key={l.href}
                 href={l.href}
                 onClick={() => setOpen(false)}
-                className="rounded-lg px-2 py-2.5 text-sm font-medium text-ink-soft hover:bg-black/[0.04]"
+                className="rounded-lg px-2 py-2.5 font-serif text-xl text-ink-soft hover:text-ink"
               >
                 {l.label}
               </a>
@@ -109,16 +111,16 @@ export default function Nav() {
             <Link
               href="/login"
               onClick={() => setOpen(false)}
-              className="rounded-lg px-2 py-2.5 text-sm font-medium text-ink-soft hover:bg-black/[0.04]"
+              className="rounded-lg px-2 py-2.5 font-serif text-xl text-ink-soft hover:text-ink"
             >
-              Dealer login
+              Login
             </Link>
             <Link
               href="/#demo"
               onClick={() => setOpen(false)}
-              className="mt-2 inline-flex h-11 items-center justify-center rounded-full bg-cyan px-5 text-sm font-semibold text-ink-inverse"
+              className="mt-2 inline-flex items-center justify-center rounded-sm bg-cyan px-5 py-3 text-[12px] font-medium uppercase tracking-[0.1em] text-white"
             >
-              Book a demo
+              Speak with us
             </Link>
           </div>
         </div>
