@@ -1,10 +1,12 @@
 // app/api/assistant/route.ts
 //
-// The in-product "LotPilot Copilot" — an AI assistant that helps the signed-in
-// dealer understand the system and their own numbers. It pulls a live snapshot of
-// the dealer's data, composes a grounded system prompt, and streams a Claude reply.
+// The in-product "LotPilot Copilot" — an AI assistant that helps a dealer
+// understand the system and their own numbers. It pulls a live snapshot of the
+// dealer's data, composes a grounded system prompt, and streams a Claude reply.
 //
-// Auth: the user's Supabase session (RLS scopes every query to their dealer).
+// Auth: a signed-in user gets their own dealer (RLS-scoped). Anonymous visitors
+// get the public demo dealer — same fallback the dashboard pages use — so the
+// Copilot works on the public demo instead of 401ing.
 // Model: Claude via ANTHROPIC_API_KEY. With no key set, it degrades to a
 // deterministic, snapshot-aware fallback so the assistant always responds.
 
@@ -17,21 +19,60 @@ export const dynamic = "force-dynamic";
 
 const MODEL = "claude-opus-4-8";
 
+// The public read-only demo dealer (Capitol Nissan). Mirrors requireDealer() in
+// lib/dashboard/queries.ts: anonymous visitors get this dealer's workspace, RLS-
+// scoped, so the Copilot answers on the demo just like the dashboard renders.
+const DEMO_DEALER_ID = "11111111-1111-1111-1111-111111111111";
+
 type ChatMessage = { role: "user" | "assistant"; content: string };
+
+/** Resolved chat context: which dealer the snapshot is for, and the user if any. */
+type DealerCtx = { dealerId: string; userId: string | null };
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
-async function buildSnapshot(supabase: any, userId: string): Promise<string> {
-  // Everything here is RLS-scoped to the caller's dealer.
-  const { data: profile } = await supabase
-    .from("dp_profiles")
-    .select("full_name, role, dealer_id")
-    .eq("id", userId)
-    .single();
-  if (!profile?.dealer_id) return "No dealer is linked to this account.";
+/**
+ * Resolve who's asking. A signed-in user gets their own dealer; an anonymous
+ * visitor gets the public demo dealer (unless DASHBOARD_PUBLIC === "false").
+ * Returns null only when we genuinely can't serve anyone (→ 401).
+ */
+async function resolveContext(supabase: any): Promise<DealerCtx | null> {
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (user) {
+    const { data: profile } = await supabase
+      .from("dp_profiles")
+      .select("dealer_id")
+      .eq("id", user.id)
+      .maybeSingle();
+    if (profile?.dealer_id) return { dealerId: profile.dealer_id, userId: user.id };
+    return null; // signed in but not linked to a dealer
+  }
+
+  if (process.env.DASHBOARD_PUBLIC === "false") return null;
+  return { dealerId: DEMO_DEALER_ID, userId: null };
+}
+
+async function buildSnapshot(supabase: any, ctx: DealerCtx): Promise<string> {
+  // Everything below is RLS-scoped to the caller's dealer (anon → demo dealer).
+  // Identify the user by id when signed in, else take the dealer's profile row.
+  const { data: profile } = ctx.userId
+    ? await supabase
+        .from("dp_profiles")
+        .select("full_name, role, dealer_id")
+        .eq("id", ctx.userId)
+        .maybeSingle()
+    : await supabase
+        .from("dp_profiles")
+        .select("full_name, role, dealer_id")
+        .eq("dealer_id", ctx.dealerId)
+        .limit(1)
+        .maybeSingle();
 
   const [dealer, vis, kpis, recos, leads, agent] = await Promise.all([
-    supabase.from("dp_dealers").select("name, metro, vehicles, feed_type").eq("id", profile.dealer_id).single(),
+    supabase.from("dp_dealers").select("name, metro, vehicles, feed_type").eq("id", ctx.dealerId).single(),
     supabase.from("dp_visibility").select("score, score_delta, band").maybeSingle(),
     supabase.from("dp_kpis").select("label, value, sub").eq("scope", "today").order("sort"),
     supabase.from("dp_recommendations").select("title, priority, impact, status").order("sort"),
@@ -53,7 +94,7 @@ async function buildSnapshot(supabase: any, userId: string): Promise<string> {
 
   return [
     `Dealer: ${d.name ?? "—"} (${d.metro ?? "—"}) · ${d.vehicles ?? 0} vehicles · feed: ${d.feed_type ?? "—"}`,
-    `User: ${profile.full_name ?? "—"} (${profile.role ?? "—"})`,
+    `User: ${profile?.full_name ?? "—"} (${profile?.role ?? "—"})`,
     v ? `AI Visibility score: ${v.score}/100 (${v.score >= 0 ? "+" : ""}${v.score_delta ?? 0} trend, band "${v.band ?? "—"}")` : "AI Visibility: not yet computed",
     kp.length ? `Today's KPIs: ${kp.map((k) => `${k.label} ${k.value}${k.sub ? ` (${k.sub})` : ""}`).join("; ")}` : "Today's KPIs: none yet",
     `Leads worked: ${ld.length} (${hot} hot)`,
@@ -90,10 +131,8 @@ function fallbackReply(question: string, snapshot: string): string {
 
 export async function POST(req: Request) {
   const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-  if (!user) {
+  const ctx = await resolveContext(supabase);
+  if (!ctx) {
     return new Response("Unauthorized", { status: 401 });
   }
 
@@ -111,7 +150,7 @@ export async function POST(req: Request) {
     return new Response("No messages", { status: 422 });
   }
 
-  const snapshot = await buildSnapshot(supabase, user.id);
+  const snapshot = await buildSnapshot(supabase, ctx);
   const system = `${LOTPILOT_KNOWLEDGE}\n\n# This dealer's live snapshot (use it to ground answers)\n${snapshot}`;
 
   const apiKey = process.env.ANTHROPIC_API_KEY;
