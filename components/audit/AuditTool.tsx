@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
-import { AnimatePresence, motion } from "framer-motion";
+import { motion } from "framer-motion";
 import { generateReport } from "@/lib/audit/generateReport";
 import type { AuditReport } from "@/lib/audit/types";
 import Icon from "@/components/Icon";
@@ -73,18 +73,17 @@ export default function AuditTool() {
   ]);
   const [input, setInput] = useState("");
   const [busy, setBusy] = useState(false);
-  const scrollRef = useRef<HTMLDivElement>(null);
   const timers = useRef<ReturnType<typeof setTimeout>[]>([]);
-
-  useEffect(() => {
-    scrollRef.current?.scrollTo({
-      top: scrollRef.current.scrollHeight,
-      behavior: "smooth",
-    });
-  }, [messages]);
   useEffect(() => () => timers.current.forEach(clearTimeout), []);
 
   const push = (m: Msg) => setMessages((x) => [...x, m]);
+  const scrollToMsg = (id: number, block: ScrollLogicalPosition = "start") => {
+    timers.current.push(
+      setTimeout(() => {
+        document.getElementById(`am-${id}`)?.scrollIntoView({ behavior: "smooth", block });
+      }, 80),
+    );
+  };
 
   const runAudit = useCallback(
     (url: string, city: string, dealershipName?: string) => {
@@ -111,7 +110,8 @@ export default function AuditTool() {
       timers.current.push(
         setTimeout(() => {
           setMessages((x) => x.filter((m) => m.id !== scanId));
-          push({ id: nid(), role: "assistant", kind: "report", report });
+          const reportId = nid();
+          push({ id: reportId, role: "assistant", kind: "report", report });
           push({
             id: nid(),
             role: "assistant",
@@ -120,6 +120,7 @@ export default function AuditTool() {
               city ? ` around ${city}` : ""
             } — and there are ~${report.matchingCarsMissed} matching cars on your lot the AI never mentioned. Every gap here is fixable from the inventory feed you already export. Want me to show you how LotPilot turns this around?`,
           });
+          scrollToMsg(reportId, "start");
           setBusy(false);
         }, total),
       );
@@ -175,6 +176,7 @@ export default function AuditTool() {
       setInput("");
       const userMsg: Msg = { id: nid(), role: "user", kind: "text", text };
       setMessages((x) => [...x, userMsg]);
+      scrollToMsg(userMsg.id, "start");
 
       const parsed = parseInput(text);
       if (parsed) runAudit(parsed.url, parsed.city);
@@ -201,7 +203,7 @@ export default function AuditTool() {
   }, [runAudit]);
 
   return (
-    <div className="surface relative flex h-[600px] flex-col overflow-hidden rounded-2xl">
+    <div className="surface relative overflow-hidden rounded-2xl">
       <div className="h-px w-full bg-gradient-to-r from-transparent via-cyan/50 to-transparent" />
 
       {/* header */}
@@ -218,13 +220,12 @@ export default function AuditTool() {
         </div>
       </div>
 
-      {/* messages */}
-      <div
-        ref={scrollRef}
-        className="scroll-slim flex-1 space-y-4 overflow-y-auto px-4 py-5 sm:px-5"
-      >
+      {/* conversation — grows with content; the page scrolls, not an inner box */}
+      <div className="space-y-4 px-4 py-5 sm:px-5">
         {messages.map((m) => (
-          <MessageView key={m.id} m={m} />
+          <div key={m.id} id={`am-${m.id}`} className="scroll-mt-24">
+            <MessageView m={m} />
+          </div>
         ))}
 
         {messages.length === 1 && (
