@@ -25,8 +25,8 @@ export default function Nav() {
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
-  // Hero is light now — nav stays dark-on-light (transparent at top, solid on scroll).
-  const onDark = false;
+  // Over the dark cinematic hero the nav is light-on-dark; solid white on scroll.
+  const onDark = !scrolled && !open;
 
   return (
     <header
