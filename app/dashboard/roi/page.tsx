@@ -3,6 +3,7 @@ import Icon from "@/components/Icon";
 import { Card, PanelHeading, StatCard, Badge } from "@/components/dashboard/ui";
 import { Funnel } from "@/components/dashboard/charts";
 import Forecast from "@/components/dashboard/Forecast";
+import { ExportCsv } from "@/components/dashboard/Exports";
 import {
   requireDealer,
   getKpis,
@@ -183,9 +184,24 @@ export default async function RoiPage() {
           <p className="text-sm text-ink-soft">
             Board-ready monthly attribution report, exported in one click.
           </p>
-          <button className="inline-flex h-10 items-center rounded-full bg-cyan px-5 text-sm font-semibold text-ink-inverse transition-colors hover:bg-cyan/90">
-            Export report
-          </button>
+          <ExportCsv
+            filename="lotpilot-attribution.csv"
+            label="Export report"
+            columns={[
+              { key: "engine", label: "AI engine" },
+              { key: "leads", label: "Leads" },
+              { key: "appts", label: "Appointments" },
+              { key: "sales", label: "Sales" },
+              { key: "gross", label: "Attributed gross" },
+            ]}
+            rows={byEngine.map((e) => ({
+              engine: e.engine,
+              leads: e.leads,
+              appts: e.appts,
+              sales: e.sales,
+              gross: e.gross,
+            }))}
+          />
         </div>
       </Card>
     </Shell>

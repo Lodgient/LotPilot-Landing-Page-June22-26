@@ -17,7 +17,7 @@ export default function FeedConnect() {
           <span className="font-display text-gradient">already export.</span>
         </>
       }
-      intro="No migration, no rebuild, no new dashboard to learn. We take the inventory file your current tools already produce — and handle everything downstream."
+      intro="No migration, no rebuild, no new tools in your team's daily workflow. We take the inventory file your current tools already produce — and handle everything downstream."
       centered={false}
     >
       <div className="grid items-start gap-10 lg:grid-cols-[0.9fr_1.1fr]">

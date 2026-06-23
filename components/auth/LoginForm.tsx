@@ -5,9 +5,6 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/client";
 
-const DEMO_EMAIL = "demo@capitolnissan.com";
-const DEMO_PASSWORD = "LotPilotDemo!23";
-
 export default function LoginForm() {
   const router = useRouter();
   const [email, setEmail] = useState("");
@@ -15,16 +12,27 @@ export default function LoginForm() {
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  async function signIn(creds?: { email: string; password: string }) {
+  async function signIn() {
     setError(null);
     setBusy(true);
     const supabase = createClient();
-    const { error } = await supabase.auth.signInWithPassword({
-      email: creds?.email ?? email,
-      password: creds?.password ?? password,
-    });
+    const { error } = await supabase.auth.signInWithPassword({ email, password });
     if (error) {
       setError(error.message);
+      setBusy(false);
+      return;
+    }
+    router.push("/dashboard");
+    router.refresh();
+  }
+
+  // Demo credentials live server-side; this never exposes them to the client.
+  async function enterDemo() {
+    setError(null);
+    setBusy(true);
+    const res = await fetch("/api/demo-login", { method: "POST" });
+    if (!res.ok) {
+      setError("Demo is unavailable right now. Please try again shortly.");
       setBusy(false);
       return;
     }
@@ -38,7 +46,7 @@ export default function LoginForm() {
       <p className="mt-1.5 text-sm text-ink-muted">Welcome back. Let&apos;s see what your AI did.</p>
 
       <button
-        onClick={() => signIn({ email: DEMO_EMAIL, password: DEMO_PASSWORD })}
+        onClick={enterDemo}
         disabled={busy}
         className="mt-7 inline-flex h-12 w-full items-center justify-center rounded-xl bg-cyan text-sm font-semibold text-ink-inverse transition-all hover:bg-cyan/90 cta-glow disabled:opacity-60"
       >
@@ -66,7 +74,12 @@ export default function LoginForm() {
         <label className="block">
           <span className="mb-1.5 flex items-center justify-between text-xs font-medium uppercase tracking-wider text-ink-faint">
             Password
-            <span className="normal-case tracking-normal text-ink-faint">Forgot?</span>
+            <a
+              href="mailto:support@lotpilot.com?subject=Password%20reset"
+              className="normal-case tracking-normal text-cyan hover:underline"
+            >
+              Forgot?
+            </a>
           </span>
           <input
             type="password"

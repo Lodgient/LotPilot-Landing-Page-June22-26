@@ -27,7 +27,9 @@ export type IconName =
   | "shield"
   | "globe"
   | "external"
-  | "copy";
+  | "copy"
+  | "download"
+  | "printer";
 
 const PATHS: Record<IconName, React.ReactNode> = {
   // layout-dashboard — Command Center
@@ -146,6 +148,20 @@ const PATHS: Record<IconName, React.ReactNode> = {
     <>
       <rect x="9" y="9" width="11" height="11" rx="2" />
       <path d="M5 15V5a2 2 0 0 1 2-2h10" />
+    </>
+  ),
+  download: (
+    <>
+      <path d="M12 3v12" />
+      <path d="m7 11 5 5 5-5" />
+      <path d="M5 21h14" />
+    </>
+  ),
+  printer: (
+    <>
+      <path d="M6 9V3h12v6" />
+      <path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2" />
+      <rect x="6" y="14" width="12" height="7" rx="1" />
     </>
   ),
 };

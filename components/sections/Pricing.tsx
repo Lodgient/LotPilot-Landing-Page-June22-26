@@ -49,7 +49,8 @@ export default function Pricing() {
               <ul className="mt-7 grid gap-3 sm:grid-cols-2">
                 {INCLUDED.map((t) => (
                   <li key={t} className="flex gap-2.5 text-sm text-ink-soft">
-                    <span className="text-accent">✓</span>
+                    <span className="text-accent" aria-hidden="true">✓</span>
+                    <span className="sr-only">Included: </span>
                     {t}
                   </li>
                 ))}

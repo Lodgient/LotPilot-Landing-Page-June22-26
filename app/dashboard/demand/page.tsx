@@ -27,6 +27,15 @@ export default async function DemandPage() {
       title="Demand Intelligence"
       intro="What buyers are asking AI in your market — and where your inventory answers (or doesn't)."
     >
+      {demand.length === 0 ? (
+      <Card className="text-center">
+        <p className="py-6 text-sm text-ink-muted">
+          No demand signal yet — once your feed is live, we map what buyers ask AI in {dealer.metro}{" "}
+          against your inventory and surface the gaps here.
+        </p>
+      </Card>
+      ) : (
+      <>
       {/* headline */}
       <Card glow className="relative overflow-hidden">
         <div className="glow-violet pointer-events-none absolute -right-10 -top-16 h-56 w-56 opacity-50" />
@@ -47,7 +56,7 @@ export default async function DemandPage() {
         <div className="p-5 sm:p-6">
           <PanelHeading
             title="Buyer demand vs your coverage"
-            sub="Weekly query volume in San Jose, CA"
+            sub={`Weekly query volume in ${dealer.metro}`}
             action={
               <ExportCsv
                 filename="lotpilot-demand.csv"
@@ -168,6 +177,8 @@ export default async function DemandPage() {
           action needed from your team.
         </p>
       </Card>
+      </>
+      )}
     </Shell>
   );
 }

@@ -1,26 +1,9 @@
 import Section from "@/components/ui/Section";
 import Reveal from "@/components/ui/Reveal";
 
-/**
- * PLACEHOLDER metric. Intentionally shows no fabricated number — the team
- * fills `value` once pilot results are confirmed. Until then it renders a
- * clearly-labeled pending state. (CLAUDE CODE BRIEF §8/§9: never invent metrics.)
- */
-function Metric({ value, label }: { value?: string; label: string }) {
-  return (
-    <div className="rounded-xl border border-line bg-white/[0.02] p-5 text-center">
-      <p className="text-3xl font-bold tracking-tight">
-        {value ?? <span className="text-ink-faint">—</span>}
-      </p>
-      <p className="mt-1 text-xs text-ink-muted">{label}</p>
-      {!value && (
-        <p className="mt-2 text-[10px] uppercase tracking-wider text-ink-faint">
-          pilot metric pending
-        </p>
-      )}
-    </div>
-  );
-}
+// What we're tracking on the launch pilot. Verified numbers replace this once
+// the pilot reports — we never invent metrics. (CLAUDE CODE BRIEF §8/§9.)
+const TRACKING = ["AI visibility lift", "Speed-to-lead", "Credit apps captured"];
 
 const PILOTS = [
   {
@@ -56,10 +39,25 @@ export default function Proof() {
                   <p className="text-xs text-ink-muted">{p.type}</p>
                 </div>
               </div>
-              <div className="mt-5 grid grid-cols-3 gap-3">
-                <Metric label="AI visibility lift" />
-                <Metric label="Speed-to-lead" />
-                <Metric label="Credit apps captured" />
+              <div className="mt-5 rounded-xl border border-line bg-white/[0.02] p-4">
+                <div className="flex flex-wrap items-center gap-x-4 gap-y-2 text-xs text-ink-soft">
+                  <span className="inline-flex items-center gap-1.5 text-accent">
+                    <span className="h-1.5 w-1.5 rounded-full bg-accent" /> Feed connected
+                  </span>
+                  <span className="inline-flex items-center gap-1.5 text-cyan">
+                    <span className="h-1.5 w-1.5 rounded-full bg-cyan" /> AI agent live
+                  </span>
+                </div>
+                <p className="mt-3 text-xs text-ink-muted">
+                  Tracking{" "}
+                  {TRACKING.map((t, i) => (
+                    <span key={t} className="text-ink-soft">
+                      {t}
+                      {i < TRACKING.length - 1 ? " · " : ""}
+                    </span>
+                  ))}{" "}
+                  — verified results post at 30 / 60 / 90 days.
+                </p>
               </div>
             </div>
           </Reveal>

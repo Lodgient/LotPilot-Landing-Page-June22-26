@@ -195,9 +195,15 @@ export default async function CommandCenter() {
             </Card>
           )}
 
-          {/* Needs attention */}
+          {/* Hot buyers to review */}
           <Card>
-            <PanelHeading title="Needs your team" sub={`${hot.length} hot buyers ready now`} />
+            <PanelHeading title="Hot buyers to review" sub={`${hot.length} ready for a human close`} />
+            {hot.length === 0 ? (
+              <p className="rounded-xl border border-line bg-white/[0.02] px-4 py-6 text-center text-sm text-ink-muted">
+                No hot buyers right now — your AI is working every lead. We&apos;ll flag any that are
+                ready for your team here.
+              </p>
+            ) : (
             <ul className="space-y-2.5">
               {hot.map((l) => (
                 <li key={l.id}>
@@ -217,6 +223,7 @@ export default async function CommandCenter() {
                 </li>
               ))}
             </ul>
+            )}
           </Card>
         </div>
       </div>

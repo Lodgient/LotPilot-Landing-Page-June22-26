@@ -42,18 +42,16 @@ export async function requireDealer(): Promise<DealerContext> {
   // RLS scopes anon reads to this dealer only. Disable with DASHBOARD_PUBLIC=false.
   if (!user) {
     if (process.env.DASHBOARD_PUBLIC === "false") redirect("/login");
-    const { data: demo } = await supabase
-      .from("dp_dealers")
-      .select("*")
-      .eq("id", DEMO_DEALER_ID)
-      .single();
+    const [{ data: demo }, { data: demoProfile }] = await Promise.all([
+      supabase.from("dp_dealers").select("*").eq("id", DEMO_DEALER_ID).single(),
+      supabase
+        .from("dp_profiles")
+        .select("full_name, role")
+        .eq("dealer_id", DEMO_DEALER_ID)
+        .limit(1)
+        .maybeSingle(),
+    ]);
     if (!demo) redirect("/login");
-    const { data: demoProfile } = await supabase
-      .from("dp_profiles")
-      .select("full_name, role")
-      .eq("dealer_id", DEMO_DEALER_ID)
-      .limit(1)
-      .maybeSingle();
     return {
       dealer: {
         id: demo.id,

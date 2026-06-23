@@ -78,6 +78,7 @@ export default async function VisibilityPage() {
               </div>
               <ProgressBar
                 value={p.score}
+                label={`${p.label}: ${p.score} out of 100`}
                 accent={p.score >= 75 ? "accent" : p.score >= 55 ? "cyan" : "warn"}
               />
             </div>
@@ -171,12 +172,20 @@ export default async function VisibilityPage() {
                   {ENGINES.map((e) => (
                     <td key={e} className="px-2 py-3 text-center">
                       {q.engines[e] ? (
-                        <span className="inline-grid h-6 w-6 place-items-center rounded-full bg-accent/15 text-xs text-accent">
-                          ✓
+                        <span
+                          className="inline-grid h-6 w-6 place-items-center rounded-full bg-accent/15 text-xs text-accent"
+                          title={`Cited in ${e}`}
+                        >
+                          <span aria-hidden="true">✓</span>
+                          <span className="sr-only">Cited in {e}</span>
                         </span>
                       ) : (
-                        <span className="inline-grid h-6 w-6 place-items-center rounded-full bg-danger/10 text-xs text-danger">
-                          ✕
+                        <span
+                          className="inline-grid h-6 w-6 place-items-center rounded-full bg-danger/10 text-xs text-danger"
+                          title={`Not cited in ${e}`}
+                        >
+                          <span aria-hidden="true">✕</span>
+                          <span className="sr-only">Not cited in {e}</span>
                         </span>
                       )}
                     </td>

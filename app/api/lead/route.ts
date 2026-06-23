@@ -44,7 +44,12 @@ export async function POST(req: Request) {
   }
 
   // TODO: wire backend — persist to CRM/Supabase + notify sales.
-  console.info("[feed-lead]", { ...body, at: new Date().toISOString() });
+  // Avoid logging PII (email/phone) to stdout; record only non-sensitive fields.
+  console.info("[feed-lead]", {
+    dealershipName,
+    feedType: body.feedType,
+    at: new Date().toISOString(),
+  });
 
   return NextResponse.json({ ok: true });
 }

@@ -64,7 +64,9 @@ export function TrendPill({ value, invert = false }: { value: number; invert?: b
         good ? "bg-accent/12 text-accent" : "bg-danger/12 text-danger",
       )}
     >
-      {up ? "▲" : "▼"} {Math.abs(value)}%
+      <span aria-hidden="true">{up ? "▲" : "▼"}</span>
+      <span className="sr-only">{up ? "up" : "down"} </span>
+      {Math.abs(value)}%
     </span>
   );
 }
@@ -74,15 +76,25 @@ export function TrendPill({ value, invert = false }: { value: number; invert?: b
 export function ProgressBar({
   value,
   accent = "cyan",
+  label,
 }: {
   value: number;
   accent?: keyof typeof ACCENT_VAR;
+  label?: string;
 }) {
+  const pct = Math.max(0, Math.min(100, value));
   return (
-    <div className="h-2 w-full overflow-hidden rounded-full bg-white/[0.07]">
+    <div
+      role="progressbar"
+      aria-valuenow={Math.round(pct)}
+      aria-valuemin={0}
+      aria-valuemax={100}
+      aria-label={label}
+      className="h-2 w-full overflow-hidden rounded-full bg-white/[0.07]"
+    >
       <div
         className="h-full rounded-full"
-        style={{ width: `${Math.max(0, Math.min(100, value))}%`, background: ACCENT_VAR[accent] }}
+        style={{ width: `${pct}%`, background: ACCENT_VAR[accent] }}
       />
     </div>
   );

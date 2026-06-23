@@ -10,6 +10,13 @@ const META: Record<ActivityType, { icon: IconName; tone: string }> = {
 };
 
 export default function ActivityFeed({ events }: { events: ActivityEvent[] }) {
+  if (events.length === 0) {
+    return (
+      <p className="rounded-xl border border-line bg-white/[0.02] px-4 py-6 text-center text-sm text-ink-muted">
+        No activity yet — your AI agent&apos;s actions will show up here as leads come in.
+      </p>
+    );
+  }
   return (
     <ol className="relative space-y-4">
       <span className="absolute left-[15px] top-1 bottom-1 w-px bg-line" aria-hidden />

@@ -3,7 +3,7 @@ import Reveal from "@/components/ui/Reveal";
 
 const CAPS = [
   { icon: "⚡", tone: "cyan", title: "Speed-to-lead in seconds", body: "Replies the instant a lead lands — SMS and voice — while the buyer is still shopping." },
-  { icon: "🔎", tone: "accent", title: "Qualifies every inquiry", body: "Answers vehicle questions, gauges intent, trade and timeline, and routes hot buyers to your team." },
+  { icon: "🔎", tone: "accent", title: "Qualifies every inquiry", body: "Answers vehicle questions, gauges intent, trade and timeline, and hands your desk only sale-ready buyers." },
   { icon: "📄", tone: "violet", title: "Captures credit applications", body: "Walks the buyer through a compliant credit app so deals arrive at your desk pre-started." },
   { icon: "📅", tone: "accent", title: "Books the appointment", body: "Offers real times, confirms, reminds, and reschedules no-shows automatically." },
   { icon: "🤝", tone: "cyan", title: "Progresses the deal", body: "Follows up relentlessly and pushes each opportunity toward appointment and sale." },

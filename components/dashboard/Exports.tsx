@@ -1,5 +1,7 @@
 "use client";
 
+import Icon from "@/components/Icon";
+
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
 function escapeCsv(v: any): string {
@@ -39,7 +41,7 @@ export function ExportCsv({
       onClick={run}
       className="inline-flex h-9 items-center gap-1.5 rounded-lg border border-line-strong bg-white/[0.03] px-3 text-sm text-ink-soft transition-colors hover:border-cyan/50 hover:text-ink"
     >
-      ⬇ {label}
+      <Icon name="download" size={14} /> {label}
     </button>
   );
 }
@@ -50,7 +52,7 @@ export function PrintButton({ label = "Print / PDF" }: { label?: string }) {
       onClick={() => window.print()}
       className="no-print inline-flex h-9 items-center gap-1.5 rounded-lg border border-line-strong bg-white/[0.03] px-3 text-sm text-ink-soft transition-colors hover:border-cyan/50 hover:text-ink"
     >
-      🖨 {label}
+      <Icon name="printer" size={14} /> {label}
     </button>
   );
 }

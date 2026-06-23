@@ -57,11 +57,13 @@ export default function Comparison() {
                 {r.feature}
               </div>
               <div className="flex items-center justify-center gap-2 border-l border-line p-4 text-center sm:p-5">
-                <span className="text-accent">✓</span>
+                <span className="text-accent" aria-hidden="true">✓</span>
+                <span className="sr-only">LotPilot: </span>
                 <span className="text-ink">{r.lp}</span>
               </div>
               <div className="flex items-center justify-center gap-2 border-l border-line p-4 text-center text-ink-muted sm:p-5">
-                <span className="text-danger">✕</span>
+                <span className="text-danger" aria-hidden="true">✕</span>
+                <span className="sr-only">Marketplaces: </span>
                 <span>{r.mk}</span>
               </div>
             </div>
