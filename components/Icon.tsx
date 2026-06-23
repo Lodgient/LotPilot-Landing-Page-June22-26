@@ -29,7 +29,9 @@ export type IconName =
   | "external"
   | "copy"
   | "download"
-  | "printer";
+  | "printer"
+  | "phone"
+  | "play";
 
 const PATHS: Record<IconName, React.ReactNode> = {
   // layout-dashboard — Command Center
@@ -164,6 +166,10 @@ const PATHS: Record<IconName, React.ReactNode> = {
       <rect x="6" y="14" width="12" height="7" rx="1" />
     </>
   ),
+  phone: (
+    <path d="M6.5 3h-2A1.5 1.5 0 0 0 3 4.5 16.5 16.5 0 0 0 19.5 21a1.5 1.5 0 0 0 1.5-1.5v-2a1.5 1.5 0 0 0-1.3-1.49l-2.5-.34a1.5 1.5 0 0 0-1.45.64l-.7 1a12 12 0 0 1-5.66-5.66l1-.7a1.5 1.5 0 0 0 .64-1.45l-.34-2.5A1.5 1.5 0 0 0 6.5 3Z" />
+  ),
+  play: <path d="M7 4.5v15l13-7.5-13-7.5Z" />,
 };
 
 export default function Icon({

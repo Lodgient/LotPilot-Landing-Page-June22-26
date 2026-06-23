@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useRef, useState } from "react";
 import Icon, { type IconName } from "@/components/Icon";
 import { Card, PanelHeading } from "@/components/dashboard/ui";
 import { createClient } from "@/lib/supabase/client";
@@ -13,9 +13,18 @@ const PERSONAS = [
   { id: "luxury", label: "White-glove / luxury" },
 ];
 
+// Each persona maps to a pre-rendered ElevenLabs voice sample shipped in
+// /public/audio. Keeping these static keeps the demo instant and free of any
+// runtime API key; live custom-text TTS is a future enhancement.
+const VOICE: Record<string, { file: string; name: string }> = {
+  warm: { file: "/audio/ava-warm.mp3", name: "Jessica" },
+  concise: { file: "/audio/ava-concise.mp3", name: "Sarah" },
+  luxury: { file: "/audio/ava-luxury.mp3", name: "Matilda" },
+};
+
 const CHANNELS: { id: "sms" | "voice" | "chat"; label: string; icon: IconName }[] = [
   { id: "sms", label: "SMS / Text", icon: "messages" },
-  { id: "voice", label: "Voice calls", icon: "reply" },
+  { id: "voice", label: "Voice calls", icon: "phone" },
   { id: "chat", label: "Website chat", icon: "sparkles" },
 ];
 
@@ -35,7 +44,41 @@ export default function AgentConsole({
   const [cfg, setCfg] = useState<AgentConfig>(initial);
   const [saving, setSaving] = useState(false);
   const [savedAt, setSavedAt] = useState<string | null>(null);
+  const [saveError, setSaveError] = useState<string | null>(null);
   const [dirty, setDirty] = useState(false);
+
+  // Voice preview
+  const audioRef = useRef<HTMLAudioElement | null>(null);
+  const [playing, setPlaying] = useState(false);
+  const voice = VOICE[cfg.persona] ?? VOICE.warm;
+
+  function stopVoice() {
+    const a = audioRef.current;
+    if (a) {
+      a.pause();
+      a.currentTime = 0;
+    }
+    setPlaying(false);
+  }
+
+  // Swapping persona swaps the voice — stop any clip that's mid-play first.
+  function selectPersona(id: string) {
+    if (id === cfg.persona) return;
+    stopVoice();
+    patch({ persona: id });
+  }
+
+  function toggleVoice() {
+    const a = audioRef.current;
+    if (!a) return;
+    if (playing) {
+      a.pause();
+      a.currentTime = 0;
+      setPlaying(false);
+    } else {
+      a.play().then(() => setPlaying(true)).catch(() => setPlaying(false));
+    }
+  }
 
   function patch(p: Partial<AgentConfig>) {
     setCfg((c) => ({ ...c, ...p }));
@@ -44,10 +87,11 @@ export default function AgentConsole({
 
   async function persist(next: AgentConfig) {
     setSaving(true);
+    setSaveError(null);
     const supabase = createClient();
     // RLS scopes this to the caller's dealer; the .neq guard just gives the
     // update a WHERE clause so it targets the dealer's single row.
-    await supabase
+    const { error } = await supabase
       .from("dp_agent")
       .update({
         status: next.status,
@@ -61,6 +105,12 @@ export default function AgentConsole({
       })
       .neq("dealer_id", "00000000-0000-0000-0000-000000000000");
     setSaving(false);
+    if (error) {
+      // The shared demo workspace is read-only, so writes are expected to fail
+      // here — surface that honestly instead of flashing a fake "Saved".
+      setSaveError("This is a read-only demo — changes won't be saved.");
+      return;
+    }
     setSavedAt(new Date().toLocaleTimeString());
     setDirty(false);
   }
@@ -168,7 +218,7 @@ export default function AgentConsole({
                 {PERSONAS.map((p) => (
                   <button
                     key={p.id}
-                    onClick={() => patch({ persona: p.id })}
+                    onClick={() => selectPersona(p.id)}
                     className={cn(
                       "rounded-full border px-3 py-1.5 text-xs font-medium transition-colors",
                       cfg.persona === p.id
@@ -205,17 +255,44 @@ export default function AgentConsole({
               </div>
             </Field>
 
-            <Field label="Opening message">
+            <div>
+              <div className="mb-1.5 flex items-center justify-between gap-2">
+                <label className="block text-xs font-medium text-ink-soft">Opening message</label>
+                <button
+                  type="button"
+                  onClick={toggleVoice}
+                  className={cn(
+                    "inline-flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-xs font-medium transition-colors",
+                    playing
+                      ? "border-cyan/50 bg-cyan/15 text-cyan"
+                      : "border-line-strong text-ink-soft hover:border-cyan/50 hover:text-ink",
+                  )}
+                >
+                  <Icon name={playing ? "close" : "play"} size={12} strokeWidth={2.25} />
+                  {playing ? "Stop" : "Hear Ava"}
+                </button>
+              </div>
               <textarea
                 value={cfg.greeting}
                 onChange={(e) => patch({ greeting: e.target.value })}
                 rows={3}
                 className="input resize-none"
               />
-              <p className="mt-1 text-[11px] text-ink-faint">
-                Use <code className="text-ink-soft">{"{vehicle}"}</code> to drop in the car they asked about.
-              </p>
-            </Field>
+              <div className="mt-1 flex flex-wrap items-center justify-between gap-x-3 gap-y-1">
+                <p className="text-[11px] text-ink-faint">
+                  Use <code className="text-ink-soft">{"{vehicle}"}</code> to drop in the car they asked about.
+                </p>
+                <p className="text-[11px] text-ink-faint">
+                  Voice: <span className="text-ink-soft">{voice.name}</span> · sample
+                </p>
+              </div>
+              <audio
+                ref={audioRef}
+                src={voice.file}
+                preload="none"
+                onEnded={() => setPlaying(false)}
+              />
+            </div>
 
             <div className="grid gap-4 sm:grid-cols-2">
               <Field label="Human handoff number">
@@ -243,9 +320,14 @@ export default function AgentConsole({
               >
                 {saving ? "Saving…" : "Save changes"}
               </button>
-              {savedAt && !dirty && (
+              {savedAt && !dirty && !saveError && (
                 <span className="inline-flex items-center gap-1 text-xs text-accent">
                   <Icon name="check" size={13} strokeWidth={2.25} /> Saved {savedAt}
+                </span>
+              )}
+              {saveError && (
+                <span className="inline-flex items-center gap-1 text-xs text-warn">
+                  <Icon name="shield" size={13} strokeWidth={2.25} /> {saveError}
                 </span>
               )}
             </div>
