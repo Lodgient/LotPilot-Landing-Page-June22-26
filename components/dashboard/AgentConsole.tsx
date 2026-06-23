@@ -50,6 +50,9 @@ export default function AgentConsole({
   // Voice preview
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const [playing, setPlaying] = useState(false);
+  const [voiceBusy, setVoiceBusy] = useState(false);
+  // Cache the last generated clip so replaying identical text+persona is instant.
+  const cacheRef = useRef<{ key: string; url: string } | null>(null);
   const voice = VOICE[cfg.persona] ?? VOICE.warm;
 
   function stopVoice() {
@@ -68,15 +71,50 @@ export default function AgentConsole({
     patch({ persona: id });
   }
 
-  function toggleVoice() {
+  function play(src: string) {
     const a = audioRef.current;
     if (!a) return;
+    a.src = src;
+    a.play().then(() => setPlaying(true)).catch(() => setPlaying(false));
+  }
+
+  // "Hear Ava": voice the live greeting text in the selected persona's voice
+  // via /api/tts. Falls back to the pre-rendered static sample if the TTS
+  // endpoint is unavailable (e.g. no API key configured in the environment).
+  async function toggleVoice() {
     if (playing) {
-      a.pause();
-      a.currentTime = 0;
-      setPlaying(false);
-    } else {
-      a.play().then(() => setPlaying(true)).catch(() => setPlaying(false));
+      stopVoice();
+      return;
+    }
+    const text = cfg.greeting.replace(/\{vehicle\}/gi, "2024 Nissan Rogue").trim();
+    if (!text) {
+      play(voice.file);
+      return;
+    }
+    const key = `${cfg.persona}|${text}`;
+    if (cacheRef.current?.key === key) {
+      play(cacheRef.current.url);
+      return;
+    }
+    setVoiceBusy(true);
+    try {
+      const res = await fetch("/api/tts", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ text, persona: cfg.persona }),
+      });
+      if (!res.ok) {
+        play(voice.file); // graceful fallback to static sample
+        return;
+      }
+      const url = URL.createObjectURL(await res.blob());
+      if (cacheRef.current) URL.revokeObjectURL(cacheRef.current.url);
+      cacheRef.current = { key, url };
+      play(url);
+    } catch {
+      play(voice.file);
+    } finally {
+      setVoiceBusy(false);
     }
   }
 
@@ -261,15 +299,16 @@ export default function AgentConsole({
                 <button
                   type="button"
                   onClick={toggleVoice}
+                  disabled={voiceBusy}
                   className={cn(
-                    "inline-flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-xs font-medium transition-colors",
+                    "inline-flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-xs font-medium transition-colors disabled:opacity-60",
                     playing
                       ? "border-cyan/50 bg-cyan/15 text-cyan"
                       : "border-line-strong text-ink-soft hover:border-cyan/50 hover:text-ink",
                   )}
                 >
-                  <Icon name={playing ? "close" : "play"} size={12} strokeWidth={2.25} />
-                  {playing ? "Stop" : "Hear Ava"}
+                  <Icon name={voiceBusy ? "sparkles" : playing ? "close" : "play"} size={12} strokeWidth={2.25} />
+                  {voiceBusy ? "Generating…" : playing ? "Stop" : "Hear Ava"}
                 </button>
               </div>
               <textarea
@@ -283,15 +322,10 @@ export default function AgentConsole({
                   Use <code className="text-ink-soft">{"{vehicle}"}</code> to drop in the car they asked about.
                 </p>
                 <p className="text-[11px] text-ink-faint">
-                  Voice: <span className="text-ink-soft">{voice.name}</span> · sample
+                  Voice: <span className="text-ink-soft">{voice.name}</span> · speaks your text live
                 </p>
               </div>
-              <audio
-                ref={audioRef}
-                src={voice.file}
-                preload="none"
-                onEnded={() => setPlaying(false)}
-              />
+              <audio ref={audioRef} preload="none" onEnded={() => setPlaying(false)} />
             </div>
 
             <div className="grid gap-4 sm:grid-cols-2">
