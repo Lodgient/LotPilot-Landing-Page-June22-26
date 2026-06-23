@@ -3,7 +3,6 @@ import { Geist_Mono, Sora, Inter } from "next/font/google";
 import "./globals.css";
 import StructuredData from "@/components/StructuredData";
 import SmoothScroll from "@/components/SmoothScroll";
-import CustomCursor from "@/components/CustomCursor";
 
 // LotPilot brand system — modern automotive-tech: Sora geometric display
 // + Inter clean body. (CSS var names kept stable so `font-sans`/`font-serif`
@@ -92,7 +91,6 @@ export default function RootLayout({
       </head>
       <body className="min-h-screen">
         <SmoothScroll />
-        <CustomCursor />
         {children}
       </body>
     </html>

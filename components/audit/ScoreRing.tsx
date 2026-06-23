@@ -36,7 +36,7 @@ export default function ScoreRing({
             cy={size / 2}
             r={r}
             fill="none"
-            stroke="rgba(255,255,255,0.08)"
+            stroke="rgba(15,23,34,0.10)"
             strokeWidth={stroke}
           />
           <motion.circle
