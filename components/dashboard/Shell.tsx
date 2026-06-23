@@ -143,7 +143,7 @@ function SidebarInner({
             {oems.map((o) => (
               <span
                 key={o}
-                className="inline-flex items-center gap-1 rounded-md border border-cyan/25 bg-cyan/[0.07] px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-cyan"
+                className="inline-flex items-center gap-1 rounded-md border border-cyan/25 bg-cyan/[0.07] px-2 py-0.5 text-[11px] font-semibold text-cyan"
               >
                 <Icon name="shield" size={10} strokeWidth={2.5} />
                 {o}
