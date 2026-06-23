@@ -86,7 +86,7 @@ export default function Section({
           >
             {eyebrow && <div className="mb-4">{<Eyebrow>{eyebrow}</Eyebrow>}</div>}
             {title && (
-              <h2 className="text-balance font-serif text-4xl font-normal leading-[1.06] tracking-tight text-ink sm:text-5xl md:text-[3.4rem]">
+              <h2 className="text-balance font-serif text-4xl font-semibold leading-[1.08] tracking-[-0.02em] text-ink sm:text-5xl md:text-[3.1rem]">
                 {title}
               </h2>
             )}

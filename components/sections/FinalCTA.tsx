@@ -22,9 +22,9 @@ export default function FinalCTA() {
             Two minutes to start
           </span>
 
-          <h2 className="mt-7 text-balance text-4xl font-bold leading-[1.05] tracking-tight text-ink sm:text-6xl">
+          <h2 className="mt-7 text-balance font-serif text-4xl font-semibold leading-[1.06] tracking-[-0.02em] text-ink sm:text-6xl">
             See where you stand with AI —{" "}
-            <span className="font-display font-normal text-gradient">
+            <span className="font-display text-gradient">
               then let us fix it.
             </span>
           </h2>

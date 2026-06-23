@@ -29,8 +29,8 @@
   --color-cyan-dim: #1d4ed8;
   --color-accent: #0ea5e9; /* sky cyan — secondary accent */
   --color-accent-dim: #0284c7;
-  --color-violet: #2563eb; /* fold the third accent into blue for cohesion */
-  --color-magenta: #2563eb;
+  --color-violet: #6366f1; /* indigo — third accent, keeps card variety on-brand */
+  --color-magenta: #6366f1;
   --color-danger: #e11d48;
   --color-warn: #f59e0b;
 
@@ -88,12 +88,13 @@ body::before {
   color: var(--color-ink);
 }
 
-/* Display serif accent — Instrument Serif italic */
+/* Display accent — Sora, upright, semibold. (Sora has no italic face, so we
+   emphasize with weight + the blue gradient instead of synthetic obliquing.) */
 .font-display {
   font-family: var(--font-serif);
-  font-style: italic;
-  font-weight: 400;
-  letter-spacing: -0.01em;
+  font-style: normal;
+  font-weight: 600;
+  letter-spacing: -0.02em;
 }
 
 /* Ambient grid + glows — dark hairlines on white, soft pastel blooms. */

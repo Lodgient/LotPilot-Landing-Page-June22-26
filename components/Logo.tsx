@@ -11,7 +11,7 @@ export default function Logo({
   return (
     <span className={cn("inline-flex items-center gap-3", className)}>
       <Image
-        src="/lotpilot-icon.png"
+        src={onDark ? "/lotpilot-icon-white.png" : "/lotpilot-icon-blue.png"}
         alt="LotPilot"
         width={20}
         height={28}
