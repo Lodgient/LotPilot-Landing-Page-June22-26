@@ -40,17 +40,16 @@ export default function Nav() {
           <Logo onDark={onDark} />
         </Link>
 
-        <ul className="hidden items-center gap-1 lg:flex">
-          {LINKS.map((l, i) => (
-            <li key={l.href} className="relative">
-              {i > 0 && (
-                <span className="absolute left-0 top-1/2 h-3 w-px -translate-y-1/2 bg-current opacity-25" />
-              )}
+        <ul className="hidden items-center gap-0.5 lg:flex">
+          {LINKS.map((l) => (
+            <li key={l.href}>
               <a
                 href={l.href}
                 className={cn(
-                  "px-3.5 py-2 text-[11.5px] font-normal uppercase tracking-[0.06em] transition-opacity",
-                  onDark ? "text-[#f8fafc]/90 hover:text-[#f8fafc]" : "text-ink-soft hover:text-ink",
+                  "rounded-full px-3.5 py-2 text-[12px] font-medium uppercase tracking-[0.07em] transition-colors duration-300",
+                  onDark
+                    ? "text-white/75 hover:bg-white/10 hover:text-white"
+                    : "text-ink-soft hover:bg-ink/[0.05] hover:text-ink",
                 )}
               >
                 {l.label}
@@ -59,24 +58,21 @@ export default function Nav() {
           ))}
         </ul>
 
-        <div className="hidden items-center gap-5 lg:flex">
+        <div className="hidden items-center gap-1.5 lg:flex">
           <Link
             href="/login"
             className={cn(
-              "text-[11.5px] font-normal uppercase tracking-[0.06em] transition-opacity",
-              onDark ? "text-[#f8fafc]/90 hover:text-[#f8fafc]" : "text-ink-soft hover:text-ink",
+              "rounded-full px-3.5 py-2 text-[12px] font-medium uppercase tracking-[0.07em] transition-colors duration-300",
+              onDark
+                ? "text-white/75 hover:bg-white/10 hover:text-white"
+                : "text-ink-soft hover:bg-ink/[0.05] hover:text-ink",
             )}
           >
             Login
           </Link>
           <Link
             href="/#demo"
-            className={cn(
-              "inline-flex items-center rounded-sm border px-5 py-2.5 text-[11.5px] font-medium uppercase tracking-[0.1em] transition-all duration-500 hover:-translate-y-0.5",
-              onDark
-                ? "border-[#f8fafc]/50 text-[#f8fafc] hover:bg-[#2563eb] hover:border-[#2563eb]"
-                : "border-cyan/60 text-cyan hover:bg-cyan hover:text-white",
-            )}
+            className="ml-1.5 inline-flex items-center gap-1.5 rounded-full bg-[#2563eb] px-5 py-2.5 text-[12px] font-semibold uppercase tracking-[0.08em] text-white shadow-[0_8px_24px_-8px_rgba(37,99,235,0.8)] transition-all duration-300 hover:-translate-y-0.5 hover:bg-[#1d4ed8] hover:shadow-[0_14px_32px_-10px_rgba(37,99,235,0.95)]"
           >
             Speak with us
           </Link>
