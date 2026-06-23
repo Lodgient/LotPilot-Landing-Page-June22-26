@@ -198,6 +198,7 @@ function buildEngineResults(
   city: string,
   queries: string[],
   rand: () => number,
+  dealerName: string,
 ): EngineQueryResult[] {
   return ENGINES.map((engine, i) => {
     const query = queries[i % queries.length];
@@ -216,6 +217,12 @@ function buildEngineResults(
       ...sample(MARKETPLACES, 2, rand),
       rand() < 0.6 ? competitor : pick(EDITORIAL, rand),
     ];
+
+    // When the dealer surfaced, list them at the top of what the AI cited — so
+    // the "You appeared" badge agrees with the recommended list below it.
+    if (dealerPresent) {
+      recommended.unshift({ name: dealerName, type: "dealer" });
+    }
 
     return { engine, query, recommended, dealerPresent };
   });
@@ -243,7 +250,7 @@ export function generateReport(
   const makeGuess = guessMake(domain, rand);
   const queries = buildQueries(niceCity, makeGuess);
   const pillars = buildPillars(rand);
-  const engines = buildEngineResults(niceCity, queries, rand);
+  const engines = buildEngineResults(niceCity, queries, rand, dealershipName?.trim() || "Your store");
 
   // Overall score = weighted blend of pillars, nudged toward the low band.
   const weights: Record<string, number> = {

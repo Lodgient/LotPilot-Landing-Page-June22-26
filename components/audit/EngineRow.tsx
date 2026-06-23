@@ -48,9 +48,11 @@ export default function EngineRow({ result }: { result: EngineQueryResult }) {
               key={`${s.name}-${i}`}
               className={cn(
                 "rounded-md border px-2 py-1 text-xs",
-                s.type === "competitor"
-                  ? "border-danger/30 bg-danger/10 text-danger"
-                  : "border-line-strong bg-white/[0.04] text-ink-soft",
+                s.type === "dealer"
+                  ? "border-accent/40 bg-accent/15 font-medium text-accent"
+                  : s.type === "competitor"
+                    ? "border-danger/30 bg-danger/10 text-danger"
+                    : "border-line-strong bg-white/[0.04] text-ink-soft",
               )}
             >
               {s.name}

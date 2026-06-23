@@ -54,7 +54,7 @@ export const metadata: Metadata = {
     description:
       "LotPilot makes every car you stock discoverable inside AI answer engines and works the leads with AI agents. The only lift for your store: send the feed.",
     locale: "en_US",
-    images: [{ url: "/og.svg", width: 1200, height: 630, alt: "LotPilot for Dealers" }],
+    // Open Graph image is provided by app/opengraph-image.tsx (dynamic PNG).
   },
   twitter: {
     card: "summary_large_image",
@@ -63,7 +63,7 @@ export const metadata: Metadata = {
     title: "Your inventory, recommended by AI. Your leads, worked by AI.",
     description:
       "Get found by buyers asking AI which car to buy — then let AI agents work every lead. You just send the feed.",
-    images: ["/og.svg"],
+    // Twitter image is taken from app/opengraph-image.tsx automatically.
   },
   robots: {
     index: true,

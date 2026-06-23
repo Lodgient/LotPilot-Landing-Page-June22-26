@@ -21,6 +21,7 @@ marketplaces that resell the same lead to competitors.
 ## Key pages
 - / : overview and free AI-Visibility Audit
 - /how-it-works : the discovery + conversion model
+- /plan : pricing and what's included
 - /demo : book a demo / connect inventory feed
 
 ## Supported inventory feed formats

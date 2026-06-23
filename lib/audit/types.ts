@@ -31,7 +31,7 @@ export interface RecommendedSource {
   /** Display name of the source the AI surfaced (marketplace / competitor / aggregator). */
   name: string;
   /** Loose category, used for styling + honesty framing. */
-  type: "marketplace" | "aggregator" | "competitor" | "oem" | "editorial";
+  type: "marketplace" | "aggregator" | "competitor" | "oem" | "editorial" | "dealer";
 }
 
 export interface EngineQueryResult {
