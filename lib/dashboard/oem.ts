@@ -47,6 +47,48 @@ const MAKES: Record<string, string> = {
 
 const escape = (s: string) => s.replace(/[-/\\^$*+?.()|[\]{}]/g, "\\$&");
 
+// Brand domains used to fetch the real franchise logo from a logo CDN at runtime
+// (we never embed the trademarked artwork ourselves; it loads live with fallbacks).
+export const OEM_DOMAINS: Record<string, string> = {
+  Acura: "acura.com",
+  "Alfa Romeo": "alfaromeousa.com",
+  "Aston Martin": "astonmartin.com",
+  Audi: "audiusa.com",
+  Bentley: "bentleymotors.com",
+  BMW: "bmwusa.com",
+  Buick: "buick.com",
+  Cadillac: "cadillac.com",
+  Chevrolet: "chevrolet.com",
+  Chrysler: "chrysler.com",
+  Dodge: "dodge.com",
+  FIAT: "fiatusa.com",
+  Ford: "ford.com",
+  Genesis: "genesis.com",
+  GMC: "gmc.com",
+  Honda: "honda.com",
+  Hyundai: "hyundaiusa.com",
+  Infiniti: "infinitiusa.com",
+  Jaguar: "jaguarusa.com",
+  Jeep: "jeep.com",
+  Kia: "kia.com",
+  "Land Rover": "landroverusa.com",
+  Lexus: "lexus.com",
+  Lincoln: "lincoln.com",
+  Maserati: "maseratiusa.com",
+  Mazda: "mazdausa.com",
+  "Mercedes-Benz": "mbusa.com",
+  MINI: "miniusa.com",
+  Mitsubishi: "mitsubishicars.com",
+  Nissan: "nissanusa.com",
+  Porsche: "porsche.com",
+  RAM: "ramtrucks.com",
+  Subaru: "subaru.com",
+  Tesla: "tesla.com",
+  Toyota: "toyota.com",
+  Volkswagen: "vw.com",
+  Volvo: "volvocars.com",
+};
+
 export function deriveOEMs(name: string): string[] {
   if (!name) return [];
   const lower = name.toLowerCase();
