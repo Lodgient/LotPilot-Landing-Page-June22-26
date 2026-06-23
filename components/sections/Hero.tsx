@@ -33,24 +33,22 @@ export default function Hero() {
 
   return (
     <section className="relative overflow-hidden pt-28 pb-20 sm:pt-36 sm:pb-28">
-      {/* automotive-AI backdrop: glowing wireframe SUV dissolving into data */}
+      {/* cinematic backdrop: luxury SUV in a bright glass showroom */}
       <div className="pointer-events-none absolute inset-0 -z-10 overflow-hidden">
-        <div className="bg-grid absolute inset-0 opacity-70" />
         <Image
           src="/hero-automotive.webp"
           alt=""
           fill
           priority
           sizes="100vw"
-          className="object-cover object-[center_72%] opacity-95"
+          className="object-cover object-[center_78%]"
         />
-        {/* fade the top to white so the headline stays crisp */}
-        <div className="absolute inset-x-0 top-0 h-[60%] bg-gradient-to-b from-white via-white/92 to-transparent" />
+        {/* fade the top so the headline + subhead read on clean light */}
+        <div className="absolute inset-x-0 top-0 h-[62%] bg-gradient-to-b from-white from-25% via-white/88 to-transparent" />
         {/* feather the bottom back to white for the engine marquee */}
-        <div className="absolute inset-x-0 bottom-0 h-[34%] bg-gradient-to-t from-white via-white/80 to-transparent" />
-        {/* soft brand blooms */}
-        <div className="glow-accent absolute -top-40 left-1/4 h-[520px] w-[520px] -translate-x-1/2" />
-        <div className="glow-cyan absolute -top-16 right-0 h-[460px] w-[460px]" />
+        <div className="absolute inset-x-0 bottom-0 h-[28%] bg-gradient-to-t from-white via-white/70 to-transparent" />
+        {/* faint brand wash for cohesion */}
+        <div className="glow-cyan absolute -top-16 right-0 h-[420px] w-[420px] opacity-60" />
       </div>
 
       <div className="relative mx-auto max-w-5xl px-5 text-center sm:px-8">
