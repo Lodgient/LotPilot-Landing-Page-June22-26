@@ -7,31 +7,32 @@
    ============================================================ */
 
 @theme {
-  /* Luxury-editorial palette (matches the Lodgient marketing site):
-     warm paper, ink, living emerald, luminous brass. */
-  --color-canvas: #fcfaf5; /* paper */
-  --color-canvas-2: #f1ebde; /* paper2 */
+  /* LotPilot brand palette — cool, clean automotive-tech.
+     Crisp cool-white surfaces, slate-black ink, electric-blue brand. */
+  --color-canvas: #f6f8fb; /* cool near-white */
+  --color-canvas-2: #ecf0f6; /* lifted panel tone */
   --color-panel: #ffffff;
-  --color-panel-2: #f1ebde;
-  --color-line: rgba(28, 24, 19, 0.1);
-  --color-line-strong: rgba(28, 24, 19, 0.18);
+  --color-panel-2: #f1f4f9;
+  --color-line: rgba(15, 23, 34, 0.1);
+  --color-line-strong: rgba(15, 23, 34, 0.16);
 
-  /* Text — warm near-black down to soft taupes */
-  --color-ink: #1a1610;
-  --color-ink-soft: #544b40;
-  --color-ink-muted: #897f71;
-  --color-ink-faint: #a89c8a;
+  /* Text — cool slate-black down to soft steel greys */
+  --color-ink: #0f1722;
+  --color-ink-soft: #475569;
+  --color-ink-muted: #74808f;
+  --color-ink-faint: #a3adba;
 
-  /* Brand: brass-gold primary, living emerald secondary.
-     (Token names kept so existing bg-cyan CTAs become gold, text-accent emerald.) */
-  --color-cyan: #c89a47; /* brass — primary CTA / links */
-  --color-cyan-dim: #a67f33;
-  --color-accent: #176a55; /* emerald */
-  --color-accent-dim: #114f3f;
-  --color-violet: #176a55; /* fold the third accent into emerald for cohesion */
-  --color-magenta: #c89a47;
-  --color-danger: #b23b3b;
-  --color-warn: #c89a47;
+  /* Brand: electric blue primary, bright sky-cyan secondary.
+     (Token names kept so existing bg-cyan CTAs become electric blue,
+     text-accent becomes cyan.) */
+  --color-cyan: #2563eb; /* electric blue — primary CTA / links */
+  --color-cyan-dim: #1d4ed8;
+  --color-accent: #0ea5e9; /* sky cyan — secondary accent */
+  --color-accent-dim: #0284c7;
+  --color-violet: #2563eb; /* fold the third accent into blue for cohesion */
+  --color-magenta: #2563eb;
+  --color-danger: #e11d48;
+  --color-warn: #f59e0b;
 
   /* Fonts */
   --font-sans: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
@@ -122,9 +123,9 @@ body::before {
   color: #ffffff;
 }
 
-/* Accent text — warm brass-gold (luxury-editorial). */
+/* Accent text — electric blue → bright cyan. */
 .text-gradient {
-  background: linear-gradient(100deg, #c89a47, #e6c57e 55%, #c89a47);
+  background: linear-gradient(100deg, #2563eb, #38bdf8 55%, #2563eb);
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;

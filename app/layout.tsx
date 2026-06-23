@@ -1,15 +1,17 @@
 import type { Metadata } from "next";
-import { Geist_Mono, Cormorant_Garamond, Jost } from "next/font/google";
+import { Geist_Mono, Sora, Inter } from "next/font/google";
 import "./globals.css";
 import StructuredData from "@/components/StructuredData";
 import SmoothScroll from "@/components/SmoothScroll";
 import CustomCursor from "@/components/CustomCursor";
 
-// Luxury-editorial system: Cormorant Garamond display serif + Jost geometric sans.
-const sans = Jost({
+// LotPilot brand system — modern automotive-tech: Sora geometric display
+// + Inter clean body. (CSS var names kept stable so `font-sans`/`font-serif`
+// remap through globals.css without editing every component.)
+const sans = Inter({
   variable: "--font-geist-sans",
   subsets: ["latin"],
-  weight: ["300", "400", "500"],
+  weight: ["400", "500", "600", "700"],
   display: "swap",
 });
 
@@ -19,11 +21,10 @@ const geistMono = Geist_Mono({
   display: "swap",
 });
 
-const instrument = Cormorant_Garamond({
+const instrument = Sora({
   variable: "--font-instrument",
   subsets: ["latin"],
-  weight: ["400", "500", "600"],
-  style: ["normal", "italic"],
+  weight: ["500", "600", "700"],
   display: "swap",
 });
 

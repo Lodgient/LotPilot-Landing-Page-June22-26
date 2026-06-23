@@ -22,7 +22,7 @@ export default function Logo({
         <span
           className={cn(
             "font-serif text-[21px] font-medium uppercase tracking-[0.12em] transition-colors",
-            onDark ? "text-[#fcfaf5]" : "text-ink",
+            onDark ? "text-[#f8fafc]" : "text-ink",
           )}
         >
           LotPilot
@@ -30,7 +30,7 @@ export default function Logo({
         <span
           className={cn(
             "mt-1 text-[9px] font-medium uppercase tracking-[0.28em] transition-colors",
-            onDark ? "text-[#fcfaf5]/85" : "text-cyan",
+            onDark ? "text-[#f8fafc]/85" : "text-cyan",
           )}
         >
           AI visibility for dealers

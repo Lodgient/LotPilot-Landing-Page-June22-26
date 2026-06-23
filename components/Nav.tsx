@@ -31,7 +31,7 @@ export default function Nav() {
       className={cn(
         "fixed inset-x-0 top-0 z-50 transition-all duration-500",
         scrolled || open
-          ? "border-b border-line bg-[#fcfaf5]/92 py-3.5 backdrop-blur-xl saturate-150"
+          ? "border-b border-line bg-[#f8fafc]/92 py-3.5 backdrop-blur-xl saturate-150"
           : "border-b border-transparent py-6",
       )}
     >
@@ -50,7 +50,7 @@ export default function Nav() {
                 href={l.href}
                 className={cn(
                   "px-3.5 py-2 text-[11.5px] font-normal uppercase tracking-[0.06em] transition-opacity",
-                  onDark ? "text-[#fcfaf5]/90 hover:text-[#fcfaf5]" : "text-ink-soft hover:text-ink",
+                  onDark ? "text-[#f8fafc]/90 hover:text-[#f8fafc]" : "text-ink-soft hover:text-ink",
                 )}
               >
                 {l.label}
@@ -64,7 +64,7 @@ export default function Nav() {
             href="/login"
             className={cn(
               "text-[11.5px] font-normal uppercase tracking-[0.06em] transition-opacity",
-              onDark ? "text-[#fcfaf5]/90 hover:text-[#fcfaf5]" : "text-ink-soft hover:text-ink",
+              onDark ? "text-[#f8fafc]/90 hover:text-[#f8fafc]" : "text-ink-soft hover:text-ink",
             )}
           >
             Login
@@ -74,7 +74,7 @@ export default function Nav() {
             className={cn(
               "inline-flex items-center rounded-sm border px-5 py-2.5 text-[11.5px] font-medium uppercase tracking-[0.1em] transition-all duration-500 hover:-translate-y-0.5",
               onDark
-                ? "border-[#fcfaf5]/50 text-[#fcfaf5] hover:bg-[#c89a47] hover:border-[#c89a47]"
+                ? "border-[#f8fafc]/50 text-[#f8fafc] hover:bg-[#2563eb] hover:border-[#2563eb]"
                 : "border-cyan/60 text-cyan hover:bg-cyan hover:text-white",
             )}
           >
@@ -85,7 +85,7 @@ export default function Nav() {
         <button
           className={cn(
             "text-2xl leading-none transition-colors lg:hidden",
-            onDark ? "text-[#fcfaf5]" : "text-ink",
+            onDark ? "text-[#f8fafc]" : "text-ink",
           )}
           aria-label="Toggle menu"
           aria-expanded={open}
@@ -96,7 +96,7 @@ export default function Nav() {
       </nav>
 
       {open && (
-        <div className="border-t border-line bg-[#fcfaf5]/97 px-7 py-5 backdrop-blur-xl lg:hidden">
+        <div className="border-t border-line bg-[#f8fafc]/97 px-7 py-5 backdrop-blur-xl lg:hidden">
           <div className="flex flex-col gap-1">
             {LINKS.map((l) => (
               <a

@@ -36,35 +36,35 @@ export default function Hero() {
       : { initial: { opacity: 0, y: 14 }, animate: { opacity: 1, y: 0 }, transition: { duration: 0.9, delay, ease } };
 
   return (
-    <section className="relative flex min-h-[100svh] items-center overflow-hidden bg-[#0c3b2f]">
+    <section className="relative flex min-h-[100svh] items-center overflow-hidden bg-[#0a0f1a]">
       {/* cinematic dealership showroom photo + Ken Burns */}
       <div className="absolute inset-[-6%] z-0">
-        <div className="kenburns absolute inset-0 bg-[url('/media/hero-dealership.webp')] bg-cover bg-center [filter:saturate(1.15)_brightness(1.04)]" />
+        <div className="kenburns absolute inset-0 bg-[url('/media/hero-dealership.webp')] bg-cover bg-center [filter:saturate(1.05)_brightness(1.02)]" />
       </div>
-      {/* legibility overlays (vertical + diagonal-left) */}
-      <div className="absolute inset-0 z-[2] bg-[linear-gradient(180deg,rgba(21,48,42,0.34)_0%,rgba(21,48,42,0.04)_36%,rgba(15,35,31,0.2)_62%,rgba(12,30,26,0.9)_100%)]" />
-      <div className="absolute inset-0 z-[2] bg-[linear-gradient(100deg,rgba(13,30,26,0.82)_0%,rgba(14,32,28,0.45)_38%,rgba(15,35,31,0.08)_60%,transparent_76%)]" />
-      <div className="pointer-events-none absolute left-[-4%] top-[6%] z-[2] h-[70%] w-[60%] bg-[radial-gradient(ellipse_at_30%_40%,rgba(230,197,126,0.16),transparent_60%)] blur-2xl" />
+      {/* legibility overlays (vertical + diagonal-left) — cool slate, no green tint */}
+      <div className="absolute inset-0 z-[2] bg-[linear-gradient(180deg,rgba(8,12,20,0.36)_0%,rgba(8,12,20,0.04)_36%,rgba(8,12,20,0.22)_62%,rgba(6,10,18,0.92)_100%)]" />
+      <div className="absolute inset-0 z-[2] bg-[linear-gradient(100deg,rgba(6,10,18,0.84)_0%,rgba(8,12,20,0.46)_38%,rgba(8,12,20,0.08)_60%,transparent_76%)]" />
+      <div className="pointer-events-none absolute left-[-4%] top-[6%] z-[2] h-[70%] w-[60%] bg-[radial-gradient(ellipse_at_30%_40%,rgba(56,189,248,0.18),transparent_60%)] blur-2xl" />
 
-      <div className="relative z-[5] mx-auto w-full max-w-[1240px] px-7 pb-28 pt-32 text-[#fcfaf5] sm:px-14">
+      <div className="relative z-[5] mx-auto w-full max-w-[1240px] px-7 pb-28 pt-32 text-[#f8fafc] sm:px-14">
         <motion.div
           {...fade(0)}
-          className="mb-9 inline-flex items-center gap-3 rounded-full border border-[#c2a06a]/40 bg-[#0f231f]/55 px-5 py-2.5 text-[11px] font-medium uppercase tracking-[0.28em] text-[#e6c57e] backdrop-blur"
+          className="mb-9 inline-flex items-center gap-3 rounded-full border border-[#5b8def]/45 bg-[#0b1220]/55 px-5 py-2.5 text-[11px] font-medium uppercase tracking-[0.28em] text-[#8fc7ff] backdrop-blur"
         >
-          <span className="pulse-dot h-1.5 w-1.5 rounded-full bg-[#e6c57e] shadow-[0_0_10px_#e6c57e]" />
+          <span className="pulse-dot h-1.5 w-1.5 rounded-full bg-[#38bdf8] shadow-[0_0_10px_#38bdf8]" />
           AI visibility for car dealers
         </motion.div>
 
-        <h1 className="max-w-[16ch] font-serif text-[clamp(46px,7.6vw,104px)] font-normal leading-[1] tracking-[-0.02em] drop-shadow-[0_2px_34px_rgba(11,26,22,0.55)]">
+        <h1 className="max-w-[15ch] font-serif text-[clamp(46px,7.4vw,100px)] font-semibold leading-[1.02] tracking-[-0.03em] drop-shadow-[0_2px_34px_rgba(6,10,18,0.6)]">
           <Line i={0}>One feed.</Line>
           <Line i={1}>
-            <em className="italic text-[#e6c57e]">Every</em> AI engine.
+            <span className="text-[#5cb8ff]">Every</span> AI engine.
           </Line>
         </h1>
 
         <motion.p
           {...fade(0.55)}
-          className="mt-8 max-w-[34rem] text-pretty text-[19px] font-normal leading-[1.8] text-[#fcfaf5]/95 drop-shadow-[0_1px_22px_rgba(11,26,22,0.6)]"
+          className="mt-8 max-w-[34rem] text-pretty text-[19px] font-normal leading-[1.8] text-[#f8fafc]/95 drop-shadow-[0_1px_22px_rgba(11,26,22,0.6)]"
         >
           LotPilot makes every car you stock discoverable inside ChatGPT, Perplexity, Gemini and
           Google AI Overviews — then AI agents work every lead in seconds. You just send the feed.
@@ -74,7 +74,7 @@ export default function Hero() {
           <a
             href="#audit"
             data-cursor
-            className="group inline-flex items-center gap-3 rounded-sm bg-[#c89a47] px-9 py-[18px] text-[12px] font-medium uppercase tracking-[1.5px] text-white transition-all duration-500 hover:-translate-y-0.5 hover:bg-[#1a1610]"
+            className="group inline-flex items-center gap-3 rounded-sm bg-[#2563eb] px-9 py-[18px] text-[12px] font-medium uppercase tracking-[1.5px] text-white shadow-[0_12px_40px_-12px_rgba(37,99,235,0.7)] transition-all duration-500 hover:-translate-y-0.5 hover:bg-[#1d4ed8]"
           >
             Run the free AI-visibility check
             <span className="transition-transform duration-500 group-hover:translate-x-1">→</span>
@@ -82,7 +82,7 @@ export default function Hero() {
           <a
             href="#how"
             data-cursor
-            className="inline-flex items-center rounded-sm border border-[#fcfaf5]/30 px-9 py-[18px] text-[12px] font-medium uppercase tracking-[1.5px] text-[#fcfaf5] transition-all duration-500 hover:-translate-y-0.5 hover:bg-[#fcfaf5] hover:text-[#114f3f]"
+            className="inline-flex items-center rounded-sm border border-[#f8fafc]/30 px-9 py-[18px] text-[12px] font-medium uppercase tracking-[1.5px] text-[#f8fafc] transition-all duration-500 hover:-translate-y-0.5 hover:bg-[#f8fafc] hover:text-[#0f1722]"
           >
             See how it works
           </a>
@@ -92,15 +92,15 @@ export default function Hero() {
       {/* stat bar */}
       <motion.div
         {...fade(0.85)}
-        className="absolute inset-x-0 bottom-0 z-[5] border-t border-[#fcfaf5]/15 bg-[#0f231f]/35 backdrop-blur-sm"
+        className="absolute inset-x-0 bottom-0 z-[5] border-t border-[#f8fafc]/15 bg-[#0b1220]/40 backdrop-blur-sm"
       >
         <div className="mx-auto flex max-w-[1240px] items-center px-7 py-6 sm:px-14">
           {STATS.map((s, i) => (
             <div
               key={s.l}
-              className={`px-6 first:pl-0 sm:px-12 ${i < STATS.length - 1 ? "border-r border-[#fcfaf5]/14" : ""}`}
+              className={`px-6 first:pl-0 sm:px-12 ${i < STATS.length - 1 ? "border-r border-[#f8fafc]/14" : ""}`}
             >
-              <div className="font-serif text-3xl leading-none text-[#fcfaf5]">{s.v}</div>
+              <div className="font-serif text-3xl leading-none text-[#f8fafc]">{s.v}</div>
               <div className="mt-1.5 text-[10px] uppercase tracking-[2px] text-[#dcd3c3]">{s.l}</div>
             </div>
           ))}
