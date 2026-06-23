@@ -34,31 +34,29 @@ export default function Hero() {
   }
 
   return (
-    <section className="relative isolate overflow-hidden">
-      {/* full-bleed cinematic backdrop — luxury SUV, car bleeds off the right */}
+    <section className="relative isolate overflow-hidden bg-[#0a0e16] text-white">
+      {/* full-bleed cinematic backdrop — luxury dealership at dusk */}
       <div className="absolute inset-0 -z-10">
         <Image
           src="/hero-car.webp"
-          alt="A luxury SUV, recommended by AI — LotPilot"
+          alt="A modern luxury car dealership at dusk — LotPilot"
           fill
           priority
           sizes="100vw"
-          className="object-cover object-[78%_center]"
+          className="object-cover object-center"
         />
-        {/* left → right wash keeps the headline crisp on the clean side */}
-        <div className="absolute inset-0 bg-gradient-to-r from-white via-white/85 to-transparent" />
-        {/* extra veil on small screens where the car sits under the copy */}
-        <div className="absolute inset-0 bg-gradient-to-t from-white via-white/70 to-white/30 lg:hidden" />
-        <div className="bg-grid absolute inset-0 opacity-40" />
+        {/* darken left + bottom so the headline + form read crisply */}
+        <div className="absolute inset-0 bg-gradient-to-r from-[#070b12]/90 via-[#070b12]/55 to-[#070b12]/20" />
+        <div className="absolute inset-0 bg-gradient-to-t from-[#070b12]/85 via-transparent to-[#070b12]/35" />
       </div>
 
       <div className="mx-auto max-w-7xl px-5 sm:px-8">
-        <div className="max-w-2xl py-24 sm:py-32 lg:py-40">
+        <div className="max-w-2xl py-28 sm:py-36 lg:py-44">
           <motion.span
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, ease }}
-            className="inline-flex items-center gap-2 rounded-full border border-line-strong bg-white/70 px-4 py-1.5 text-xs font-medium text-ink-soft shadow-sm backdrop-blur"
+            className="inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/10 px-4 py-1.5 text-xs font-medium text-white/90 backdrop-blur"
           >
             <span className="pulse-dot h-1.5 w-1.5 rounded-full bg-accent" />
             Buyers now ask AI which car to buy
@@ -68,34 +66,38 @@ export default function Hero() {
             initial={{ opacity: 0, y: 14 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.7, delay: 0.05, ease }}
-            className="mt-6 text-balance text-5xl font-semibold leading-[1.02] tracking-tight sm:text-6xl lg:text-7xl"
+            className="mt-6 text-balance text-5xl font-semibold leading-[1.02] tracking-tight drop-shadow-[0_2px_24px_rgba(0,0,0,0.45)] sm:text-6xl lg:text-7xl"
           >
             Your inventory,{" "}
-            <span className="font-display text-gradient">recommended by AI.</span>
+            <span className="font-display bg-gradient-to-r from-accent via-cyan to-violet bg-clip-text text-transparent">
+              recommended by AI.
+            </span>
             <br className="hidden sm:block" /> Your leads,{" "}
-            <span className="font-display text-gradient">worked by AI.</span>
+            <span className="font-display bg-gradient-to-r from-accent via-cyan to-violet bg-clip-text text-transparent">
+              worked by AI.
+            </span>
           </motion.h1>
 
           <motion.p
             initial={{ opacity: 0, y: 14 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.7, delay: 0.12, ease }}
-            className="mt-6 max-w-xl text-pretty text-base leading-relaxed text-ink-muted sm:text-lg"
+            className="mt-6 max-w-xl text-pretty text-base leading-relaxed text-white/80 sm:text-lg"
           >
             LotPilot makes every car you stock discoverable inside ChatGPT, Perplexity,
             Gemini and Google AI Overviews — then our AI agents work every lead in
             seconds: qualify, take credit apps, book the deal.
-            <span className="font-medium text-ink-soft"> You just send the feed.</span>
+            <span className="font-medium text-white"> You just send the feed.</span>
           </motion.p>
 
-          {/* audit launcher */}
+          {/* audit launcher — white card pops on the dark scene */}
           <motion.div
             initial={{ opacity: 0, y: 16 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.7, delay: 0.18, ease }}
             className="mt-8 max-w-lg"
           >
-            <div className="surface rounded-2xl p-2.5 shadow-xl ring-1 ring-black/[0.04]">
+            <div className="rounded-2xl border border-white/15 bg-white p-2.5 shadow-2xl">
               <p className="px-2 pt-1 text-left text-sm font-medium text-ink-soft">
                 See if AI can find your inventory —{" "}
                 <span className="text-accent">free 60-second check</span>
@@ -121,7 +123,7 @@ export default function Hero() {
             </div>
             <a
               href="#demo"
-              className="mt-3 inline-block text-sm text-ink-soft underline-offset-4 transition-colors hover:text-ink hover:underline"
+              className="mt-3 inline-block text-sm text-white/80 underline-offset-4 transition-colors hover:text-white hover:underline"
             >
               or connect your feed / book a demo →
             </a>
@@ -132,7 +134,7 @@ export default function Hero() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ duration: 0.8, delay: 0.3 }}
-            className="mt-8 flex flex-wrap items-center gap-x-5 gap-y-2 text-xs text-ink-faint"
+            className="mt-8 flex flex-wrap items-center gap-x-5 gap-y-2 text-xs text-white/60"
           >
             {TRUST.map((t) => (
               <span key={t} className="inline-flex items-center gap-1.5">
@@ -143,9 +145,9 @@ export default function Hero() {
         </div>
       </div>
 
-      {/* engine marquee */}
-      <div className="relative border-t border-line/60 bg-canvas/60 py-6 backdrop-blur-sm">
-        <p className="mb-4 text-center text-xs font-mono uppercase tracking-[0.25em] text-ink-faint">
+      {/* engine marquee — quiet band closing the dark hero */}
+      <div className="relative border-t border-white/10 py-6">
+        <p className="mb-4 text-center text-xs font-mono uppercase tracking-[0.25em] text-white/40">
           Built to be cited by
         </p>
         <div className="relative flex overflow-hidden [mask-image:linear-gradient(to_right,transparent,#000_12%,#000_88%,transparent)]">
@@ -153,7 +155,7 @@ export default function Hero() {
             {[...ENGINES, ...ENGINES].map((e, i) => (
               <span
                 key={`${e}-${i}`}
-                className="whitespace-nowrap text-lg font-medium text-ink-muted/70"
+                className="whitespace-nowrap text-lg font-medium text-white/55"
               >
                 {e}
               </span>
