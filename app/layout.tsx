@@ -3,6 +3,7 @@ import { Geist_Mono, Fraunces, Inter } from "next/font/google";
 import "./globals.css";
 import StructuredData from "@/components/StructuredData";
 import SmoothScroll from "@/components/SmoothScroll";
+import { Analytics } from "@vercel/analytics/next";
 
 // LotPilot brand system — Editorial Tech-Lux: Fraunces (editorial serif) for
 // display moments + Inter for clean UI/body. (CSS var names kept stable so
@@ -94,6 +95,7 @@ export default function RootLayout({
       <body className="min-h-screen">
         <SmoothScroll />
         {children}
+        <Analytics />
       </body>
     </html>
   );

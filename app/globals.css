@@ -134,6 +134,27 @@ body::before {
   color: transparent;
 }
 
+/* Legal / long-form prose */
+.legal h2 {
+  font-family: var(--font-serif);
+  font-size: 1.3rem;
+  letter-spacing: -0.01em;
+  color: var(--color-ink);
+  margin-top: 2rem;
+  margin-bottom: 0.6rem;
+}
+.legal h3 {
+  font-weight: 600;
+  color: var(--color-ink);
+  margin-top: 1.25rem;
+  margin-bottom: 0.35rem;
+}
+.legal p { margin-bottom: 0.9rem; }
+.legal ul { list-style: disc; padding-left: 1.25rem; margin-bottom: 0.9rem; }
+.legal li { margin-bottom: 0.35rem; }
+.legal a { color: var(--color-cyan); text-decoration: underline; }
+.legal strong { color: var(--color-ink); font-weight: 600; }
+
 /* Cinematic hero photo drift */
 @keyframes kenburns {
   0% { transform: scale(1) translate3d(0, 0, 0); }

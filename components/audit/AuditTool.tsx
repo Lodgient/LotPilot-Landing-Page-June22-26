@@ -8,6 +8,7 @@ import Icon from "@/components/Icon";
 import ScoreRing from "./ScoreRing";
 import PillarBars from "./PillarBars";
 import EngineRow from "./EngineRow";
+import { ShareProof } from "./ShareCard";
 import { cn } from "@/lib/cn";
 
 /** Cross-section trigger: the hero/CTA can dispatch this to auto-run the agent. */
@@ -76,7 +77,19 @@ export default function AuditTool() {
   const [input, setInput] = useState("");
   const [busy, setBusy] = useState(false);
   const timers = useRef<ReturnType<typeof setTimeout>[]>([]);
+  const inputRef = useRef<HTMLInputElement>(null);
   useEffect(() => () => timers.current.forEach(clearTimeout), []);
+
+  // Viral loop: from a report, prompt the dealer to run the same check on a rival.
+  const auditRival = useCallback(() => {
+    push({
+      id: nid(),
+      role: "assistant",
+      kind: "text",
+      text: "Want to see how a competitor stacks up? Paste their website below and I'll run the exact same check on them.",
+    });
+    timers.current.push(setTimeout(() => inputRef.current?.focus(), 120));
+  }, []);
 
   const push = (m: Msg) => setMessages((x) => [...x, m]);
   const scrollToMsg = (id: number, block: ScrollLogicalPosition = "start") => {
@@ -226,7 +239,7 @@ export default function AuditTool() {
       <div className="space-y-4 px-4 py-5 sm:px-5">
         {messages.map((m) => (
           <div key={m.id} id={`am-${m.id}`} className="scroll-mt-24">
-            <MessageView m={m} />
+            <MessageView m={m} onAuditRival={auditRival} />
           </div>
         ))}
 
@@ -255,6 +268,7 @@ export default function AuditTool() {
       >
         <div className="flex items-end gap-2">
           <input
+            ref={inputRef}
             value={input}
             onChange={(e) => setInput(e.target.value)}
             placeholder="Paste your dealership website…  e.g. yourstore.com — Austin, TX"
@@ -287,7 +301,7 @@ function Avatar() {
   );
 }
 
-function MessageView({ m }: { m: Msg }) {
+function MessageView({ m, onAuditRival }: { m: Msg; onAuditRival?: () => void }) {
   if (m.kind === "text" && m.role === "user") {
     return (
       <div className="flex justify-end">
@@ -325,7 +339,7 @@ function MessageView({ m }: { m: Msg }) {
     <div className="flex items-start gap-2.5">
       <Avatar />
       <div className="w-full">
-        <ReportCard report={m.report} />
+        <ReportCard report={m.report} onAuditRival={onAuditRival} />
       </div>
     </div>
   );
@@ -392,7 +406,28 @@ function ScanCard({ step, url, city }: { step: number; url: string; city: string
 
 /* ============================================================ report card */
 
-function ReportCard({ report }: { report: AuditReport }) {
+function ReportCard({ report, onAuditRival }: { report: AuditReport; onAuditRival?: () => void }) {
+  // Build the forwardable "shock" card: a query where AI named a rival, not them.
+  const shockResult =
+    report.engines.find((e) => !e.dealerPresent && e.recommended.some((r) => r.type !== "dealer")) ??
+    report.engines.find((e) => !e.dealerPresent);
+  const shockData = shockResult
+    ? {
+        dealershipName: report.dealershipName || report.url,
+        city: report.city,
+        score: report.score,
+        dealerHits: report.dealerHits,
+        queryCount: report.queryCount,
+        shock: {
+          engine: shockResult.engine,
+          query: shockResult.query,
+          names: shockResult.recommended
+            .filter((r) => r.type !== "dealer")
+            .map((r) => r.name)
+            .slice(0, 2),
+        },
+      }
+    : null;
   return (
     <motion.div
       initial={{ opacity: 0, y: 10 }}
@@ -478,6 +513,13 @@ function ReportCard({ report }: { report: AuditReport }) {
           </div>
         </div>
       </div>
+
+      {/* Forwardable shock asset + "audit a rival" viral loop */}
+      {shockData && (
+        <div className="mt-6 border-t border-line pt-5">
+          <ShareProof data={shockData} onAuditRival={onAuditRival} />
+        </div>
+      )}
 
       {/* CTA */}
       <div className="mt-6 flex flex-col gap-3 sm:flex-row">

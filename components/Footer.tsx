@@ -77,9 +77,16 @@ export default function Footer() {
           ))}
         </div>
 
-        <div className="mt-14 flex flex-col items-start justify-between gap-4 border-t border-line pt-6 text-xs text-ink-faint sm:flex-row sm:items-center">
-          <p>© {new Date().getFullYear()} LotPilot. All rights reserved.</p>
-          <div className="flex flex-wrap items-center gap-x-5 gap-y-2">
+        <div className="mt-14 border-t border-line pt-6">
+          <div className="flex flex-col items-start justify-between gap-4 text-xs text-ink-faint sm:flex-row sm:items-center">
+            <p>© {new Date().getFullYear()} LotPilot. All rights reserved.</p>
+            <div className="flex flex-wrap items-center gap-x-5 gap-y-2">
+              <Link href="/privacy" className="transition-colors hover:text-ink">Privacy</Link>
+              <Link href="/terms" className="transition-colors hover:text-ink">Terms</Link>
+              <Link href="/security" className="transition-colors hover:text-ink">Security</Link>
+            </div>
+          </div>
+          <div className="mt-4 flex flex-wrap items-center gap-x-5 gap-y-2 text-xs text-ink-faint">
             <span>Delaware C-Corp</span>
             <span>US data only</span>
             <span>FCRA-aligned</span>

@@ -1,6 +1,7 @@
 "use client";
 
 import { useRef, useState } from "react";
+import { track } from "@vercel/analytics";
 import type { PlanId } from "@/lib/stripe/plans";
 
 /**
@@ -26,6 +27,7 @@ export default function CheckoutButton({
     if (busy) return;
     setBusy(true);
     setNote(null);
+    track("checkout_started", { plans: plans.join(",") });
     try {
       const res = await fetch("/api/checkout", {
         method: "POST",

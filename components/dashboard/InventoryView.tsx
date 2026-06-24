@@ -112,7 +112,7 @@ const FILTERS: { key: Filter; label: string }[] = [
 
 function EngineDots({ v }: { v: Vehicle }) {
   return (
-    <div className="flex items-center gap-1" aria-label={`${v.enginesCiting} of 5 engines`}>
+    <div className="flex items-center gap-1" aria-label={`${v.enginesCiting} of ${ENGINES.length} engines`}>
       {ENGINES.map((e) => (
         <span
           key={e}
@@ -476,7 +476,7 @@ export default function InventoryView({ vehicles, dealer }: { vehicles: Vehicle[
             <div className="mt-2.5 flex flex-wrap items-center justify-between gap-2">
               {v.blocker === "None" ? (
                 <span className="inline-flex items-center gap-1 text-xs text-accent">
-                  <Icon name="check" size={13} strokeWidth={2.25} /> Cited in {v.enginesCiting}/5 engines
+                  <Icon name="check" size={13} strokeWidth={2.25} /> Cited in {v.enginesCiting}/{ENGINES.length} engines
                 </span>
               ) : (
                 <span className="text-xs text-ink-muted">Top fix: {v.blocker}</span>
@@ -590,7 +590,7 @@ export default function InventoryView({ vehicles, dealer }: { vehicles: Vehicle[
                   </td>
                   <td className="px-3 py-3">
                     {v.blocker === "None" ? (
-                      <span className="inline-flex items-center gap-1 text-xs text-accent"><Icon name="check" size={13} strokeWidth={2.25} /> Cited in {v.enginesCiting}/5 engines</span>
+                      <span className="inline-flex items-center gap-1 text-xs text-accent"><Icon name="check" size={13} strokeWidth={2.25} /> Cited in {v.enginesCiting}/{ENGINES.length} engines</span>
                     ) : (
                       <span className="inline-flex items-center gap-1 text-xs text-warn"><Icon name="bolt" size={12} strokeWidth={2.25} /> {v.blocker}</span>
                     )}
@@ -885,7 +885,7 @@ function VehicleDetail({
           <Metric label="AI score" value={String(v.aiScore)} color={scoreColor(v.aiScore)} />
           <Metric label="AI leads" value={String(v.aiLeads)} />
           <Metric label="AI VDP views" value={v.aiVdpViews.toLocaleString()} />
-          <Metric label="Engines citing" value={`${v.enginesCiting}/5`} />
+          <Metric label="Engines citing" value={`${v.enginesCiting}/${ENGINES.length}`} />
           <Metric label="Queries matched" value={String(v.queriesMatched)} />
           <Metric label="Days on lot" value={String(v.daysOnLot)} />
         </div>

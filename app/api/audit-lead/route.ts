@@ -5,6 +5,7 @@
 // full per-engine breakdown + gap report.
 
 import { NextResponse } from "next/server";
+import { createAnonClient } from "@/lib/supabase/anon";
 
 export const runtime = "nodejs";
 
@@ -42,16 +43,26 @@ export async function POST(req: Request) {
     );
   }
 
-  // TODO: wire backend — persist the lead (CRM/Supabase), fire notification,
-  // and enqueue a follow-up. For now we just log + acknowledge.
-  console.info("[audit-lead]", {
-    email,
-    dealershipName,
-    url: body.url,
-    city: body.city,
-    score: body.score,
-    at: new Date().toISOString(),
-  });
+  try {
+    const supabase = createAnonClient();
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const { error } = await (supabase.from("lp_marketing_leads") as any).insert({
+      kind: "audit",
+      dealership_name: dealershipName,
+      email,
+      website: (body.url || "").trim() || null,
+      city: (body.city || "").trim() || null,
+      score: typeof body.score === "number" ? Math.round(body.score) : null,
+      source: "free-audit",
+    });
+    if (error) {
+      console.error("[audit-lead] insert failed:", error.message);
+      return NextResponse.json({ ok: false, error: "Couldn't save — please try again." }, { status: 500 });
+    }
+  } catch (e) {
+    console.error("[audit-lead] insert threw:", e);
+    return NextResponse.json({ ok: false, error: "Couldn't save — please try again." }, { status: 500 });
+  }
 
   return NextResponse.json({ ok: true });
 }

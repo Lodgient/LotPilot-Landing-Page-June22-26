@@ -54,11 +54,19 @@ function Switch({ on, onClick }: { on: boolean; onClick: () => void }) {
   );
 }
 
-function SaveBar({ note }: { note?: string }) {
+function SaveBar() {
+  const [tapped, setTapped] = useState(false);
   return (
     <div className="mt-6 flex items-center justify-between gap-3 border-t border-line pt-5">
-      <p className="text-xs text-ink-faint">{note ?? "Changes apply across your workspace."}</p>
-      <button className="inline-flex h-10 items-center rounded-full bg-cyan px-5 text-sm font-semibold text-ink-inverse transition-all hover:-translate-y-0.5 hover:bg-cyan-dim cta-glow">
+      <p className="text-xs text-ink-faint">
+        {tapped
+          ? "This is the read-only demo workspace — changes aren't saved here."
+          : "Changes apply across your workspace."}
+      </p>
+      <button
+        onClick={() => setTapped(true)}
+        className="inline-flex h-10 items-center rounded-full bg-cyan px-5 text-sm font-semibold text-ink-inverse transition-all hover:-translate-y-0.5 hover:bg-cyan-dim cta-glow"
+      >
         Save changes
       </button>
     </div>
