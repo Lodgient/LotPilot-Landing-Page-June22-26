@@ -39,11 +39,11 @@ export default function Hero() {
     <section className="relative flex min-h-[100svh] items-center overflow-hidden bg-[#0a0f1a]">
       {/* cinematic dealership showroom photo + Ken Burns */}
       <div className="absolute inset-[-6%] z-0">
-        <div className="kenburns absolute inset-0 bg-[url('/media/hero-dealership.webp')] bg-cover bg-center [filter:saturate(1.05)_brightness(1.02)]" />
+        <div className="kenburns absolute inset-0 bg-[url('/media/hero-dealership.webp')] bg-cover bg-center [filter:saturate(1.12)_brightness(1.16)]" />
       </div>
-      {/* legibility overlays (vertical + diagonal-left) — cool slate, no green tint */}
-      <div className="absolute inset-0 z-[2] bg-[linear-gradient(180deg,rgba(8,12,20,0.36)_0%,rgba(8,12,20,0.04)_36%,rgba(8,12,20,0.22)_62%,rgba(6,10,18,0.92)_100%)]" />
-      <div className="absolute inset-0 z-[2] bg-[linear-gradient(100deg,rgba(6,10,18,0.84)_0%,rgba(8,12,20,0.46)_38%,rgba(8,12,20,0.08)_60%,transparent_76%)]" />
+      {/* legibility overlays — lightened so the showroom shows through; left stays readable */}
+      <div className="absolute inset-0 z-[2] bg-[linear-gradient(180deg,rgba(8,12,20,0.18)_0%,transparent_38%,transparent_64%,rgba(6,10,18,0.72)_100%)]" />
+      <div className="absolute inset-0 z-[2] bg-[linear-gradient(100deg,rgba(6,10,18,0.72)_0%,rgba(8,12,20,0.3)_40%,transparent_66%)]" />
       <div className="pointer-events-none absolute left-[-4%] top-[6%] z-[2] h-[70%] w-[60%] bg-[radial-gradient(ellipse_at_30%_40%,rgba(56,189,248,0.18),transparent_60%)] blur-2xl" />
 
       <div className="relative z-[5] mx-auto w-full max-w-[1240px] px-7 pb-28 pt-32 text-[#f8fafc] sm:px-14">

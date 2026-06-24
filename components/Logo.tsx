@@ -10,16 +10,22 @@ export default function Logo({
 }) {
   return (
     <span className={cn("inline-flex items-center gap-3", className)}>
-      {/* The brand mark is a light teal→lime line-art built for dark grounds,
-          so it sits on a small dark tile to stay vivid on light surfaces too. */}
-      <span className="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-[#0f1722] shadow-sm ring-1 ring-white/10">
+      {/* The brand mark is a light teal→lime line-art built for dark grounds, so
+          it sits on a near-black tile with an adaptive ring — vivid and clearly
+          visible on both the dark hero and white surfaces. */}
+      <span
+        className={cn(
+          "grid h-11 w-11 shrink-0 place-items-center rounded-xl bg-gradient-to-br from-[#0d1626] to-[#080c14] shadow-[0_6px_18px_-6px_rgba(0,0,0,0.55)] ring-1",
+          onDark ? "ring-white/30" : "ring-black/10",
+        )}
+      >
         <Image
           src="/lotpilot-icon.png"
           alt="LotPilot"
           width={20}
           height={28}
           priority
-          className="h-6 w-auto"
+          className="h-7 w-auto"
         />
       </span>
       <span className="flex flex-col leading-none">

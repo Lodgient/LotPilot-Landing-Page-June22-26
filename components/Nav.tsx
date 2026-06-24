@@ -40,23 +40,19 @@ export default function Nav() {
           <Logo onDark={onDark} />
         </Link>
 
-        <ul className="hidden items-center gap-7 lg:flex">
+        <ul className="hidden items-center gap-1.5 lg:flex">
           {LINKS.map((l) => (
             <li key={l.href}>
               <a
                 href={l.href}
                 className={cn(
-                  "group relative text-[13px] font-medium transition-colors duration-300",
-                  onDark ? "text-white/75 hover:text-white" : "text-ink-soft hover:text-ink",
+                  "inline-flex rounded-full px-3.5 py-2 text-[13px] font-medium ring-1 transition-all duration-200",
+                  onDark
+                    ? "bg-white/[0.08] text-white/85 ring-white/15 hover:-translate-y-0.5 hover:bg-white/[0.16] hover:text-white"
+                    : "bg-ink/[0.03] text-ink-soft ring-line hover:-translate-y-0.5 hover:bg-ink/[0.06] hover:text-ink",
                 )}
               >
                 {l.label}
-                <span
-                  className={cn(
-                    "absolute -bottom-1 left-0 h-px w-full origin-left scale-x-0 transition-transform duration-300 group-hover:scale-x-100",
-                    onDark ? "bg-white" : "bg-ink",
-                  )}
-                />
               </a>
             </li>
           ))}
