@@ -268,9 +268,15 @@ export default function Shell({
           <span className="hidden sm:inline-flex">
             <PrintButton />
           </span>
-          <span className="hidden sm:inline-flex">
-            <DemoBadge />
-          </span>
+          {dealer.id === "11111111-1111-1111-1111-111111111111" ? (
+            <span className="hidden sm:inline-flex">
+              <DemoBadge />
+            </span>
+          ) : (
+            <span className="hidden items-center gap-1.5 rounded-full bg-accent/12 px-2.5 py-1 text-[11px] font-medium text-accent sm:inline-flex">
+              <span className="pulse-dot h-1.5 w-1.5 rounded-full bg-accent" /> Live
+            </span>
+          )}
         </header>
 
         <main className="px-5 pb-24 pt-6 sm:px-8 sm:py-8">{children}</main>

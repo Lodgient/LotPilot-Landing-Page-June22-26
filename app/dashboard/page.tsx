@@ -8,6 +8,7 @@ import ScoreRing from "@/components/audit/ScoreRing";
 import { Sparkline } from "@/components/dashboard/charts";
 import CountUp from "@/components/dashboard/CountUp";
 import Greeting from "@/components/dashboard/Greeting";
+import OnboardingChecklist, { type OnboardingStep } from "@/components/dashboard/OnboardingChecklist";
 import { cn } from "@/lib/cn";
 import {
   requireDealer,
@@ -18,13 +19,14 @@ import {
   getLeads,
   getOvernightSummary,
   getRecommendations,
+  getAgentConfig,
 } from "@/lib/dashboard/queries";
 
 export const dynamic = "force-dynamic";
 
 export default async function CommandCenter() {
   const { dealer, profile } = await requireDealer();
-  const [kpis, activity, visibility, monitor, leads, overnight, recommendations] =
+  const [kpis, activity, visibility, monitor, leads, overnight, recommendations, agent] =
     await Promise.all([
       getKpis("today"),
       getActivity(),
@@ -33,9 +35,51 @@ export default async function CommandCenter() {
       getLeads(),
       getOvernightSummary(),
       getRecommendations(),
+      getAgentConfig(dealer.id),
     ]);
   const hot = leads.filter((l) => l.temp === "Hot");
   const isFresh = kpis.length === 0 && activity.length === 0;
+
+  // First-run activation checklist — lights up as each connector fills data in.
+  const firstName = profile.fullName.split(" ")[0] ?? "";
+  const feedDone = (dealer.vehicles ?? 0) > 0 || !!dealer.feedType;
+  const scanDone = !!visibility;
+  const agentDone = agent?.status === "active";
+  const onboardSteps: OnboardingStep[] = [
+    {
+      title: "Workspace created",
+      desc: `${dealer.name} is live on LotPilot.`,
+      icon: "check",
+      status: "done",
+    },
+    {
+      title: "Connect your inventory feed",
+      desc: "Send the export you already produce — vAuto, HomeNet, Dealer.com or CSV.",
+      icon: "globe",
+      status: feedDone ? "done" : "active",
+      href: "/#feed",
+      cta: "Connect feed",
+    },
+    {
+      title: "We rebuild your VINs & run the first scan",
+      desc: "Every car becomes AI-readable, then tested across the answer engines.",
+      icon: "radar",
+      status: scanDone ? "done" : feedDone ? "active" : "todo",
+      href: "/dashboard/visibility",
+      cta: "Run first scan",
+    },
+    {
+      title: "Turn on your AI Sales Agent",
+      desc: "Ava works every lead 24/7 — qualifies, books, captures credit apps.",
+      icon: "bolt",
+      status: agentDone ? "done" : scanDone ? "active" : "todo",
+      href: "/dashboard/assistant",
+      cta: "Set up Ava",
+    },
+  ];
+  const onboarded =
+    dealer.id === "11111111-1111-1111-1111-111111111111" ||
+    onboardSteps.every((s) => s.status === "done");
 
   // Surface the most urgent AI-visibility signal as a top banner (spec §8.3).
   const trend = visibility?.trend ?? [];
@@ -98,35 +142,11 @@ export default async function CommandCenter() {
         title={`Welcome, ${profile.fullName.split(" ")[0]}`}
         intro={`Let's get ${dealer.name} discoverable in AI.`}
       >
-        <Card glow className="relative overflow-hidden text-center">
-          <div className="glow-cyan pointer-events-none absolute left-1/2 -top-16 h-56 w-56 -translate-x-1/2 opacity-50" />
-          <div className="relative mx-auto max-w-xl py-6">
-            <Badge tone="cyan">● New workspace</Badge>
-            <h2 className="mt-4 font-display text-3xl text-ink sm:text-4xl">
-              Connect your inventory feed to{" "}
-              <span className="text-gradient">light up your dashboard.</span>
-            </h2>
-            <p className="mt-3 text-sm text-ink-muted">
-              Send us the export you already produce (vAuto, HomeNet, Dealer.com, DealerSocket, CSV
-              or XML). We make every vehicle AI-discoverable and start working your leads — then this
-              dashboard fills with live per-VIN visibility, demand and attribution.
-            </p>
-            <div className="mt-6 flex flex-col items-center justify-center gap-3 sm:flex-row">
-              <Link
-                href="/#feed"
-                className="inline-flex h-12 items-center rounded-full bg-cyan px-6 text-sm font-semibold text-ink-inverse transition-all hover:-translate-y-0.5 hover:bg-cyan/90 cta-glow"
-              >
-                Connect your feed →
-              </Link>
-              <Link
-                href="/#audit"
-                className="inline-flex h-12 items-center rounded-full border border-line-strong px-6 text-sm font-medium text-ink transition-colors hover:border-cyan/50 hover:bg-black/[0.04]"
-              >
-                Run a free AI audit
-              </Link>
-            </div>
-          </div>
-        </Card>
+        <OnboardingChecklist firstName={firstName} dealerName={dealer.name} steps={onboardSteps} />
+        <p className="mt-4 text-center text-xs text-ink-faint">
+          As soon as your feed connects, this dashboard fills with live per-VIN visibility, demand
+          and attribution.
+        </p>
       </Shell>
     );
   }
@@ -138,6 +158,13 @@ export default async function CommandCenter() {
       title={<Greeting name={profile.fullName.split(" ")[0]} />}
       intro={`Here's what your AI did for ${dealer.name}.`}
     >
+      {/* Still activating? Keep the checklist on top until every step is done. */}
+      {!onboarded && (
+        <div className="mb-6">
+          <OnboardingChecklist firstName={firstName} dealerName={dealer.name} steps={onboardSteps} />
+        </div>
+      )}
+
       {/* AI-visibility alert — the most urgent signal, first thing seen */}
       {alert && (
         <Link
