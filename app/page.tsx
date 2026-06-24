@@ -10,6 +10,7 @@ import Conversion from "@/components/sections/Conversion";
 import Comparison from "@/components/sections/Comparison";
 import Proof from "@/components/sections/Proof";
 import FeedConnect from "@/components/sections/FeedConnect";
+import Inevitable from "@/components/sections/Inevitable";
 import Pricing from "@/components/sections/Pricing";
 import FinalCTA from "@/components/sections/FinalCTA";
 
@@ -28,6 +29,7 @@ export default function Home() {
         <Comparison />
         <Proof />
         <FeedConnect />
+        <Inevitable />
         <Pricing />
         <FinalCTA />
       </main>
