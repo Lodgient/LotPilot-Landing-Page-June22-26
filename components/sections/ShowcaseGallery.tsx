@@ -37,38 +37,8 @@ export default function ShowcaseGallery() {
 
   return (
     <div>
-      {/* main frame */}
-      <div className="overflow-hidden rounded-xl border border-line-strong bg-panel shadow-[0_30px_80px_-32px_rgba(15,23,34,0.38)]">
-        <div className="flex items-center gap-1.5 border-b border-line bg-canvas-2 px-3.5 py-2.5">
-          <span className="h-2.5 w-2.5 rounded-full bg-danger/40" />
-          <span className="h-2.5 w-2.5 rounded-full bg-warn/40" />
-          <span className="h-2.5 w-2.5 rounded-full bg-accent/40" />
-          <span className="ml-2 truncate text-[10px] text-ink-faint">
-            dealers.lotpilot.com/{cur.label}
-          </span>
-        </div>
-        <div className="relative aspect-[16/10] bg-canvas-2">
-          <motion.img
-            key={cur.src}
-            src={cur.src}
-            alt={`LotPilot ${cur.title}`}
-            width={1600}
-            height={1000}
-            initial={{ opacity: 0, scale: 1.008 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.45, ease: [0.16, 1, 0.3, 1] }}
-            className="absolute inset-0 block h-full w-full"
-          />
-        </div>
-      </div>
-
-      <div className="mt-5 text-center">
-        <p className="text-base font-semibold text-ink">{cur.title}</p>
-        <p className="mx-auto mt-1 max-w-2xl text-sm leading-relaxed text-ink-muted">{cur.body}</p>
-      </div>
-
-      {/* clickable thumbnails */}
-      <div className="mt-7 grid grid-cols-2 gap-3 sm:grid-cols-4">
+      {/* clickable view tabs — kept up top so you switch without scrolling */}
+      <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
         {SHOTS.map((s, i) => (
           <button
             key={s.src}
@@ -103,6 +73,37 @@ export default function ShowcaseGallery() {
             </p>
           </button>
         ))}
+      </div>
+
+      {/* active title + description, above the preview */}
+      <div className="mt-6 text-center">
+        <p className="text-base font-semibold text-ink">{cur.title}</p>
+        <p className="mx-auto mt-1 max-w-2xl text-sm leading-relaxed text-ink-muted">{cur.body}</p>
+      </div>
+
+      {/* the big preview */}
+      <div className="mt-4 overflow-hidden rounded-xl border border-line-strong bg-panel shadow-[0_30px_80px_-32px_rgba(15,23,34,0.38)]">
+        <div className="flex items-center gap-1.5 border-b border-line bg-canvas-2 px-3.5 py-2.5">
+          <span className="h-2.5 w-2.5 rounded-full bg-danger/40" />
+          <span className="h-2.5 w-2.5 rounded-full bg-warn/40" />
+          <span className="h-2.5 w-2.5 rounded-full bg-accent/40" />
+          <span className="ml-2 truncate text-[10px] text-ink-faint">
+            dealers.lotpilot.com/{cur.label}
+          </span>
+        </div>
+        <div className="relative aspect-[16/10] bg-canvas-2">
+          <motion.img
+            key={cur.src}
+            src={cur.src}
+            alt={`LotPilot ${cur.title}`}
+            width={1600}
+            height={1000}
+            initial={{ opacity: 0, scale: 1.008 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.45, ease: [0.16, 1, 0.3, 1] }}
+            className="absolute inset-0 block h-full w-full"
+          />
+        </div>
       </div>
     </div>
   );
