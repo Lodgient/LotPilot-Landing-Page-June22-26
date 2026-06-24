@@ -1,9 +1,43 @@
 import Shell from "@/components/dashboard/Shell";
+import Icon, { type IconName } from "@/components/Icon";
 import { Card, PanelHeading, Badge } from "@/components/dashboard/ui";
 import { Sparkline } from "@/components/dashboard/charts";
 import { ExportCsv } from "@/components/dashboard/Exports";
 import { requireDealer, getDemand } from "@/lib/dashboard/queries";
 import { cn } from "@/lib/cn";
+
+function Tile({
+  icon,
+  tone,
+  value,
+  label,
+  sub,
+}: {
+  icon: IconName;
+  tone: "violet" | "danger" | "accent" | "warn";
+  value: string;
+  label: string;
+  sub?: string;
+}) {
+  const chip: Record<string, string> = {
+    violet: "bg-violet/15 text-violet ring-violet/20",
+    danger: "bg-danger/12 text-danger ring-danger/20",
+    accent: "bg-accent/12 text-accent ring-accent/20",
+    warn: "bg-warn/12 text-warn ring-warn/20",
+  };
+  return (
+    <Card className="flex flex-col gap-3">
+      <span className={cn("grid h-8 w-8 place-items-center rounded-lg ring-1 ring-inset", chip[tone])}>
+        <Icon name={icon} size={16} />
+      </span>
+      <div>
+        <div className="text-2xl font-bold tracking-tight text-ink">{value}</div>
+        <div className="mt-0.5 text-xs text-ink-muted">{label}</div>
+        {sub && <div className="mt-0.5 text-[11px] text-ink-faint">{sub}</div>}
+      </div>
+    </Card>
+  );
+}
 
 export const dynamic = "force-dynamic";
 
@@ -19,6 +53,15 @@ export default async function DemandPage() {
 
   const gaps = demand.filter((d) => d.status === "gap");
   const totalGapVolume = gaps.reduce((s, d) => s + d.weeklyVolume, 0);
+  const totalVolume = demand.reduce((s, d) => s + d.weeklyVolume, 0);
+  const covered = demand.filter((d) => d.status === "covered").length;
+  const surplus = demand.filter((d) => d.status === "surplus").length;
+  const coveragePct = demand.length ? Math.round((covered / demand.length) * 100) : 0;
+  // surface the actionable rows (demand gaps) first, biggest volume on top
+  const rank: Record<string, number> = { gap: 0, surplus: 1, covered: 2 };
+  const ordered = [...demand].sort(
+    (a, b) => rank[a.status] - rank[b.status] || b.weeklyVolume - a.weeklyVolume,
+  );
 
   return (
     <Shell
@@ -52,6 +95,38 @@ export default async function DemandPage() {
         </div>
       </Card>
 
+      {/* signal KPIs */}
+      <div className="mt-6 grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+        <Tile
+          icon="search"
+          tone="violet"
+          value={totalVolume.toLocaleString()}
+          label="Buyers/week asking AI"
+          sub={`across ${demand.length} demand clusters`}
+        />
+        <Tile
+          icon="radar"
+          tone="danger"
+          value={String(gaps.length)}
+          label="Demand gaps"
+          sub={`${totalGapVolume.toLocaleString()} buyers/wk you're missing`}
+        />
+        <Tile
+          icon="check"
+          tone="accent"
+          value={`${coveragePct}%`}
+          label="Demand covered"
+          sub={`${covered} of ${demand.length} clusters`}
+        />
+        <Tile
+          icon="trending"
+          tone="warn"
+          value={String(surplus)}
+          label="Surplus segments"
+          sub="overstocked vs demand"
+        />
+      </div>
+
       <Card className="mt-6 p-0">
         <div className="p-5 sm:p-6">
           <PanelHeading
@@ -69,7 +144,7 @@ export default async function DemandPage() {
                   { key: "topSource", label: "AI favors" },
                   { key: "status", label: "Status" },
                 ]}
-                rows={demand.map((d) => ({
+                rows={ordered.map((d) => ({
                   query: d.query,
                   segment: d.segment,
                   weeklyVolume: d.weeklyVolume,
@@ -84,7 +159,7 @@ export default async function DemandPage() {
         </div>
         {/* mobile cards */}
         <div className="space-y-3 px-5 pb-1 lg:hidden">
-          {demand.map((d) => {
+          {ordered.map((d) => {
             const meta = STATUS[d.status];
             return (
               <div key={d.query} className="rounded-xl border border-line bg-black/[0.02] p-3">
@@ -136,7 +211,7 @@ export default async function DemandPage() {
               </tr>
             </thead>
             <tbody>
-              {demand.map((d) => {
+              {ordered.map((d) => {
                 const meta = STATUS[d.status];
                 return (
                   <tr key={d.query} className="border-t border-line">
