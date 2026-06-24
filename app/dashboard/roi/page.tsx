@@ -1,3 +1,4 @@
+import Link from "next/link";
 import Shell from "@/components/dashboard/Shell";
 import Icon from "@/components/Icon";
 import { Card, PanelHeading, StatCard, Badge } from "@/components/dashboard/ui";
@@ -242,9 +243,16 @@ export default async function RoiPage() {
 
         <div className="mt-5 flex flex-wrap items-center justify-between gap-3 rounded-xl border border-cyan/25 bg-cyan/[0.05] p-4">
           <p className="text-sm text-ink-soft">
-            Board-ready monthly attribution report, exported in one click.
+            Board-ready monthly report — present it to ownership, or export the raw data.
           </p>
-          <ExportCsv
+          <div className="flex flex-wrap items-center gap-2">
+            <Link
+              href="/dashboard/report"
+              className="inline-flex h-10 items-center gap-1.5 rounded-full bg-cyan px-4 text-sm font-semibold text-ink-inverse transition-all hover:-translate-y-0.5 hover:bg-cyan/90 cta-glow"
+            >
+              <Icon name="printer" size={15} /> Board-ready report
+            </Link>
+            <ExportCsv
             filename="lotpilot-attribution.csv"
             label="Export report"
             columns={[
@@ -261,7 +269,8 @@ export default async function RoiPage() {
               sales: e.sales,
               gross: e.gross,
             }))}
-          />
+            />
+          </div>
         </div>
       </Card>
     </Shell>
