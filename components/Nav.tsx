@@ -6,10 +6,10 @@ import Logo from "./Logo";
 import { cn } from "@/lib/cn";
 
 const LINKS = [
-  { href: "/#problem", label: "The problem" },
-  { href: "/#audit", label: "Free check" },
+  { href: "/#problem", label: "The Problem" },
+  { href: "/#audit", label: "Free Check" },
   { href: "/#product", label: "Product" },
-  { href: "/#how", label: "How it works" },
+  { href: "/#how", label: "How It Works" },
   { href: "/#pricing", label: "Pricing" },
 ];
 
@@ -46,7 +46,7 @@ export default function Nav() {
               <a
                 href={l.href}
                 className={cn(
-                  "inline-flex rounded-full px-3.5 py-2 text-[13px] font-medium ring-1 transition-all duration-200",
+                  "inline-flex rounded-full px-3.5 py-2 text-[13px] font-medium tracking-[-0.006em] ring-1 transition-all duration-200",
                   onDark
                     ? "bg-white/[0.08] text-white/85 ring-white/15 hover:-translate-y-0.5 hover:bg-white/[0.16] hover:text-white"
                     : "bg-ink/[0.03] text-ink-soft ring-line hover:-translate-y-0.5 hover:bg-ink/[0.06] hover:text-ink",
@@ -62,7 +62,7 @@ export default function Nav() {
           <Link
             href="/login"
             className={cn(
-              "text-[13px] font-medium transition-colors duration-300",
+              "text-[13px] font-medium tracking-[-0.006em] transition-colors duration-300",
               onDark ? "text-white/75 hover:text-white" : "text-ink-soft hover:text-ink",
             )}
           >
@@ -70,7 +70,7 @@ export default function Nav() {
           </Link>
           <Link
             href="/dashboard"
-            className="inline-flex items-center gap-1.5 rounded-full bg-[#2563eb] px-4 py-2 text-[13px] font-semibold text-white shadow-[0_8px_24px_-10px_rgba(37,99,235,0.9)] transition-all duration-300 hover:-translate-y-0.5 hover:bg-[#1d4ed8] hover:shadow-[0_14px_34px_-12px_rgba(37,99,235,0.95)]"
+            className="inline-flex items-center gap-1.5 rounded-full bg-[#2563eb] px-4 py-2 text-[13px] font-semibold tracking-[-0.006em] text-white shadow-[0_8px_24px_-10px_rgba(37,99,235,0.9)] transition-all duration-300 hover:-translate-y-0.5 hover:bg-[#1d4ed8] hover:shadow-[0_14px_34px_-12px_rgba(37,99,235,0.95)]"
           >
             See the live demo
           </Link>
