@@ -200,6 +200,10 @@ export default function AgentConsole({
     <div className="space-y-6">
       {/* hero status */}
       <Card glow className="relative overflow-hidden">
+        <span
+          aria-hidden
+          className="pointer-events-none absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-cyan via-accent to-violet"
+        />
         <div className="glow-cyan pointer-events-none absolute -right-10 -top-16 h-56 w-56 opacity-50" />
         <div className="relative flex flex-wrap items-start justify-between gap-5">
           <div className="flex items-start gap-4">
@@ -311,10 +315,10 @@ export default function AgentConsole({
                     key={p.id}
                     onClick={() => selectPersona(p.id)}
                     className={cn(
-                      "rounded-full border px-3 py-1.5 text-xs font-medium transition-colors",
+                      "rounded-full border px-3.5 py-1.5 text-xs font-medium transition-all",
                       cfg.persona === p.id
-                        ? "border-cyan/40 bg-cyan/12 text-cyan"
-                        : "border-line text-ink-muted hover:text-ink",
+                        ? "border-cyan/50 bg-cyan/12 text-cyan ring-1 ring-inset ring-cyan/25"
+                        : "border-line text-ink-muted hover:-translate-y-0.5 hover:border-line-strong hover:text-ink",
                     )}
                   >
                     {p.label}
