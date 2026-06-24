@@ -27,6 +27,13 @@ function scoreTone(s: number): "danger" | "warn" | "accent" {
   return s < 40 ? "danger" : s < 70 ? "warn" : "accent";
 }
 
+// Front gross still on the table until this unit is fully AI-visible.
+function oppOf(v: Vehicle) {
+  return Math.max(0, Math.round(v.estGross * (1 - v.aiScore / 100)));
+}
+// A car real buyers are searching for in-market.
+const inDemand = (v: Vehicle) => v.queriesMatched >= 4;
+
 // Build a gently-rising (or falling) series ending at the current value, for KPI sparklines.
 function rampUp(end: number, n = 9, factor = 0.8) {
   const start = Math.max(0, Math.round(end * factor));
@@ -94,7 +101,7 @@ function Thumb({ v, className }: { v: Vehicle; className?: string }) {
 }
 
 type Filter = "all" | "invisible" | "aged" | "strong";
-type SortKey = "ai" | "dol" | "leads" | "price";
+type SortKey = "ai" | "dol" | "leads" | "price" | "opp";
 
 const FILTERS: { key: Filter; label: string }[] = [
   { key: "all", label: "All inventory" },
@@ -184,12 +191,15 @@ export default function InventoryView({ vehicles, dealer }: { vehicles: Vehicle[
     }
     const sorted = [...list].sort((a, b) => {
       if (sort === "ai") return b.aiScore - a.aiScore;
+      if (sort === "opp") return oppOf(b) - oppOf(a);
       if (sort === "dol") return b.daysOnLot - a.daysOnLot;
       if (sort === "leads") return b.aiLeads - a.aiLeads;
       return b.price - a.price;
     });
     return sorted;
   }, [vehicles, filter, q, sort]);
+
+  const maxOpp = Math.max(1, ...vehicles.map(oppOf));
 
   return (
     <div>
@@ -254,6 +264,7 @@ export default function InventoryView({ vehicles, dealer }: { vehicles: Vehicle[
             className="h-9 rounded-lg border border-line-strong bg-black/[0.03] px-2 text-sm text-ink focus:border-cyan/60 focus:outline-none"
           >
             <option value="ai" className="bg-panel">Sort: AI score</option>
+            <option value="opp" className="bg-panel">Sort: Opportunity $</option>
             <option value="dol" className="bg-panel">Sort: Days on lot</option>
             <option value="leads" className="bg-panel">Sort: AI leads</option>
             <option value="price" className="bg-panel">Sort: Price</option>
@@ -340,7 +351,15 @@ export default function InventoryView({ vehicles, dealer }: { vehicles: Vehicle[
             </div>
             <div className="mt-3 flex items-center justify-between gap-3">
               <span className="text-sm tabular-nums text-ink-soft">{money(v.price)}</span>
-              <span className="text-xs text-ink-faint">{v.aiLeads} AI leads</span>
+              <span className="text-xs text-ink-faint">
+                {v.aiLeads} AI leads
+                {oppOf(v) > 0 && (
+                  <>
+                    {" · "}
+                    <span style={{ color: scoreColor(v.aiScore) }}>{money(oppOf(v))} opp</span>
+                  </>
+                )}
+              </span>
             </div>
             <div className="mt-2.5 flex flex-wrap items-center justify-between gap-2">
               {v.blocker === "None" ? (
@@ -369,7 +388,7 @@ export default function InventoryView({ vehicles, dealer }: { vehicles: Vehicle[
       {/* table */}
       <Card className="mt-4 hidden p-0 lg:block">
         <div className="overflow-x-auto scroll-slim">
-          <table className="w-full min-w-[940px] border-collapse">
+          <table className="w-full min-w-[1080px] border-collapse">
             <thead>
               <tr className="text-xs text-ink-faint">
                 <th className="px-4 py-3 text-left font-medium">Vehicle</th>
@@ -383,6 +402,12 @@ export default function InventoryView({ vehicles, dealer }: { vehicles: Vehicle[
                 </th>
                 <th className="px-3 py-3 text-center font-medium">Engines</th>
                 <th className="px-3 py-3 text-center font-medium">AI leads</th>
+                <th
+                  className="cursor-help px-3 py-3 text-left font-medium"
+                  title="Estimated front gross still on the table until this unit is fully AI-visible. Sort by it to work the biggest money first."
+                >
+                  Opportunity
+                </th>
                 <th className="px-3 py-3 text-left font-medium">Status</th>
                 <th className="px-3 py-3 text-center font-medium">Trend</th>
                 <th className="px-3 py-3 text-center font-medium">AI view</th>
@@ -401,6 +426,18 @@ export default function InventoryView({ vehicles, dealer }: { vehicles: Vehicle[
                       <div className="min-w-0">
                         <p className="text-sm font-medium text-ink">
                           {v.year} {v.make} {v.model} <span className="text-ink-muted">{v.trim}</span>
+                          {inDemand(v) && (
+                            <span
+                              className={cn(
+                                "ml-2 inline-flex items-center gap-1 rounded-md px-1.5 py-0.5 align-middle text-[10px] font-semibold",
+                                v.aiScore < 40 ? "bg-danger/12 text-danger" : "bg-violet/15 text-violet",
+                              )}
+                              title={`${v.queriesMatched} buyer queries in your market match this car`}
+                            >
+                              <Icon name="trending" size={10} strokeWidth={2.5} />
+                              In demand
+                            </span>
+                          )}
                         </p>
                         <p className="text-xs text-ink-faint">
                           {v.stockType} · {v.mileage.toLocaleString()} mi · {v.vin}
@@ -419,6 +456,23 @@ export default function InventoryView({ vehicles, dealer }: { vehicles: Vehicle[
                   </td>
                   <td className="px-3 py-3"><div className="flex justify-center"><EngineDots v={v} /></div></td>
                   <td className="px-3 py-3 text-center text-sm tabular-nums text-ink-soft">{v.aiLeads}</td>
+                  <td className="px-3 py-3">
+                    {oppOf(v) <= 0 ? (
+                      <span className="inline-flex items-center gap-1 text-xs text-accent">
+                        <Icon name="check" size={12} strokeWidth={2.5} /> Captured
+                      </span>
+                    ) : (
+                      <div className="flex items-center gap-2">
+                        <div className="h-1.5 w-14 shrink-0 overflow-hidden rounded-full bg-black/[0.06]">
+                          <div
+                            className="h-full rounded-full"
+                            style={{ width: `${Math.min(100, (oppOf(v) / maxOpp) * 100)}%`, background: scoreColor(v.aiScore) }}
+                          />
+                        </div>
+                        <span className="text-sm tabular-nums text-ink-soft">{money(oppOf(v))}</span>
+                      </div>
+                    )}
+                  </td>
                   <td className="px-3 py-3">
                     {v.blocker === "None" ? (
                       <span className="inline-flex items-center gap-1 text-xs text-accent"><Icon name="check" size={13} strokeWidth={2.25} /> Cited in {v.enginesCiting}/5 engines</span>
