@@ -12,6 +12,13 @@ const TEMP_TONE: Record<LeadTemp, "danger" | "warn" | "neutral"> = {
   Cold: "neutral",
 };
 
+// Color the avatar by lead temperature so hot buyers pop in the list.
+const AVATAR_TONE: Record<LeadTemp, string> = {
+  Hot: "bg-danger/15 text-danger ring-1 ring-danger/30",
+  Warm: "bg-warn/15 text-warn ring-1 ring-warn/30",
+  Cold: "bg-black/[0.05] text-ink-muted ring-1 ring-line",
+};
+
 const FILTERS = ["All", "Hot", "Credit app", "Appointments"] as const;
 type Filter = (typeof FILTERS)[number];
 
@@ -201,14 +208,22 @@ export default function LeadsView({ leads }: { leads: Lead[] }) {
                 key={l.id}
                 onClick={() => selectLead(l.id)}
                 className={cn(
-                  "w-full rounded-xl border p-3 text-left transition-colors",
+                  "relative w-full overflow-hidden rounded-xl border p-3 text-left transition-colors",
                   l.id === active.id
                     ? "border-cyan/50 bg-cyan/[0.06]"
                     : "border-line bg-black/[0.02] hover:border-line-strong hover:bg-black/[0.04]",
                 )}
               >
+                {l.id === active.id && (
+                  <span aria-hidden className="absolute inset-y-0 left-0 w-1 rounded-r-full bg-cyan" />
+                )}
                 <div className="flex items-center gap-2.5">
-                  <span className="grid h-9 w-9 shrink-0 place-items-center rounded-full bg-violet/20 text-xs font-semibold text-violet">
+                  <span
+                    className={cn(
+                      "grid h-9 w-9 shrink-0 place-items-center rounded-full text-xs font-semibold",
+                      AVATAR_TONE[l.temp],
+                    )}
+                  >
                     {l.name.split(" ").map((n) => n[0]).join("")}
                   </span>
                   <div className="min-w-0 flex-1">
@@ -241,7 +256,12 @@ export default function LeadsView({ leads }: { leads: Lead[] }) {
         <Card className="flex min-h-[560px] flex-col p-0">
           <div className="flex flex-wrap items-center justify-between gap-3 border-b border-line p-5">
             <div className="flex items-center gap-3">
-              <span className="grid h-11 w-11 place-items-center rounded-full bg-violet/20 text-sm font-semibold text-violet">
+              <span
+                className={cn(
+                  "grid h-11 w-11 place-items-center rounded-full text-sm font-semibold",
+                  AVATAR_TONE[active.temp],
+                )}
+              >
                 {active.name.split(" ").map((n) => n[0]).join("")}
               </span>
               <div>
@@ -338,7 +358,7 @@ export default function LeadsView({ leads }: { leads: Lead[] }) {
             )}
           </div>
 
-          <div className="border-t border-line p-4">
+          <div className={cn("border-t border-line p-4", !tookOver && "bg-accent/[0.025]")}>
             {tookOver ? (
               <div className="flex items-center gap-2">
                 <input
