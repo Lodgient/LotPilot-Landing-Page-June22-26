@@ -18,7 +18,8 @@ export default function Home() {
   return (
     <>
       <Nav />
-      <main>
+      {/* clip decorative glow/drift bleed so the page never scrolls sideways on mobile */}
+      <main className="overflow-x-clip">
         <Hero />
         <Problem />
         <AuditSection />
