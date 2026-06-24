@@ -49,10 +49,13 @@ export default function AnswerMonitor({
   dealerName,
   metro,
   queries,
+  captures,
 }: {
   dealerName: string;
   metro: string;
   queries: VisibilityQuery[];
+  /** Live captured runs keyed `${query}|${EngineName}` — real response + screenshot. */
+  captures?: Record<string, { rawResponse?: string; screenshotUrl?: string }>;
 }) {
   const [qi, setQi] = useState(0);
   const q = queries[Math.min(qi, queries.length - 1)];
@@ -69,11 +72,14 @@ export default function AnswerMonitor({
   const competitor = q.competitor || "a national marketplace";
   const site = dealerName.toLowerCase().replace(/[^a-z0-9]+/g, "") + ".com";
 
-  const answer = cited
+  const cap = captures?.[`${q.query}|${engine}`];
+  const simulated = cited
     ? `A strong local match is ${dealerName}${
         metro ? ` in ${metroShort}` : ""
       } — they have several in stock that fit "${q.query}," with pricing and availability on their listing. Worth reaching out before they sell.`
     : `For "${q.query}," the options most commonly cited are ${competitor}. I don't see ${dealerName}'s matching inventory surfaced for this question yet.`;
+  // Render the real captured response when the bots have run; otherwise simulate.
+  const answer = cap?.rawResponse || simulated;
 
   const { out, done } = useTypewriter(answer);
 
@@ -173,6 +179,16 @@ export default function AnswerMonitor({
                     </span>
                   )}
                 </div>
+              )}
+              {done && cap?.screenshotUrl && (
+                <a
+                  href={cap.screenshotUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="mt-2 inline-flex items-center gap-1 text-xs font-medium text-cyan hover:underline"
+                >
+                  <Icon name="external" size={12} /> View captured screenshot
+                </a>
               )}
             </div>
           </div>

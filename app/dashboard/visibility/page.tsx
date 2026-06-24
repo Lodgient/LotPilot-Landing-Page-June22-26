@@ -7,7 +7,7 @@ import {
   requireDealer,
   getVisibility,
   getPillars,
-  getVisibilityQueries,
+  getVisibilityMonitor,
   getShareOfVoice,
   getRecommendedVins,
   getBenchmarks,
@@ -40,14 +40,15 @@ const PILLAR_HELP: Record<string, string> = {
 
 export default async function VisibilityPage() {
   const { dealer, profile } = await requireDealer();
-  const [visibility, pillars, queries, sov, vins, benchmarks] = await Promise.all([
+  const [visibility, pillars, monitor, sov, vins, benchmarks] = await Promise.all([
     getVisibility(),
     getPillars(),
-    getVisibilityQueries(),
+    getVisibilityMonitor(dealer.id),
     getShareOfVoice(),
     getRecommendedVins(),
     getBenchmarks(),
   ]);
+  const queries = monitor.queries;
 
   const you = sov.find((s) => s.value === Math.max(...sov.map((x) => x.value)));
 
@@ -179,7 +180,12 @@ export default async function VisibilityPage() {
 
       {queries.length > 0 && (
         <div className="mt-6">
-          <AnswerMonitor dealerName={dealer.name} metro={dealer.metro} queries={queries} />
+          <AnswerMonitor
+            dealerName={dealer.name}
+            metro={dealer.metro}
+            queries={queries}
+            captures={monitor.captures}
+          />
         </div>
       )}
 

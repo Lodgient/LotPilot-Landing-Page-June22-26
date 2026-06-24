@@ -5,6 +5,7 @@ import type {
   AttributionEngine,
   Benchmark,
   Dealer,
+  EngineName,
   DemandRow,
   ForecastRow,
   FunnelStage,
@@ -168,6 +169,96 @@ export async function getVisibilityQueries(): Promise<VisibilityQuery[]> {
     volume: r.volume ?? 0,
     competitor: r.competitor ?? null,
   }));
+}
+
+/**
+ * Live-or-demo AI visibility monitor data. With AI_MONITOR_LIVE="true" it reads
+ * the bot backend's tables (ai_visibility_scans/_runs/_results) for the dealer's
+ * latest complete scan and maps them to the dashboard shape — including the raw
+ * captured response + screenshot per (query, engine). Guarded: if the tables
+ * aren't present yet (bots not shipped) or empty, it falls back to demo data so
+ * the page never breaks. Flip the flag and it's live with zero UI changes.
+ */
+const PLATFORM_TO_ENGINE: Record<string, EngineName> = {
+  chatgpt: "ChatGPT",
+  grok: "Grok",
+  perplexity: "Perplexity",
+  gemini: "Gemini",
+  claude: "Claude",
+};
+
+export interface VisibilityMonitor {
+  queries: VisibilityQuery[];
+  captures: Record<string, { rawResponse?: string; screenshotUrl?: string }>;
+  live: boolean;
+}
+
+export async function getVisibilityMonitor(dealerId: string): Promise<VisibilityMonitor> {
+  if (process.env.AI_MONITOR_LIVE === "true") {
+    try {
+      const supabase = await createClient();
+      const { data: scan } = await supabase
+        .from("ai_visibility_scans")
+        .select("id")
+        .eq("dealer_id", dealerId)
+        .eq("status", "complete")
+        .order("completed_at", { ascending: false })
+        .limit(1)
+        .maybeSingle();
+
+      if (scan?.id) {
+        const [{ data: runs }, { data: results }] = await Promise.all([
+          supabase
+            .from("ai_visibility_runs")
+            .select("id, resolved_query, platform, raw_response, screenshot_url")
+            .eq("scan_id", scan.id),
+          supabase
+            .from("ai_visibility_results")
+            .select("run_id, target_dealer_mentioned, competitor_names_found")
+            .eq("scan_id", scan.id),
+        ]);
+
+        if (runs && runs.length) {
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          const resById = new Map<string, any>((results ?? []).map((r: any) => [r.run_id, r]));
+          const byQuery = new Map<string, VisibilityQuery>();
+          const captures: VisibilityMonitor["captures"] = {};
+
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          for (const run of runs as any[]) {
+            const engine = PLATFORM_TO_ENGINE[run.platform];
+            if (!engine) continue;
+            const res = resById.get(run.id);
+            const cited = !!res?.target_dealer_mentioned;
+            const q =
+              byQuery.get(run.resolved_query) ??
+              ({
+                query: run.resolved_query,
+                engines: {} as Record<EngineName, boolean>,
+                volume: 0,
+                competitor: null,
+              } as VisibilityQuery);
+            (q.engines as Record<string, boolean>)[engine] = cited;
+            if (!cited && !q.competitor) {
+              const comp = (res?.competitor_names_found ?? [])[0];
+              if (comp) q.competitor = comp;
+            }
+            byQuery.set(run.resolved_query, q);
+            if (run.raw_response || run.screenshot_url) {
+              captures[`${run.resolved_query}|${engine}`] = {
+                rawResponse: run.raw_response ?? undefined,
+                screenshotUrl: run.screenshot_url ?? undefined,
+              };
+            }
+          }
+          return { queries: [...byQuery.values()], captures, live: true };
+        }
+      }
+    } catch {
+      // Tables not present yet / RLS / empty — fall through to demo data.
+    }
+  }
+  return { queries: await getVisibilityQueries(), captures: {}, live: false };
 }
 
 export async function getShareOfVoice(): Promise<ShareSegment[]> {
