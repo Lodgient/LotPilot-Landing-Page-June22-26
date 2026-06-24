@@ -31,6 +31,12 @@ export default async function RoiPage() {
   const maxGross = Math.max(...byEngine.map((e) => e.gross), 1);
   const totalGross = byEngine.reduce((s, e) => s + e.gross, 0);
 
+  // Money-proof verdict: gross driven vs the founding subscription rate.
+  const cost = 999; // $/mo founding rate (see pricing)
+  const roiMultiple = Math.max(1, Math.round(totalGross / cost));
+  const net = totalGross - cost;
+  const costPct = Math.max(2, Math.round((cost / Math.max(1, totalGross)) * 100));
+
   return (
     <Shell
       dealer={dealer}
@@ -38,6 +44,60 @@ export default async function RoiPage() {
       title="ROI & Attribution"
       intro="What the AI channel is worth — and who owns the customer."
     >
+      {/* the verdict a GM signs renewals on */}
+      <Card glow className="relative mb-6 overflow-hidden">
+        <div className="glow-accent pointer-events-none absolute -right-10 -top-16 h-56 w-56 opacity-50" />
+        <div className="relative grid gap-6 lg:grid-cols-[1.5fr_auto] lg:items-center">
+          <div>
+            <Badge tone="accent">● This month</Badge>
+            <p className="mt-3 text-sm font-medium text-ink-muted">
+              LotPilot drove in attributed front gross
+            </p>
+            <div className="mt-1 flex flex-wrap items-baseline gap-x-3 gap-y-1">
+              <span className="text-gradient text-5xl font-bold tracking-tight sm:text-6xl">
+                {money(totalGross)}
+              </span>
+            </div>
+            <p className="mt-3 max-w-xl text-pretty text-base text-ink sm:text-lg">
+              You pay <span className="font-semibold">{money(cost)}/mo</span> — that&apos;s{" "}
+              <span className="font-semibold text-accent">≈{roiMultiple}× back</span>, about{" "}
+              <span className="font-semibold">{money(net)}</span> in gross you keep after LotPilot,
+              with <span className="font-semibold">{owned} customers</span> you own outright.
+            </p>
+          </div>
+          <div className="flex flex-col items-center justify-center rounded-2xl border border-accent/30 bg-accent/[0.06] px-8 py-6 text-center">
+            <span className="text-5xl font-bold leading-none text-accent sm:text-6xl">
+              {roiMultiple}×
+            </span>
+            <span className="mt-2 text-[11px] font-medium uppercase tracking-wider text-accent/80">
+              return on spend
+            </span>
+          </div>
+        </div>
+
+        {/* cost vs gross — visualize how small the cost is */}
+        <div className="relative mt-6 space-y-2.5">
+          <div>
+            <div className="mb-1 flex items-center justify-between text-[11px] text-ink-faint">
+              <span>AI-driven front gross</span>
+              <span className="tabular-nums text-ink-soft">{money(totalGross)}</span>
+            </div>
+            <div className="h-2.5 overflow-hidden rounded-full bg-black/[0.06]">
+              <div className="h-full rounded-full bg-gradient-to-r from-cyan to-accent" style={{ width: "100%" }} />
+            </div>
+          </div>
+          <div>
+            <div className="mb-1 flex items-center justify-between text-[11px] text-ink-faint">
+              <span>What you pay LotPilot</span>
+              <span className="tabular-nums text-ink-soft">{money(cost)}/mo</span>
+            </div>
+            <div className="h-2.5 overflow-hidden rounded-full bg-black/[0.06]">
+              <div className="h-full rounded-full bg-ink/30" style={{ width: `${costPct}%` }} />
+            </div>
+          </div>
+        </div>
+      </Card>
+
       <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
         {kpis.map((k) => (
           <StatCard key={k.label} kpi={k} />
