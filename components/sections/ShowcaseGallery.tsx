@@ -9,24 +9,28 @@ const SHOTS = [
     src: "/product/visibility.webp",
     label: "dashboard/visibility",
     title: "AI Visibility",
+    tag: "What every AI says about you",
     body: "See what ChatGPT, Grok, Perplexity, Gemini and Claude say about your store — per engine, with the live answer monitor.",
   },
   {
     src: "/product/command.webp",
     label: "dashboard",
     title: "Command Center",
+    tag: "Your overnight recap",
     body: "Every morning: what your AI did overnight — gross influenced, leads worked, appointments booked.",
   },
   {
     src: "/product/inventory.webp",
     label: "dashboard/inventory",
     title: "Inventory AI",
+    tag: "Every car, scored",
     body: "Every car scored for AI visibility and ranked by the gross it's leaving on the table.",
   },
   {
     src: "/product/roi.webp",
     label: "dashboard/roi",
     title: "ROI & Attribution",
+    tag: "Gross traced to AI",
     body: "Sold cars and gross traced to the exact AI engine that produced them.",
   },
 ];
@@ -36,7 +40,7 @@ export default function ShowcaseGallery() {
   const cur = SHOTS[active];
 
   return (
-    <div className="grid gap-6 lg:grid-cols-[1fr_300px] lg:items-start">
+    <div className="grid gap-6 lg:grid-cols-[1fr_288px] lg:items-start">
       {/* main column: title + description + big preview */}
       <div className="order-2 lg:order-1">
         <div className="mb-4">
@@ -69,42 +73,53 @@ export default function ShowcaseGallery() {
         </div>
       </div>
 
-      {/* side rail: vertical thumbnails (horizontal scroll on mobile) */}
-      <div className="order-1 flex gap-3 overflow-x-auto pb-1 lg:order-2 lg:flex-col lg:overflow-visible lg:pb-0">
-        {SHOTS.map((s, i) => (
-          <button
-            key={s.src}
-            onClick={() => setActive(i)}
-            aria-pressed={active === i}
-            className={cn(
-              "group w-44 shrink-0 rounded-lg border bg-panel p-1.5 text-left transition-all lg:w-full",
-              active === i
-                ? "border-cyan/60 ring-2 ring-cyan/30"
-                : "border-line hover:-translate-y-0.5 hover:border-line-strong",
-            )}
-          >
-            <div className="overflow-hidden rounded-md">
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
-                src={s.src}
-                alt={s.title}
-                loading="lazy"
-                className={cn(
-                  "block aspect-[16/10] w-full object-cover transition-opacity",
-                  active === i ? "opacity-100" : "opacity-70 group-hover:opacity-100",
-                )}
-              />
-            </div>
-            <p
+      {/* side rail: compact selectable list (horizontal scroll on mobile) */}
+      <div
+        role="tablist"
+        aria-label="Product views"
+        className="order-1 flex gap-2.5 overflow-x-auto pb-1 lg:order-2 lg:flex-col lg:overflow-visible lg:pb-0"
+      >
+        {SHOTS.map((s, i) => {
+          const on = active === i;
+          return (
+            <button
+              key={s.src}
+              role="tab"
+              aria-selected={on}
+              onClick={() => setActive(i)}
               className={cn(
-                "mt-2 px-1 pb-0.5 text-xs font-semibold transition-colors",
-                active === i ? "text-cyan" : "text-ink-soft group-hover:text-ink",
+                "group flex w-60 shrink-0 items-center gap-3 rounded-xl border p-2 text-left transition-all lg:w-full",
+                on
+                  ? "border-cyan/60 bg-cyan/[0.05] ring-1 ring-cyan/25"
+                  : "border-line bg-panel hover:border-line-strong hover:bg-canvas-2",
               )}
             >
-              {s.title}
-            </p>
-          </button>
-        ))}
+              <span className="relative shrink-0 overflow-hidden rounded-md ring-1 ring-line">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src={s.src}
+                  alt=""
+                  loading="lazy"
+                  className={cn(
+                    "block h-12 w-[76px] object-cover transition-opacity",
+                    on ? "opacity-100" : "opacity-80 group-hover:opacity-100",
+                  )}
+                />
+              </span>
+              <span className="min-w-0">
+                <span
+                  className={cn(
+                    "block truncate text-sm font-semibold transition-colors",
+                    on ? "text-cyan" : "text-ink group-hover:text-ink",
+                  )}
+                >
+                  {s.title}
+                </span>
+                <span className="mt-0.5 block truncate text-xs text-ink-muted">{s.tag}</span>
+              </span>
+            </button>
+          );
+        })}
       </div>
     </div>
   );
