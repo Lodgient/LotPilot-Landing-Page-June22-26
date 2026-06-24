@@ -70,16 +70,18 @@ export default async function CommandCenter() {
     },
     {
       title: "Turn on your AI Sales Agent",
-      desc: "Ava works every lead 24/7 — qualifies, books, captures credit apps.",
+      desc: "Optional add-on — most dealers add Ava once the first leads start coming in.",
       icon: "bolt",
-      status: agentDone ? "done" : scanDone ? "active" : "todo",
+      status: agentDone ? "done" : "todo",
       href: "/dashboard/assistant",
       cta: "Set up Ava",
+      optional: true,
     },
   ];
+  // Setup is "done" once the required steps are complete — the agent is optional.
   const onboarded =
     dealer.id === "11111111-1111-1111-1111-111111111111" ||
-    onboardSteps.every((s) => s.status === "done");
+    onboardSteps.filter((s) => !s.optional).every((s) => s.status === "done");
 
   // Surface the most urgent AI-visibility signal as a top banner (spec §8.3).
   const trend = visibility?.trend ?? [];

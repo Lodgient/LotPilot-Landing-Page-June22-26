@@ -12,6 +12,8 @@ export interface OnboardingStep {
   status: StepStatus;
   href?: string;
   cta?: string;
+  /** Not required to finish setup (e.g. the AI Sales Agent add-on). */
+  optional?: boolean;
 }
 
 export default function OnboardingChecklist({
@@ -23,8 +25,10 @@ export default function OnboardingChecklist({
   dealerName: string;
   steps: OnboardingStep[];
 }) {
-  const done = steps.filter((s) => s.status === "done").length;
-  const pct = Math.round((done / steps.length) * 100);
+  // Progress reflects only the required steps; optional add-ons don't gate setup.
+  const required = steps.filter((s) => !s.optional);
+  const done = required.filter((s) => s.status === "done").length;
+  const pct = Math.round((done / Math.max(1, required.length)) * 100);
 
   return (
     <Card glow className="relative overflow-hidden">
@@ -54,15 +58,17 @@ export default function OnboardingChecklist({
             />
           </div>
           <span className="text-sm font-medium tabular-nums text-ink-soft">
-            {done}/{steps.length}
+            {done}/{required.length}
           </span>
         </div>
 
         {/* steps */}
         <ol className="mt-6 space-y-2.5">
-          {steps.map((s, i) => {
+          {steps.map((s) => {
             const isDone = s.status === "done";
-            const isActive = s.status === "active";
+            const isOptional = !!s.optional;
+            const isActive = !isOptional && s.status === "active";
+            const num = required.indexOf(s) + 1;
             return (
               <li
                 key={s.title}
@@ -78,26 +84,47 @@ export default function OnboardingChecklist({
                   className={cn(
                     "grid h-9 w-9 shrink-0 place-items-center rounded-full text-sm font-semibold",
                     isDone && "bg-accent/15 text-accent",
+                    !isDone && isOptional && "bg-violet/12 text-violet",
                     isActive && "bg-cyan text-white shadow-[0_4px_12px_-3px_rgba(37,99,235,0.7)]",
-                    s.status === "todo" && "border border-line text-ink-faint",
+                    !isDone && !isOptional && !isActive && "border border-line text-ink-faint",
                   )}
                 >
-                  {isDone ? <Icon name="check" size={16} strokeWidth={2.5} /> : i + 1}
+                  {isDone ? (
+                    <Icon name="check" size={16} strokeWidth={2.5} />
+                  ) : isOptional ? (
+                    <Icon name={s.icon} size={16} />
+                  ) : (
+                    num
+                  )}
                 </span>
 
-                <span className="grid h-9 w-9 shrink-0 place-items-center rounded-lg bg-black/[0.04] text-ink-soft">
-                  <Icon name={s.icon} size={16} />
-                </span>
+                {!isOptional && (
+                  <span className="grid h-9 w-9 shrink-0 place-items-center rounded-lg bg-black/[0.04] text-ink-soft">
+                    <Icon name={s.icon} size={16} />
+                  </span>
+                )}
 
                 <div className="min-w-0 flex-1">
-                  <p className={cn("text-sm font-semibold", isDone ? "text-ink-muted" : "text-ink")}>
-                    {s.title}
+                  <p className="flex items-center gap-2 text-sm font-semibold">
+                    <span className={isDone ? "text-ink-muted" : "text-ink"}>{s.title}</span>
+                    {isOptional && (
+                      <span className="rounded-full bg-violet/12 px-2 py-0.5 text-[10px] font-medium uppercase tracking-wide text-violet">
+                        Optional
+                      </span>
+                    )}
                   </p>
                   <p className="text-xs text-ink-muted">{s.desc}</p>
                 </div>
 
                 {isDone ? (
                   <span className="shrink-0 text-xs font-medium text-accent">Done</span>
+                ) : isOptional && s.href ? (
+                  <Link
+                    href={s.href}
+                    className="inline-flex h-9 shrink-0 items-center gap-1.5 rounded-full border border-line-strong bg-panel px-4 text-sm font-medium text-ink transition-colors hover:border-violet/50"
+                  >
+                    {s.cta ?? "Add"}
+                  </Link>
                 ) : isActive && s.href ? (
                   <Link
                     href={s.href}
