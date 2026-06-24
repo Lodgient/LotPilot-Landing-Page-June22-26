@@ -426,16 +426,16 @@ export default function InventoryView({ vehicles, dealer }: { vehicles: Vehicle[
                       <div className="min-w-0">
                         <p className="text-sm font-medium text-ink">
                           {v.year} {v.make} {v.model} <span className="text-ink-muted">{v.trim}</span>
-                          {inDemand(v) && (
+                          {inDemand(v) && v.aiScore < 70 && (
                             <span
                               className={cn(
                                 "ml-2 inline-flex items-center gap-1 rounded-md px-1.5 py-0.5 align-middle text-[10px] font-semibold",
                                 v.aiScore < 40 ? "bg-danger/12 text-danger" : "bg-violet/15 text-violet",
                               )}
-                              title={`${v.queriesMatched} buyer queries in your market match this car`}
+                              title={`${v.queriesMatched} buyer queries match this car, but it isn't fully visible yet`}
                             >
                               <Icon name="trending" size={10} strokeWidth={2.5} />
-                              In demand
+                              {v.aiScore < 40 ? "In demand · invisible" : "In demand"}
                             </span>
                           )}
                         </p>
