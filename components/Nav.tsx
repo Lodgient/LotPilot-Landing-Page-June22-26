@@ -7,9 +7,9 @@ import { cn } from "@/lib/cn";
 
 const LINKS = [
   { href: "/#problem", label: "The problem" },
-  { href: "/#audit", label: "Free audit" },
+  { href: "/#audit", label: "Free check" },
+  { href: "/#product", label: "Product" },
   { href: "/#how", label: "How it works" },
-  { href: "/#compare", label: "vs Marketplaces" },
   { href: "/#pricing", label: "Pricing" },
 ];
 
@@ -18,7 +18,7 @@ export default function Nav() {
   const [open, setOpen] = useState(false);
 
   useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 24);
+    const onScroll = () => setScrolled(window.scrollY > 16);
     onScroll();
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);
@@ -27,52 +27,54 @@ export default function Nav() {
   const onDark = !scrolled && !open;
 
   return (
-    <header
-      className={cn(
-        "fixed inset-x-0 top-0 z-50 transition-all duration-500",
-        scrolled || open
-          ? "border-b border-line bg-[#f8fafc]/92 py-3.5 backdrop-blur-xl saturate-150"
-          : "border-b border-transparent py-6",
-      )}
-    >
-      <nav className="mx-auto flex max-w-[1240px] items-center justify-between gap-4 px-7 sm:px-10">
-        <Link href="/" aria-label="LotPilot home">
+    <header className="fixed inset-x-0 top-0 z-50 px-3 pt-3 sm:px-5 sm:pt-4">
+      <div
+        className={cn(
+          "mx-auto flex max-w-[1200px] items-center justify-between gap-4 rounded-2xl border px-4 py-2.5 transition-all duration-500 sm:px-5",
+          scrolled || open
+            ? "border-line bg-[#f8fafc]/80 shadow-[0_12px_40px_-18px_rgba(15,23,34,0.28)] backdrop-blur-xl saturate-150"
+            : "border-white/12 bg-[#0a0f1a]/25 backdrop-blur-md",
+        )}
+      >
+        <Link href="/" aria-label="LotPilot home" className="shrink-0">
           <Logo onDark={onDark} />
         </Link>
 
-        <ul className="hidden items-center gap-0.5 lg:flex">
+        <ul className="hidden items-center gap-7 lg:flex">
           {LINKS.map((l) => (
             <li key={l.href}>
               <a
                 href={l.href}
                 className={cn(
-                  "rounded-full px-3.5 py-2 text-[12px] font-medium uppercase tracking-[0.07em] transition-colors duration-300",
-                  onDark
-                    ? "text-white/75 hover:bg-white/10 hover:text-white"
-                    : "text-ink-soft hover:bg-ink/[0.05] hover:text-ink",
+                  "group relative text-[13px] font-medium transition-colors duration-300",
+                  onDark ? "text-white/75 hover:text-white" : "text-ink-soft hover:text-ink",
                 )}
               >
                 {l.label}
+                <span
+                  className={cn(
+                    "absolute -bottom-1 left-0 h-px w-full origin-left scale-x-0 transition-transform duration-300 group-hover:scale-x-100",
+                    onDark ? "bg-white" : "bg-ink",
+                  )}
+                />
               </a>
             </li>
           ))}
         </ul>
 
-        <div className="hidden items-center gap-1.5 lg:flex">
+        <div className="hidden items-center gap-3 lg:flex">
           <Link
             href="/login"
             className={cn(
-              "rounded-full px-3.5 py-2 text-[12px] font-medium uppercase tracking-[0.07em] transition-colors duration-300",
-              onDark
-                ? "text-white/75 hover:bg-white/10 hover:text-white"
-                : "text-ink-soft hover:bg-ink/[0.05] hover:text-ink",
+              "text-[13px] font-medium transition-colors duration-300",
+              onDark ? "text-white/75 hover:text-white" : "text-ink-soft hover:text-ink",
             )}
           >
             Login
           </Link>
           <Link
             href="/dashboard"
-            className="ml-1.5 inline-flex items-center gap-1.5 rounded-full bg-[#2563eb] px-5 py-2.5 text-[12px] font-semibold uppercase tracking-[0.08em] text-white shadow-[0_8px_24px_-8px_rgba(37,99,235,0.8)] transition-all duration-300 hover:-translate-y-0.5 hover:bg-[#1d4ed8] hover:shadow-[0_14px_32px_-10px_rgba(37,99,235,0.95)]"
+            className="inline-flex items-center gap-1.5 rounded-full bg-[#2563eb] px-4 py-2 text-[13px] font-semibold text-white shadow-[0_8px_24px_-10px_rgba(37,99,235,0.9)] transition-all duration-300 hover:-translate-y-0.5 hover:bg-[#1d4ed8] hover:shadow-[0_14px_34px_-12px_rgba(37,99,235,0.95)]"
           >
             See the live demo
           </Link>
@@ -80,8 +82,8 @@ export default function Nav() {
 
         <button
           className={cn(
-            "text-2xl leading-none transition-colors lg:hidden",
-            onDark ? "text-[#f8fafc]" : "text-ink",
+            "grid h-9 w-9 place-items-center rounded-lg text-xl leading-none transition-colors lg:hidden",
+            onDark ? "text-white hover:bg-white/10" : "text-ink hover:bg-ink/[0.05]",
           )}
           aria-label="Toggle menu"
           aria-expanded={open}
@@ -89,35 +91,37 @@ export default function Nav() {
         >
           {open ? "✕" : "☰"}
         </button>
-      </nav>
+      </div>
 
       {open && (
-        <div className="border-t border-line bg-[#f8fafc]/97 px-7 py-5 backdrop-blur-xl lg:hidden">
-          <div className="flex flex-col gap-1">
+        <div className="mx-auto mt-2 max-w-[1200px] overflow-hidden rounded-2xl border border-line bg-[#f8fafc]/97 p-3 shadow-xl backdrop-blur-xl lg:hidden">
+          <div className="flex flex-col">
             {LINKS.map((l) => (
               <a
                 key={l.href}
                 href={l.href}
                 onClick={() => setOpen(false)}
-                className="rounded-lg px-2 py-2.5 font-serif text-xl text-ink-soft hover:text-ink"
+                className="rounded-lg px-3 py-2.5 text-base font-medium text-ink-soft transition-colors hover:bg-ink/[0.04] hover:text-ink"
               >
                 {l.label}
               </a>
             ))}
-            <Link
-              href="/login"
-              onClick={() => setOpen(false)}
-              className="rounded-lg px-2 py-2.5 font-serif text-xl text-ink-soft hover:text-ink"
-            >
-              Login
-            </Link>
-            <Link
-              href="/dashboard"
-              onClick={() => setOpen(false)}
-              className="mt-2 inline-flex items-center justify-center rounded-sm bg-cyan px-5 py-3 text-[12px] font-medium uppercase tracking-[0.1em] text-white"
-            >
-              See the live demo
-            </Link>
+            <div className="mt-2 flex items-center gap-2 border-t border-line pt-3">
+              <Link
+                href="/login"
+                onClick={() => setOpen(false)}
+                className="flex-1 rounded-full border border-line-strong px-4 py-2.5 text-center text-sm font-medium text-ink"
+              >
+                Login
+              </Link>
+              <Link
+                href="/dashboard"
+                onClick={() => setOpen(false)}
+                className="flex-1 rounded-full bg-[#2563eb] px-4 py-2.5 text-center text-sm font-semibold text-white"
+              >
+                See the live demo
+              </Link>
+            </div>
           </div>
         </div>
       )}
