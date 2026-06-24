@@ -5,6 +5,7 @@ import { LineChart, Donut, ProgressBar } from "@/components/dashboard/charts";
 import Benchmarks from "@/components/dashboard/Benchmarks";
 import AnswerMonitor from "@/components/dashboard/AnswerMonitor";
 import VinCitationBreakdown from "@/components/dashboard/VinCitationBreakdown";
+import { ShareProof } from "@/components/audit/ShareCard";
 import RunScanButton from "@/components/dashboard/RunScanButton";
 import {
   requireDealer,
@@ -73,6 +74,22 @@ export default async function VisibilityPage() {
   const citedVins = vehicles.filter((v) => v.enginesCiting > 0).length;
   const darkVins = totalVins - citedVins;
   const citationRate = totalVins ? Math.round((citedVins / totalVins) * 100) : 0;
+
+  // Forwardable shock asset (doc §4.3): a real buyer query where AI named a rival
+  // instead of this store — exportable as an image straight from the dashboard.
+  const shockQuery = queries.find((q) => q.competitor && !ENGINES.every((e) => q.engines[e]));
+  const shockEngine = shockQuery ? ENGINES.find((e) => !shockQuery.engines[e]) ?? ENGINES[0] : null;
+  const shockData =
+    shockQuery && shockEngine && shockQuery.competitor
+      ? {
+          dealershipName: dealer.name,
+          city: dealer.metro,
+          score: visibility?.score ?? citationRate,
+          dealerHits: citedQueries,
+          queryCount: totalQueries,
+          shock: { engine: shockEngine, query: shockQuery.query, names: [shockQuery.competitor] },
+        }
+      : null;
 
   // First-run: brand-new dealer, no scan yet (spec §6.3).
   if (!visibility && queries.length === 0) {
@@ -219,6 +236,16 @@ export default async function VisibilityPage() {
       </Card>
 
       <VinCitationBreakdown vehicles={vehicles} dealerName={dealer.name} />
+
+      {shockData && (
+        <Card className="mt-6">
+          <PanelHeading
+            title="Forward the proof"
+            sub="A board-ready image of AI naming a rival instead of you — share it in one tap"
+          />
+          <ShareProof data={shockData} showHeading={false} />
+        </Card>
+      )}
 
       <Card className="mt-6">
         <PanelHeading title="The five pillars" sub="What the score is built from" />

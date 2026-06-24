@@ -124,9 +124,11 @@ export const ShareCard = forwardRef<HTMLDivElement, { data: ShareCardData }>(
 export function ShareProof({
   data,
   onAuditRival,
+  showHeading = true,
 }: {
   data: ShareCardData;
   onAuditRival?: () => void;
+  showHeading?: boolean;
 }) {
   const cardRef = useRef<HTMLDivElement>(null);
   const [busy, setBusy] = useState(false);
@@ -197,10 +199,12 @@ export function ShareProof({
   }, [capture, fileName]);
 
   return (
-    <div className="mt-6">
-      <p className="mb-3 text-xs uppercase tracking-wider text-ink-faint">
-        The proof — forward this to anyone who doubts it
-      </p>
+    <div className={showHeading ? "mt-6" : ""}>
+      {showHeading && (
+        <p className="mb-3 text-xs uppercase tracking-wider text-ink-faint">
+          The proof — forward this to anyone who doubts it
+        </p>
+      )}
       <div className="overflow-x-auto">
         <ShareCard ref={cardRef} data={data} />
       </div>
