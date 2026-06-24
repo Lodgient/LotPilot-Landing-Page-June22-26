@@ -132,6 +132,7 @@ export default function InventoryView({ vehicles, dealer }: { vehicles: Vehicle[
   const pathname = usePathname();
   const [filter, setFilter] = useState<Filter>(((sp.get("view") as Filter) ?? "all"));
   const [sort, setSort] = useState<SortKey>(((sp.get("sort") as SortKey) ?? "ai"));
+  const [layout, setLayout] = useState<"table" | "grid">("table");
   const [q, setQ] = useState(sp.get("q") ?? "");
   const [active, setActive] = useState<Vehicle | null>(null);
   const [preview, setPreview] = useState<Vehicle | null>(null);
@@ -252,6 +253,22 @@ export default function InventoryView({ vehicles, dealer }: { vehicles: Vehicle[
           </button>
         ))}
         <div className="flex w-full flex-wrap items-center gap-2 sm:ml-auto sm:w-auto">
+          <div className="inline-flex rounded-lg border border-line-strong bg-black/[0.02] p-0.5">
+            {(["table", "grid"] as const).map((l) => (
+              <button
+                key={l}
+                onClick={() => setLayout(l)}
+                className={cn(
+                  "inline-flex items-center gap-1.5 rounded-md px-2.5 py-1 text-xs font-medium transition-colors",
+                  layout === l ? "bg-cyan/15 text-cyan" : "text-ink-muted hover:text-ink",
+                )}
+                title={l === "table" ? "Table view" : "Lot view — color-coded by AI score"}
+              >
+                <Icon name={l === "table" ? "messages" : "command"} size={13} />
+                {l === "table" ? "Table" : "Lot view"}
+              </button>
+            ))}
+          </div>
           <input
             value={q}
             onChange={(e) => setQ(e.target.value)}
@@ -327,6 +344,64 @@ export default function InventoryView({ vehicles, dealer }: { vehicles: Vehicle[
         )}
       </p>
 
+      {layout === "grid" ? (
+        /* lot view — a color-coded map of the whole lot's AI health */
+        <div className="mt-3 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
+          {rows.map((v) => (
+            <button
+              key={v.id}
+              onClick={() => setActive(v)}
+              className="surface surface-hover group relative flex flex-col overflow-hidden rounded-xl text-left"
+            >
+              <div className="h-1 w-full" style={{ background: scoreColor(v.aiScore) }} />
+              <div className="flex flex-1 flex-col gap-2.5 p-3">
+                <div className="flex items-start justify-between gap-2">
+                  <ScoreGauge score={v.aiScore} size={34} />
+                  <span className="text-[11px] tabular-nums text-ink-faint">{v.daysOnLot}d</span>
+                </div>
+                <div className="min-w-0">
+                  <p className="truncate text-sm font-medium text-ink">
+                    {v.year} {v.make} {v.model}
+                  </p>
+                  <p className="truncate text-xs text-ink-faint">
+                    {v.trim} · {money(v.price)}
+                  </p>
+                </div>
+                <div className="mt-auto flex items-center justify-between gap-2">
+                  <EngineDots v={v} />
+                  {oppOf(v) > 0 ? (
+                    <span
+                      className="text-xs font-semibold tabular-nums"
+                      style={{ color: scoreColor(v.aiScore) }}
+                    >
+                      {money(oppOf(v))}
+                    </span>
+                  ) : (
+                    <Icon name="check" size={13} strokeWidth={2.5} className="text-accent" />
+                  )}
+                </div>
+              </div>
+              {inDemand(v) && v.aiScore < 70 && (
+                <span
+                  className={cn(
+                    "absolute right-2 top-2 grid h-5 w-5 place-items-center rounded-full",
+                    v.aiScore < 40 ? "bg-danger/15 text-danger" : "bg-violet/15 text-violet",
+                  )}
+                  title="In demand — buyers are searching this, and it isn't fully visible"
+                >
+                  <Icon name="trending" size={11} strokeWidth={2.5} />
+                </span>
+              )}
+            </button>
+          ))}
+          {rows.length === 0 && (
+            <p className="surface col-span-full rounded-2xl p-6 text-center text-sm text-ink-muted">
+              No vehicles match this view.
+            </p>
+          )}
+        </div>
+      ) : (
+        <>
       {/* mobile cards */}
       <div className="mt-3 space-y-3 lg:hidden">
         {rows.map((v) => (
@@ -508,6 +583,8 @@ export default function InventoryView({ vehicles, dealer }: { vehicles: Vehicle[
           <p className="p-6 text-center text-sm text-ink-muted">No vehicles match this view.</p>
         )}
       </Card>
+        </>
+      )}
 
       {/* drill-down modal */}
       {active && (
