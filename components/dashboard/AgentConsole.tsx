@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Icon, { type IconName } from "@/components/Icon";
 import { Card, PanelHeading } from "@/components/dashboard/ui";
 import { Sparkline, TrendPill } from "@/components/dashboard/charts";
@@ -288,6 +288,9 @@ export default function AgentConsole({
       {/* live call demo */}
       <CallMe />
 
+      {/* test the assistant live */}
+      <TestAva name={cfg.displayName} persona={cfg.persona} greeting={cfg.greeting} />
+
       <div className="grid gap-6 lg:grid-cols-[1.1fr_1fr]">
         {/* configuration */}
         <Card>
@@ -454,6 +457,171 @@ export default function AgentConsole({
         </Card>
       </div>
     </div>
+  );
+}
+
+type TestMsg = { id: number; role: "user" | "assistant"; text: string };
+
+const TEST_CHIPS = [
+  "Do you have a RAV4 under $30k?",
+  "What's my trade-in worth?",
+  "Can I get financing with less-than-perfect credit?",
+];
+
+/**
+ * Test Ava live — message the assistant like a buyer and watch her answer in
+ * real time (grounded in the dealer's inventory via /api/assistant), with
+ * one-tap voice playback of any reply via /api/tts.
+ */
+function TestAva({ name, persona, greeting }: { name: string; persona: string; greeting: string }) {
+  const [messages, setMessages] = useState<TestMsg[]>([
+    { id: 0, role: "assistant", text: greeting.replace(/\{vehicle\}/gi, "2024 Nissan Rogue") },
+  ]);
+  const [input, setInput] = useState("");
+  const [busy, setBusy] = useState(false);
+  const [speakingId, setSpeakingId] = useState<number | null>(null);
+  const idRef = useRef(1);
+  const audioRef = useRef<HTMLAudioElement | null>(null);
+  const scrollRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight, behavior: "smooth" });
+  }, [messages]);
+
+  async function send(q: string) {
+    const text = q.trim();
+    if (!text || busy) return;
+    setInput("");
+    const userMsg: TestMsg = { id: idRef.current++, role: "user", text };
+    const aId = idRef.current++;
+    const history = [...messages, userMsg];
+    setMessages([...history, { id: aId, role: "assistant", text: "" }]);
+    setBusy(true);
+    try {
+      const res = await fetch("/api/assistant", {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({ messages: history.map((m) => ({ role: m.role, content: m.text })) }),
+      });
+      if (!res.ok || !res.body) throw new Error("unreachable");
+      const reader = res.body.getReader();
+      const dec = new TextDecoder();
+      let acc = "";
+      for (;;) {
+        const { done, value } = await reader.read();
+        if (done) break;
+        acc += dec.decode(value, { stream: true });
+        setMessages((m) => m.map((x) => (x.id === aId ? { ...x, text: acc } : x)));
+      }
+    } catch {
+      setMessages((m) =>
+        m.map((x) =>
+          x.id === aId
+            ? { ...x, text: "I'd love to help with that — give me a second and try again." }
+            : x,
+        ),
+      );
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  async function speak(msg: TestMsg) {
+    const a = audioRef.current;
+    if (!a) return;
+    if (speakingId === msg.id) {
+      a.pause();
+      a.currentTime = 0;
+      setSpeakingId(null);
+      return;
+    }
+    try {
+      const res = await fetch("/api/tts", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ text: msg.text, persona }),
+      });
+      if (!res.ok) return;
+      const url = URL.createObjectURL(await res.blob());
+      a.src = url;
+      a.onended = () => setSpeakingId(null);
+      setSpeakingId(msg.id);
+      a.play().catch(() => setSpeakingId(null));
+    } catch {
+      setSpeakingId(null);
+    }
+  }
+
+  return (
+    <Card>
+      <PanelHeading
+        title={`Test ${name} live`}
+        sub="Ask anything a buyer would — and hear exactly how your AI works the lead"
+      />
+      <div ref={scrollRef} className="max-h-[320px] space-y-3 overflow-y-auto pr-1 scroll-slim">
+        {messages.map((m) =>
+          m.role === "user" ? (
+            <div key={m.id} className="flex justify-end">
+              <div className="max-w-[80%] rounded-2xl rounded-tr-sm bg-cyan px-3.5 py-2.5 text-sm text-ink-inverse">
+                {m.text}
+              </div>
+            </div>
+          ) : (
+            <div key={m.id} className="flex items-start gap-2.5">
+              <span className="mt-0.5 grid h-7 w-7 shrink-0 place-items-center rounded-lg bg-gradient-to-br from-cyan to-violet text-[11px] font-bold text-white">
+                {name.charAt(0) || "A"}
+              </span>
+              <div className="min-w-0 max-w-[85%]">
+                <div className="rounded-2xl rounded-tl-sm border border-line bg-black/[0.02] px-3.5 py-2.5 text-sm leading-relaxed text-ink-soft">
+                  {m.text || <span className="text-ink-faint">…</span>}
+                </div>
+                {m.text && (
+                  <button
+                    onClick={() => speak(m)}
+                    className="mt-1 inline-flex items-center gap-1 text-[11px] font-medium text-ink-faint transition-colors hover:text-cyan"
+                  >
+                    <Icon name={speakingId === m.id ? "close" : "play"} size={11} strokeWidth={2.25} />
+                    {speakingId === m.id ? "Stop" : "Hear it"}
+                  </button>
+                )}
+              </div>
+            </div>
+          ),
+        )}
+      </div>
+
+      {messages.length <= 1 && (
+        <div className="mt-3 flex flex-wrap gap-2">
+          {TEST_CHIPS.map((c) => (
+            <button
+              key={c}
+              onClick={() => send(c)}
+              className="rounded-full border border-line-strong bg-black/[0.02] px-3 py-1.5 text-xs text-ink-soft transition-colors hover:border-cyan/40 hover:text-ink"
+            >
+              {c}
+            </button>
+          ))}
+        </div>
+      )}
+
+      <form onSubmit={(e) => { e.preventDefault(); send(input); }} className="mt-3 flex items-end gap-2">
+        <input
+          value={input}
+          onChange={(e) => setInput(e.target.value)}
+          placeholder={`Message ${name} like a buyer…`}
+          className="h-11 flex-1 rounded-xl border border-line-strong bg-black/[0.03] px-4 text-sm text-ink placeholder:text-ink-faint focus:border-cyan/60 focus:outline-none"
+        />
+        <button
+          type="submit"
+          disabled={busy || !input.trim()}
+          aria-label="Send"
+          className="grid h-11 w-11 shrink-0 place-items-center rounded-xl bg-cyan text-ink-inverse transition-colors hover:bg-cyan/90 disabled:opacity-50"
+        >
+          <Icon name="arrow-right" size={18} strokeWidth={2.25} />
+        </button>
+      </form>
+      <audio ref={audioRef} preload="none" />
+    </Card>
   );
 }
 
