@@ -124,7 +124,7 @@ export default async function VisibilityPage() {
           <div className="glow-cyan pointer-events-none absolute left-1/2 -top-16 h-56 w-56 -translate-x-1/2 opacity-50" />
           <div className="relative mx-auto max-w-xl py-6">
             <Badge tone="cyan">● Not yet measured</Badge>
-            <h2 className="mt-4 text-2xl font-semibold tracking-tight text-ink sm:text-3xl">
+            <h2 className="mt-4 font-display text-3xl text-ink sm:text-4xl">
               See where you stand in <span className="text-gradient">AI search.</span>
             </h2>
             <p className="mt-3 text-sm text-ink-muted">
@@ -326,14 +326,14 @@ export default async function VisibilityPage() {
         <div className="mb-5 grid grid-cols-1 gap-3 sm:grid-cols-3">
           <div className="rounded-xl border border-line bg-black/[0.02] p-3.5">
             <p className="text-xs text-ink-faint">Monthly buyer demand</p>
-            <p className="mt-1 text-2xl font-semibold tabular-nums text-ink">
+            <p className="mt-1 font-display text-[26px] leading-none text-ink [font-feature-settings:'tnum'_'lnum']">
               {monthlyDemand.toLocaleString()}
             </p>
             <p className="text-xs text-ink-muted">searches across these queries</p>
           </div>
           <div className="rounded-xl border border-danger/25 bg-danger/[0.06] p-3.5">
             <p className="text-xs text-ink-faint">Gross at risk</p>
-            <p className="mt-1 text-2xl font-semibold tabular-nums text-danger">
+            <p className="mt-1 font-display text-[26px] leading-none text-danger [font-feature-settings:'tnum'_'lnum']">
               {visibility?.grossAtRisk ?? "—"}
             </p>
             <p className="text-xs text-ink-muted">

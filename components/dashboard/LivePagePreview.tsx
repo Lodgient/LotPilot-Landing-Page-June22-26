@@ -131,11 +131,11 @@ export default function LivePagePreview({
             <p className="font-mono text-[11px] uppercase tracking-wider text-ink-faint">
               {vehicle.stockType} · VIN {vehicle.vin}
             </p>
-            <h1 className="mt-1 text-2xl font-bold tracking-tight text-ink sm:text-3xl">
+            <h1 className="mt-1 font-display text-3xl text-ink sm:text-4xl">
               {name} <span className="text-ink-muted">{vehicle.trim}</span>
             </h1>
             <div className="mt-3 flex flex-wrap items-center gap-x-5 gap-y-1.5 text-sm">
-              <span className="text-2xl font-bold text-gradient">{money(vehicle.price)}</span>
+              <span className="font-display text-2xl text-gradient">{money(vehicle.price)}</span>
               <span className="text-ink-muted">{vehicle.mileage.toLocaleString()} mi</span>
               <span className="text-ink-muted">{vehicle.body}</span>
               <span className="text-ink-muted">{vehicle.daysOnLot} days on lot</span>

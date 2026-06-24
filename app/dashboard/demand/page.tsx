@@ -31,7 +31,7 @@ function Tile({
         <Icon name={icon} size={16} />
       </span>
       <div>
-        <div className="text-2xl font-bold tracking-tight text-ink">{value}</div>
+        <div className="font-display text-[26px] leading-none text-ink">{value}</div>
         <div className="mt-0.5 text-xs text-ink-muted">{label}</div>
         {sub && <div className="mt-0.5 text-[11px] text-ink-faint">{sub}</div>}
       </div>
@@ -75,7 +75,7 @@ export default async function DemandPage() {
           <div className="glow-violet pointer-events-none absolute left-1/2 -top-16 h-56 w-56 -translate-x-1/2 opacity-50" />
           <div className="relative mx-auto max-w-xl py-6">
             <Badge tone="violet">● No signal yet</Badge>
-            <h2 className="mt-4 text-2xl font-semibold tracking-tight text-ink sm:text-3xl">
+            <h2 className="mt-4 font-display text-3xl text-ink sm:text-4xl">
               See what buyers are asking AI{dealer.metro ? (
                 <>
                   {" "}in <span className="text-gradient">{dealer.metro}.</span>
@@ -106,7 +106,7 @@ export default async function DemandPage() {
         <div className="glow-violet pointer-events-none absolute -right-10 -top-16 h-56 w-56 opacity-50" />
         <div className="relative">
           <Badge tone="violet">● Market signal</Badge>
-          <h2 className="mt-3 text-pretty text-2xl font-semibold tracking-tight text-ink sm:text-3xl">
+          <h2 className="mt-3 text-pretty font-display text-3xl text-ink sm:text-4xl">
             <span className="text-gradient">{totalGapVolume.toLocaleString()} buyers/week</span> are
             asking AI for cars you could be selling — LotPilot is winning back the answer.
           </h2>

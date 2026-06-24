@@ -73,7 +73,7 @@ export default async function RoiPage() {
             </p>
           </div>
           <div className="flex flex-col items-center justify-center rounded-2xl border border-accent/30 bg-accent/[0.06] px-8 py-6 text-center">
-            <span className="text-5xl font-bold leading-none text-accent sm:text-6xl">
+            <span className="font-display text-5xl leading-none text-accent sm:text-6xl">
               {roiMultiple}×
             </span>
             <span className="mt-2 text-[11px] font-medium uppercase tracking-wider text-accent/80">
@@ -130,7 +130,7 @@ export default async function RoiPage() {
           <div className="glow-accent pointer-events-none absolute -left-10 -top-10 h-48 w-48 opacity-50" />
           <div className="relative">
             <p className="text-sm text-ink-muted">Customers you own outright</p>
-            <div className="mt-2 text-6xl font-bold tracking-tight text-gradient">{owned}</div>
+            <div className="mt-2 font-display text-6xl text-gradient">{owned}</div>
             <p className="mt-2 text-sm text-ink-soft">
               Every AI-sourced lead this month is yours alone.
             </p>

@@ -86,15 +86,15 @@ export default async function BoardReportPage() {
           <p className="text-xs font-mono uppercase tracking-wider text-ink-faint">The bottom line</p>
           <div className="mt-3 grid gap-4 sm:grid-cols-3">
             <div>
-              <p className="text-3xl font-bold tracking-tight text-ink">{money(totalGross)}</p>
+              <p className="font-display text-3xl text-ink">{money(totalGross)}</p>
               <p className="text-xs text-ink-muted">AI-influenced front gross</p>
             </div>
             <div>
-              <p className="text-3xl font-bold tracking-tight text-accent">{roiMultiple}×</p>
+              <p className="font-display text-3xl text-accent">{roiMultiple}×</p>
               <p className="text-xs text-ink-muted">return on {money(cost)}/mo all-in</p>
             </div>
             <div>
-              <p className="text-3xl font-bold tracking-tight text-ink">{owned}</p>
+              <p className="font-display text-3xl text-ink">{owned}</p>
               <p className="text-xs text-ink-muted">customers you own outright</p>
             </div>
           </div>
@@ -118,7 +118,7 @@ export default async function BoardReportPage() {
           <p className="mb-3 text-sm font-semibold text-ink">AI visibility</p>
           <div className="grid gap-4 rounded-xl border border-line bg-black/[0.02] p-5 sm:grid-cols-[auto_1fr] sm:items-center">
             <div className="text-center">
-              <p className="text-4xl font-bold tabular-nums" style={{ color: band(citationRate) }}>
+              <p className="font-display text-4xl [font-feature-settings:'tnum'_'lnum']" style={{ color: band(citationRate) }}>
                 {citationRate}
                 <span className="align-top text-base font-semibold text-ink-faint">%</span>
               </p>

@@ -27,7 +27,7 @@ function Tile({
         <Icon name={icon} size={18} />
       </span>
       <div className="min-w-0">
-        <p className="text-2xl font-bold tabular-nums text-ink" style={color ? { color } : undefined}>
+        <p className="font-display text-[26px] leading-none text-ink [font-feature-settings:'tnum'_'lnum']" style={color ? { color } : undefined}>
           {value}
         </p>
         <p className="text-xs text-ink-muted">{label}</p>
@@ -76,7 +76,7 @@ export default async function VisibilityHistoryPage() {
         <Card glow className="relative mt-4 overflow-hidden text-center">
           <div className="relative mx-auto max-w-lg py-6">
             <Badge tone="cyan">● No scans yet</Badge>
-            <h2 className="mt-4 text-2xl font-semibold tracking-tight text-ink">
+            <h2 className="mt-4 font-display text-3xl text-ink">
               Your visibility trend will build here.
             </h2>
             <p className="mt-3 text-sm text-ink-muted">

@@ -221,7 +221,7 @@ export default function AgentConsole({
             </span>
             <div>
               <div className="flex items-center gap-2">
-                <h2 className="text-2xl font-semibold tracking-tight text-ink">{cfg.displayName}</h2>
+                <h2 className="font-display text-2xl text-ink">{cfg.displayName}</h2>
                 <span
                   className={cn(
                     "inline-flex items-center gap-1.5 rounded-full border px-2.5 py-0.5 text-xs font-medium",
@@ -280,7 +280,7 @@ export default function AgentConsole({
             </div>
             <div className="mt-3 flex items-end justify-between gap-3">
               <div>
-                <div className="text-2xl font-bold tracking-tight text-ink">{s.value}</div>
+                <div className="font-display text-[26px] leading-none text-ink">{s.value}</div>
                 <div className="mt-0.5 text-xs text-ink-muted">{s.label}</div>
               </div>
               <Sparkline data={s.spark} accent={s.accent} />

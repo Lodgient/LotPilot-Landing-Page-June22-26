@@ -147,7 +147,7 @@ export function Donut({
       </svg>
       {(centerLabel || centerSub) && (
         <div className="absolute inset-0 flex flex-col items-center justify-center">
-          {centerLabel && <span className="text-2xl font-bold tracking-tight">{centerLabel}</span>}
+          {centerLabel && <span className="font-display text-2xl leading-none [font-feature-settings:'tnum'_'lnum']">{centerLabel}</span>}
           {centerSub && <span className="text-xs text-ink-muted">{centerSub}</span>}
         </div>
       )}

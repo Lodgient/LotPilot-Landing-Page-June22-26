@@ -54,7 +54,7 @@ function StatTile({
         <Icon name={icon} size={18} />
       </span>
       <div className="min-w-0">
-        <p className="text-2xl font-bold tabular-nums text-ink">{value}</p>
+        <p className="font-display text-[26px] leading-none text-ink [font-feature-settings:'tnum'_'lnum']">{value}</p>
         <p className="text-xs text-ink-muted">{label}</p>
       </div>
     </Card>

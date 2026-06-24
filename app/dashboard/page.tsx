@@ -102,7 +102,7 @@ export default async function CommandCenter() {
           <div className="glow-cyan pointer-events-none absolute left-1/2 -top-16 h-56 w-56 -translate-x-1/2 opacity-50" />
           <div className="relative mx-auto max-w-xl py-6">
             <Badge tone="cyan">● New workspace</Badge>
-            <h2 className="mt-4 text-2xl font-semibold tracking-tight text-ink sm:text-3xl">
+            <h2 className="mt-4 font-display text-3xl text-ink sm:text-4xl">
               Connect your inventory feed to{" "}
               <span className="text-gradient">light up your dashboard.</span>
             </h2>
@@ -222,7 +222,7 @@ export default async function CommandCenter() {
                     <span className="grid h-7 w-7 place-items-center rounded-lg bg-cyan/12 text-cyan">
                       <Icon name={s.icon} size={14} />
                     </span>
-                    <p className="mt-2 text-lg font-bold leading-none tabular-nums text-ink">
+                    <p className="mt-2 font-display text-xl leading-none text-ink [font-feature-settings:'tnum'_'lnum']">
                       {s.value}
                     </p>
                     <p className="mt-1 text-[11px] leading-tight text-ink-muted">{s.label}</p>

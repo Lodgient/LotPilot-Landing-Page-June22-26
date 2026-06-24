@@ -211,7 +211,7 @@ export default function InventoryView({ vehicles, dealer }: { vehicles: Vehicle[
           <span className="inline-flex items-center gap-2 rounded-full border border-cyan/25 bg-cyan/10 px-3 py-1 text-xs font-medium text-cyan">
             <span className="h-1.5 w-1.5 rounded-full bg-cyan" /> No inventory yet
           </span>
-          <h2 className="mt-4 text-2xl font-semibold tracking-tight text-ink sm:text-3xl">
+          <h2 className="mt-4 font-display text-3xl text-ink sm:text-4xl">
             Connect your feed to see every car&apos;s{" "}
             <span className="text-gradient">AI performance.</span>
           </h2>

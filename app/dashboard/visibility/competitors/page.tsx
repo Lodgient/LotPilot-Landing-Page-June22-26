@@ -24,7 +24,7 @@ function Tile({ icon, label, value }: { icon: IconName; label: string; value: st
         <Icon name={icon} size={18} />
       </span>
       <div className="min-w-0">
-        <p className="truncate text-2xl font-bold tabular-nums text-ink">{value}</p>
+        <p className="truncate font-display text-[26px] leading-none text-ink [font-feature-settings:'tnum'_'lnum']">{value}</p>
         <p className="text-xs text-ink-muted">{label}</p>
       </div>
     </Card>
@@ -77,7 +77,7 @@ export default async function CompetitorsPage() {
         <Card glow className="relative mt-4 overflow-hidden text-center">
           <div className="relative mx-auto max-w-lg py-6">
             <Badge tone="accent">● You&apos;re winning</Badge>
-            <h2 className="mt-4 text-2xl font-semibold tracking-tight text-ink">
+            <h2 className="mt-4 font-display text-3xl text-ink">
               No competitor is out-citing you right now.
             </h2>
             <p className="mt-3 text-sm text-ink-muted">
