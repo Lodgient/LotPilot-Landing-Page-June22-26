@@ -42,6 +42,7 @@ export type EngineName =
   | "ChatGPT"
   | "Perplexity"
   | "Gemini"
+  | "Grok"
   | "Google AI Overviews"
   | "Bing Copilot";
 
@@ -49,6 +50,7 @@ export const ENGINES: EngineName[] = [
   "ChatGPT",
   "Perplexity",
   "Gemini",
+  "Grok",
   "Google AI Overviews",
   "Bing Copilot",
 ];

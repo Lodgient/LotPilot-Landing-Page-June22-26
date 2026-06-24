@@ -54,6 +54,7 @@ const ENGINES: EngineName[] = [
   "ChatGPT",
   "Perplexity",
   "Gemini",
+  "Grok",
   "Google AI Overviews",
   "Bing Copilot",
 ];

@@ -23,6 +23,7 @@ const SCAN_STEPS = [
   "Querying ChatGPT…",
   "Querying Perplexity…",
   "Querying Gemini…",
+  "Querying Grok…",
   "Querying Google AI Overviews…",
   "Querying Bing Copilot…",
   "Scoring crawlability, schema, freshness & citations…",

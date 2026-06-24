@@ -7,6 +7,7 @@ export type EngineName =
   | "ChatGPT"
   | "Perplexity"
   | "Gemini"
+  | "Grok"
   | "Google AI Overviews"
   | "Bing Copilot";
 

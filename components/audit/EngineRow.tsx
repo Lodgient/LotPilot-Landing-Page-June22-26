@@ -7,6 +7,7 @@ const ENGINE_GLYPH: Record<string, string> = {
   ChatGPT: "◎",
   Perplexity: "✷",
   Gemini: "✦",
+  Grok: "✸",
   "Google AI Overviews": "◆",
   "Bing Copilot": "❖",
 };

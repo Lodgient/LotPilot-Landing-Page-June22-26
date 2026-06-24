@@ -2,6 +2,7 @@ import Shell from "@/components/dashboard/Shell";
 import { Card, PanelHeading, Badge } from "@/components/dashboard/ui";
 import { LineChart, Donut, ProgressBar } from "@/components/dashboard/charts";
 import Benchmarks from "@/components/dashboard/Benchmarks";
+import AnswerMonitor from "@/components/dashboard/AnswerMonitor";
 import {
   requireDealer,
   getVisibility,
@@ -135,6 +136,12 @@ export default async function VisibilityPage() {
           ))}
         </div>
       </Card>
+
+      {queries.length > 0 && (
+        <div className="mt-6">
+          <AnswerMonitor dealerName={dealer.name} metro={dealer.metro} queries={queries} />
+        </div>
+      )}
 
       <Card className="mt-6">
         <PanelHeading title="Where you show up" sub="Real buyer queries in your market, by engine" />
