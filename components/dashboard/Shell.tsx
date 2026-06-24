@@ -13,6 +13,7 @@ import { DemoBadge } from "./ui";
 import DateRange from "./DateRange";
 import { PrintButton } from "./Exports";
 import Copilot from "./Copilot";
+import CommandPalette, { OPEN_CMDK } from "./CommandPalette";
 
 type NavItem = { href: string; label: string; icon: IconName; exact?: boolean };
 
@@ -262,6 +263,15 @@ export default function Shell({
             <h1 className="truncate font-display text-lg text-ink sm:text-xl">{title}</h1>
             {intro && <p className="hidden truncate text-xs text-ink-muted sm:block">{intro}</p>}
           </div>
+          <button
+            onClick={() => window.dispatchEvent(new Event(OPEN_CMDK))}
+            aria-label="Open command palette"
+            className="hidden items-center gap-2 rounded-full border border-line-strong bg-black/[0.02] px-3 py-1.5 text-xs text-ink-muted transition-colors hover:border-cyan/40 hover:text-ink sm:inline-flex"
+          >
+            <Icon name="search" size={14} />
+            <span className="hidden md:inline">Search</span>
+            <kbd className="rounded border border-line bg-panel px-1 text-[10px] leading-tight">⌘K</kbd>
+          </button>
           <Suspense fallback={null}>
             <DateRange />
           </Suspense>
@@ -283,6 +293,7 @@ export default function Shell({
       </div>
 
       <Copilot dealerName={dealer.name} />
+      <CommandPalette />
     </div>
   );
 }
