@@ -159,6 +159,10 @@ export default async function CommandCenter() {
 
       {/* While you slept */}
       <Card glow className="relative overflow-hidden">
+        <span
+          aria-hidden
+          className="pointer-events-none absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-cyan via-accent to-violet"
+        />
         <div className="glow-cyan pointer-events-none absolute -right-10 -top-16 h-56 w-56 opacity-50" />
         <div className="relative grid gap-6 lg:grid-cols-[1fr_auto]">
           <div>
@@ -202,7 +206,7 @@ export default async function CommandCenter() {
               <p className="text-[11px] font-medium uppercase tracking-wider text-ink-faint">
                 Overnight at a glance
               </p>
-              <ul className="mt-3 space-y-2.5 text-sm">
+              <div className="mt-3 grid grid-cols-2 gap-2.5">
                 {(
                   [
                     { icon: "messages", label: "Leads answered", value: overnight.leadsAnswered ?? "—" },
@@ -211,15 +215,20 @@ export default async function CommandCenter() {
                     { icon: "bolt", label: "Fastest reply", value: overnight.fastestReply ?? "—" },
                   ] as { icon: IconName; label: string; value: string | number }[]
                 ).map((s) => (
-                  <li key={s.label} className="flex items-center gap-2.5">
-                    <span className="grid h-7 w-7 shrink-0 place-items-center rounded-lg bg-cyan/12 text-cyan">
+                  <div
+                    key={s.label}
+                    className="rounded-xl border border-line bg-panel p-2.5 transition-colors hover:border-cyan/40"
+                  >
+                    <span className="grid h-7 w-7 place-items-center rounded-lg bg-cyan/12 text-cyan">
                       <Icon name={s.icon} size={14} />
                     </span>
-                    <span className="text-ink-soft">{s.label}</span>
-                    <span className="ml-auto font-semibold tabular-nums text-ink">{s.value}</span>
-                  </li>
+                    <p className="mt-2 text-lg font-bold leading-none tabular-nums text-ink">
+                      {s.value}
+                    </p>
+                    <p className="mt-1 text-[11px] leading-tight text-ink-muted">{s.label}</p>
+                  </div>
                 ))}
-              </ul>
+              </div>
             </div>
             <Link
               href="/dashboard/leads"
