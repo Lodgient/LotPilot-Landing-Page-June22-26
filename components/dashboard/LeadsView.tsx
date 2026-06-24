@@ -89,10 +89,16 @@ function TypingDots() {
   );
 }
 
+type SentMsg = { from: "rep"; text: string; time: string };
+
 export default function LeadsView({ leads }: { leads: Lead[] }) {
   const [filter, setFilter] = useState<Filter>("All");
   const [activeId, setActiveId] = useState<string>(leads[0]?.id ?? "");
   const [tookOver, setTookOver] = useState(false);
+  const [draft, setDraft] = useState("");
+  const [sending, setSending] = useState(false);
+  // Human replies sent during this session, appended per lead (optimistic).
+  const [sent, setSent] = useState<Record<string, SentMsg[]>>({});
 
   // replay state
   const [replaying, setReplaying] = useState(false);
@@ -158,6 +164,30 @@ export default function LeadsView({ leads }: { leads: Lead[] }) {
     setReplaying(false);
     setActiveId(id);
     setTookOver(false);
+  }
+
+  async function sendReply() {
+    const text = draft.trim();
+    if (!text || sending) return;
+    setSending(true);
+    setSent((s) => ({ ...s, [active.id]: [...(s[active.id] ?? []), { from: "rep", text, time: "Just now" }] }));
+    setDraft("");
+    timers.current.push(
+      setTimeout(() => {
+        scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight, behavior: "smooth" });
+      }, 60),
+    );
+    try {
+      await fetch("/api/lead/reply", {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({ leadId: active.id, text }),
+      });
+    } catch {
+      /* optimistic — message already shown */
+    } finally {
+      setSending(false);
+    }
   }
 
   const stats = {
@@ -356,16 +386,39 @@ export default function LeadsView({ leads }: { leads: Lead[] }) {
                 </div>
               </div>
             )}
+
+            {/* human replies sent this session */}
+            {(sent[active.id] ?? []).map((m, i) => (
+              <div key={`sent-${i}`} className="flex justify-end">
+                <div className="max-w-[78%]">
+                  <div className="rounded-2xl rounded-tr-sm border border-violet/30 bg-violet/[0.12] px-4 py-2.5 text-sm text-ink">
+                    {m.text}
+                  </div>
+                  <p className="mt-1 flex items-center justify-end gap-1.5 text-[11px] text-ink-faint">
+                    You · {m.time}
+                  </p>
+                </div>
+              </div>
+            ))}
           </div>
 
           <div className={cn("border-t border-line p-4", !tookOver && "bg-accent/[0.025]")}>
             {tookOver ? (
               <div className="flex items-center gap-2">
                 <input
+                  value={draft}
+                  onChange={(e) => setDraft(e.target.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") sendReply();
+                  }}
                   placeholder="Type a message to the buyer…"
                   className="h-11 flex-1 rounded-xl border border-line-strong bg-black/[0.03] px-4 text-sm text-ink placeholder:text-ink-faint focus:border-cyan/60 focus:outline-none"
                 />
-                <button className="h-11 rounded-xl bg-cyan px-5 text-sm font-semibold text-ink-inverse hover:bg-cyan/90">
+                <button
+                  onClick={sendReply}
+                  disabled={sending || !draft.trim()}
+                  className="h-11 rounded-xl bg-cyan px-5 text-sm font-semibold text-ink-inverse transition-colors hover:bg-cyan/90 disabled:opacity-50"
+                >
                   Send
                 </button>
                 <button

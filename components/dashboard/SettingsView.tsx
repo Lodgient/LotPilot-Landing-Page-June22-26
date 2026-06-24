@@ -5,6 +5,7 @@ import Link from "next/link";
 import Icon, { type IconName } from "@/components/Icon";
 import { Card, PanelHeading, Badge } from "@/components/dashboard/ui";
 import type { Dealer, Profile } from "@/lib/dashboard/types";
+import { saveProfile } from "@/lib/dashboard/actions";
 import { cn } from "@/lib/cn";
 
 const TABS = [
@@ -86,6 +87,27 @@ export default function SettingsView({ dealer, profile }: { dealer: Dealer; prof
   const last = profile.fullName.split(" ").slice(1).join(" ");
   const oems = dealer.name.match(/nissan|infiniti|toyota|honda|ford|chevrolet|kia|hyundai|bmw|audi|lexus/gi) ?? [];
 
+  // Profile tab — controlled + real persistence (RLS-scoped) for signed-in dealers.
+  const [pFirst, setPFirst] = useState(first);
+  const [pLast, setPLast] = useState(last);
+  const [pRole, setPRole] = useState(profile.role);
+  const [pSaving, setPSaving] = useState(false);
+  const [pNote, setPNote] = useState<string | null>(null);
+
+  async function onSaveProfile() {
+    setPSaving(true);
+    setPNote(null);
+    const res = await saveProfile({ fullName: `${pFirst} ${pLast}`.trim(), role: pRole });
+    setPSaving(false);
+    setPNote(
+      res.ok
+        ? "Saved ✓"
+        : res.error === "read_only_demo"
+          ? "This is the read-only demo — sign in to save changes."
+          : "Couldn't save — please try again.",
+    );
+  }
+
   return (
     <div className="grid gap-6 lg:grid-cols-[220px_1fr] lg:items-start">
       {/* tab rail */}
@@ -134,16 +156,16 @@ export default function SettingsView({ dealer, profile }: { dealer: Dealer; prof
             </div>
             <div className="grid gap-5 sm:grid-cols-2">
               <Field label="First name">
-                <input className="input" defaultValue={first} />
+                <input className="input" value={pFirst} onChange={(e) => setPFirst(e.target.value)} />
               </Field>
               <Field label="Last name">
-                <input className="input" defaultValue={last} />
+                <input className="input" value={pLast} onChange={(e) => setPLast(e.target.value)} />
               </Field>
               <Field label="Work email">
                 <input className="input" defaultValue="duncan@capitolnissan.com" />
               </Field>
               <Field label="Role / title">
-                <input className="input" defaultValue={profile.role} />
+                <input className="input" value={pRole} onChange={(e) => setPRole(e.target.value)} />
               </Field>
               <Field label="Mobile (for hot-lead alerts)">
                 <input className="input" defaultValue="(408) 555-0142" />
@@ -157,7 +179,16 @@ export default function SettingsView({ dealer, profile }: { dealer: Dealer; prof
                 </select>
               </Field>
             </div>
-            <SaveBar />
+            <div className="mt-6 flex items-center justify-between gap-3 border-t border-line pt-5">
+              <p className="text-xs text-ink-faint">{pNote ?? "Your name and role across the workspace."}</p>
+              <button
+                onClick={onSaveProfile}
+                disabled={pSaving}
+                className="inline-flex h-10 items-center rounded-full bg-cyan px-5 text-sm font-semibold text-ink-inverse transition-all hover:-translate-y-0.5 hover:bg-cyan-dim cta-glow disabled:opacity-60"
+              >
+                {pSaving ? "Saving…" : "Save changes"}
+              </button>
+            </div>
           </Card>
         )}
 
