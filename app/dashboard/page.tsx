@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Icon, { type IconName } from "@/components/Icon";
 import Shell from "@/components/dashboard/Shell";
 import { Card, PanelHeading, StatCard, Badge } from "@/components/dashboard/ui";
 import ActivityFeed from "@/components/dashboard/ActivityFeed";
@@ -120,10 +121,33 @@ export default async function CommandCenter() {
             </p>
             <p className="mt-1 text-sm text-ink-muted">Nothing leaked while the store was closed.</p>
           </div>
-          <div className="flex items-center gap-4 lg:flex-col lg:items-end lg:justify-center">
+          <div className="flex flex-col gap-4 lg:w-64">
+            <div className="rounded-2xl border border-line bg-canvas-2/50 p-4">
+              <p className="text-[11px] font-medium uppercase tracking-wider text-ink-faint">
+                Overnight at a glance
+              </p>
+              <ul className="mt-3 space-y-2.5 text-sm">
+                {(
+                  [
+                    { icon: "messages", label: "Leads answered", value: overnight.leadsAnswered ?? "—" },
+                    { icon: "calendar", label: "Appointments", value: overnight.appts ?? "—" },
+                    { icon: "file", label: "Credit apps", value: overnight.creditApps ?? "—" },
+                    { icon: "bolt", label: "Fastest reply", value: overnight.fastestReply ?? "—" },
+                  ] as { icon: IconName; label: string; value: string | number }[]
+                ).map((s) => (
+                  <li key={s.label} className="flex items-center gap-2.5">
+                    <span className="grid h-7 w-7 shrink-0 place-items-center rounded-lg bg-cyan/12 text-cyan">
+                      <Icon name={s.icon} size={14} />
+                    </span>
+                    <span className="text-ink-soft">{s.label}</span>
+                    <span className="ml-auto font-semibold tabular-nums text-ink">{s.value}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
             <Link
               href="/dashboard/leads"
-              className="inline-flex h-11 items-center rounded-full bg-cyan px-5 text-sm font-semibold text-ink-inverse transition-all hover:-translate-y-0.5 hover:bg-cyan/90 cta-glow"
+              className="inline-flex h-11 items-center justify-center rounded-full bg-cyan px-5 text-sm font-semibold text-ink-inverse transition-all hover:-translate-y-0.5 hover:bg-cyan/90 cta-glow"
             >
               Review conversations →
             </Link>
