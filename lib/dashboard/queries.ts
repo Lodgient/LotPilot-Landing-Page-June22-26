@@ -1,7 +1,12 @@
 import { redirect } from "next/navigation";
+import { unstable_cache } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
+import { createAnonClient } from "@/lib/supabase/anon";
 import type {
   ActivityEvent,
+  AgentConfig,
+  AgentPerformance,
+  AgentStatus,
   AttributionEngine,
   Benchmark,
   Dealer,
@@ -27,22 +32,33 @@ export interface DealerContext {
   profile: Profile;
 }
 
-/**
- * Resolve the signed-in user's dealer + profile. Redirects to /login if there's
- * no session or the user isn't linked to a dealer.
- */
 const DEMO_DEALER_ID = "11111111-1111-1111-1111-111111111111";
 
-export async function requireDealer(): Promise<DealerContext> {
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+/* eslint-disable @typescript-eslint/no-explicit-any */
 
-  // Public read-only demo: anonymous visitors see the demo dealer's workspace.
-  // RLS scopes anon reads to this dealer only. Disable with DASHBOARD_PUBLIC=false.
-  if (!user) {
-    if (process.env.DASHBOARD_PUBLIC === "false") redirect("/login");
+type AnonDb = ReturnType<typeof createAnonClient>;
+
+/**
+ * Cache a static, public demo read. The dashboard serves a single anonymous
+ * demo dataset, so these reads are identical for every visitor and safe to
+ * cache — cutting the per-navigation Supabase round-trips that made section
+ * switches feel slow. Uses the cookie-free anon client so it can live inside
+ * `unstable_cache`. REVISIT (key by dealer id) when real multi-tenant auth ships.
+ */
+function demoRead<A extends unknown[], T>(
+  key: string,
+  fn: (db: AnonDb, ...args: A) => Promise<T>,
+): (...args: A) => Promise<T> {
+  return unstable_cache(
+    (...args: A) => fn(createAnonClient(), ...args),
+    ["dashboard", key],
+    { revalidate: 300, tags: ["dashboard"] },
+  ) as (...args: A) => Promise<T>;
+}
+
+const getDemoDealerContext = demoRead(
+  "demo-dealer",
+  async (supabase): Promise<DealerContext | null> => {
     const [{ data: demo }, { data: demoProfile }] = await Promise.all([
       supabase.from("dp_dealers").select("*").eq("id", DEMO_DEALER_ID).single(),
       supabase
@@ -52,22 +68,44 @@ export async function requireDealer(): Promise<DealerContext> {
         .limit(1)
         .maybeSingle(),
     ]);
-    if (!demo) redirect("/login");
+    if (!demo) return null;
+    const d = demo as any;
+    const pr = demoProfile as any;
     return {
       dealer: {
-        id: demo.id,
-        name: demo.name,
-        metro: demo.metro ?? "",
-        rooftops: demo.rooftops ?? 1,
-        feedType: demo.feed_type ?? "",
-        vehicles: demo.vehicles ?? 0,
-        lastSync: demo.last_sync ?? "",
+        id: d.id,
+        name: d.name,
+        metro: d.metro ?? "",
+        rooftops: d.rooftops ?? 1,
+        feedType: d.feed_type ?? "",
+        vehicles: d.vehicles ?? 0,
+        lastSync: d.last_sync ?? "",
       },
       profile: {
-        fullName: demoProfile?.full_name ?? demo.name ?? "Demo",
-        role: demoProfile?.role ?? "Demo workspace",
+        fullName: pr?.full_name ?? d.name ?? "Demo",
+        role: pr?.role ?? "Demo workspace",
       },
     };
+  },
+);
+
+/**
+ * Resolve the signed-in user's dealer + profile. Redirects to /login if there's
+ * no session or the user isn't linked to a dealer. Auth must stay live (cookies);
+ * only the anonymous demo's dealer/profile lookup is cached.
+ */
+export async function requireDealer(): Promise<DealerContext> {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  // Public read-only demo: anonymous visitors see the demo dealer's workspace.
+  if (!user) {
+    if (process.env.DASHBOARD_PUBLIC === "false") redirect("/login");
+    const ctx = await getDemoDealerContext();
+    if (!ctx) redirect("/login");
+    return ctx;
   }
 
   const { data: profile } = await supabase
@@ -100,7 +138,6 @@ export async function requireDealer(): Promise<DealerContext> {
   };
 }
 
-/* eslint-disable @typescript-eslint/no-explicit-any */
 function toKpi(r: any): KPI {
   return {
     label: r.label,
@@ -113,71 +150,69 @@ function toKpi(r: any): KPI {
   };
 }
 
-export async function getKpis(scope: "today" | "roi"): Promise<KPI[]> {
-  const supabase = await createClient();
-  const { data } = await supabase
-    .from("dp_kpis")
-    .select("*")
-    .eq("scope", scope)
-    .order("sort");
-  return (data ?? []).map(toKpi);
-}
+export const getKpis = demoRead(
+  "kpis",
+  async (supabase, scope: "today" | "roi"): Promise<KPI[]> => {
+    const { data } = await supabase.from("dp_kpis").select("*").eq("scope", scope).order("sort");
+    return (data ?? []).map(toKpi);
+  },
+);
 
-export async function getOvernightSummary(): Promise<Record<string, string>> {
-  const supabase = await createClient();
-  const { data } = await supabase.from("dp_kpis").select("label, value").eq("scope", "overnight");
-  const out: Record<string, string> = {};
-  (data ?? []).forEach((r: any) => (out[r.label] = r.value));
-  return out;
-}
+export const getOvernightSummary = demoRead(
+  "overnight",
+  async (supabase): Promise<Record<string, string>> => {
+    const { data } = await supabase.from("dp_kpis").select("label, value").eq("scope", "overnight");
+    const out: Record<string, string> = {};
+    (data ?? []).forEach((r: any) => (out[r.label] = r.value));
+    return out;
+  },
+);
 
-export async function getActivity(): Promise<ActivityEvent[]> {
-  const supabase = await createClient();
-  const { data } = await supabase
-    .from("dp_activity")
-    .select("*")
-    .order("sort");
+export const getActivity = demoRead("activity", async (supabase): Promise<ActivityEvent[]> => {
+  const { data } = await supabase.from("dp_activity").select("*").order("sort");
   return (data ?? []).map((r: any) => ({ type: r.type, time: r.time_label ?? "", text: r.body }));
-}
+});
 
-export async function getVisibility(): Promise<VisibilitySnapshot | null> {
-  const supabase = await createClient();
-  const { data } = await supabase.from("dp_visibility").select("*").maybeSingle();
-  if (!data) return null;
-  return {
-    score: data.score,
-    delta: data.score_delta ?? 0,
-    band: data.band ?? "developing",
-    trend: data.trend ?? [],
-    grossAtRisk: data.gross_at_risk ?? "",
-    projectedLeads: data.projected_leads ?? "",
-  };
-}
+export const getVisibility = demoRead(
+  "visibility",
+  async (supabase): Promise<VisibilitySnapshot | null> => {
+    const { data } = await supabase.from("dp_visibility").select("*").maybeSingle();
+    if (!data) return null;
+    const r = data as any;
+    return {
+      score: r.score,
+      delta: r.score_delta ?? 0,
+      band: r.band ?? "developing",
+      trend: r.trend ?? [],
+      grossAtRisk: r.gross_at_risk ?? "",
+      projectedLeads: r.projected_leads ?? "",
+    };
+  },
+);
 
-export async function getPillars(): Promise<Pillar[]> {
-  const supabase = await createClient();
+export const getPillars = demoRead("pillars", async (supabase): Promise<Pillar[]> => {
   const { data } = await supabase.from("dp_pillars").select("*").order("sort");
   return (data ?? []).map((r: any) => ({ label: r.label, score: r.score, delta: r.delta ?? 0 }));
-}
+});
 
-export async function getVisibilityQueries(): Promise<VisibilityQuery[]> {
-  const supabase = await createClient();
-  const { data } = await supabase.from("dp_visibility_queries").select("*").order("sort");
-  return (data ?? []).map((r: any) => ({
-    query: r.query,
-    engines: r.engines,
-    volume: r.volume ?? 0,
-    competitor: r.competitor ?? null,
-  }));
-}
+export const getVisibilityQueries = demoRead(
+  "visibility-queries",
+  async (supabase): Promise<VisibilityQuery[]> => {
+    const { data } = await supabase.from("dp_visibility_queries").select("*").order("sort");
+    return (data ?? []).map((r: any) => ({
+      query: r.query,
+      engines: r.engines,
+      volume: r.volume ?? 0,
+      competitor: r.competitor ?? null,
+    }));
+  },
+);
 
 /**
  * Live-or-demo AI visibility monitor data. With AI_MONITOR_LIVE="true" it reads
  * the bot backend's tables (ai_visibility_scans/_runs/_results) for the dealer's
- * latest complete scan and maps them to the dashboard shape — including the raw
- * captured response + screenshot per (query, engine). Guarded: if the tables
- * aren't present yet (bots not shipped) or empty, it falls back to demo data so
- * the page never breaks. Flip the flag and it's live with zero UI changes.
+ * latest complete scan and maps them to the dashboard shape. Guarded: if the
+ * tables aren't present yet or empty, it falls back to the cached demo queries.
  */
 const PLATFORM_TO_ENGINE: Record<string, EngineName> = {
   chatgpt: "ChatGPT",
@@ -219,12 +254,10 @@ export async function getVisibilityMonitor(dealerId: string): Promise<Visibility
         ]);
 
         if (runs && runs.length) {
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
           const resById = new Map<string, any>((results ?? []).map((r: any) => [r.run_id, r]));
           const byQuery = new Map<string, VisibilityQuery>();
           const captures: VisibilityMonitor["captures"] = {};
 
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
           for (const run of runs as any[]) {
             const engine = PLATFORM_TO_ENGINE[run.platform];
             if (!engine) continue;
@@ -261,20 +294,25 @@ export async function getVisibilityMonitor(dealerId: string): Promise<Visibility
   return { queries: await getVisibilityQueries(), captures: {}, live: false };
 }
 
-export async function getShareOfVoice(): Promise<ShareSegment[]> {
-  const supabase = await createClient();
+export const getShareOfVoice = demoRead("share-of-voice", async (supabase): Promise<ShareSegment[]> => {
   const { data } = await supabase.from("dp_share_of_voice").select("*").order("sort");
   return (data ?? []).map((r: any) => ({ name: r.name, value: r.value, color: r.color }));
-}
+});
 
-export async function getRecommendedVins(): Promise<RecommendedVin[]> {
-  const supabase = await createClient();
-  const { data } = await supabase.from("dp_recommended_vins").select("*").order("sort");
-  return (data ?? []).map((r: any) => ({ vehicle: r.vehicle, engine: r.engine, leads: r.leads, price: r.price }));
-}
+export const getRecommendedVins = demoRead(
+  "recommended-vins",
+  async (supabase): Promise<RecommendedVin[]> => {
+    const { data } = await supabase.from("dp_recommended_vins").select("*").order("sort");
+    return (data ?? []).map((r: any) => ({
+      vehicle: r.vehicle,
+      engine: r.engine,
+      leads: r.leads,
+      price: r.price,
+    }));
+  },
+);
 
-export async function getLeads(): Promise<Lead[]> {
-  const supabase = await createClient();
+export const getLeads = demoRead("leads", async (supabase): Promise<Lead[]> => {
   const { data } = await supabase
     .from("dp_leads")
     .select("*, dp_messages(sender, body, time_label, sort)")
@@ -293,22 +331,22 @@ export async function getLeads(): Promise<Lead[]> {
       .sort((a: any, b: any) => a.sort - b.sort)
       .map((m: any) => ({ from: m.sender, text: m.body, time: m.time_label ?? "" })),
   }));
-}
+});
 
-export async function getFunnel(): Promise<FunnelStage[]> {
-  const supabase = await createClient();
+export const getFunnel = demoRead("funnel", async (supabase): Promise<FunnelStage[]> => {
   const { data } = await supabase.from("dp_funnel").select("*").order("sort");
   return (data ?? []).map((r: any) => ({ stage: r.stage, value: r.value }));
-}
+});
 
-export async function getVsMarketplace(): Promise<VsMarketplaceRow[]> {
-  const supabase = await createClient();
-  const { data } = await supabase.from("dp_vs_marketplace").select("*").order("sort");
-  return (data ?? []).map((r: any) => ({ metric: r.metric, lp: r.lp, mk: r.mk }));
-}
+export const getVsMarketplace = demoRead(
+  "vs-marketplace",
+  async (supabase): Promise<VsMarketplaceRow[]> => {
+    const { data } = await supabase.from("dp_vs_marketplace").select("*").order("sort");
+    return (data ?? []).map((r: any) => ({ metric: r.metric, lp: r.lp, mk: r.mk }));
+  },
+);
 
-export async function getVehicles(): Promise<Vehicle[]> {
-  const supabase = await createClient();
+export const getVehicles = demoRead("vehicles", async (supabase): Promise<Vehicle[]> => {
   const { data } = await supabase.from("dp_vehicles").select("*").order("sort");
   return (data ?? []).map((r: any) => ({
     id: r.id,
@@ -335,10 +373,9 @@ export async function getVehicles(): Promise<Vehicle[]> {
     liveUrl: r.live_url ?? undefined,
     liveImage: r.live_image ?? undefined,
   }));
-}
+});
 
-export async function getDemand(): Promise<DemandRow[]> {
-  const supabase = await createClient();
+export const getDemand = demoRead("demand", async (supabase): Promise<DemandRow[]> => {
   const { data } = await supabase.from("dp_demand").select("*").order("sort");
   return (data ?? []).map((r: any) => ({
     query: r.query,
@@ -350,37 +387,40 @@ export async function getDemand(): Promise<DemandRow[]> {
     topSource: r.top_source,
     status: r.status,
   }));
-}
+});
 
-export async function getAttributionByEngine(): Promise<AttributionEngine[]> {
-  const supabase = await createClient();
-  const { data } = await supabase.from("dp_attribution_engine").select("*").order("sort");
-  return (data ?? []).map((r: any) => ({
-    engine: r.engine,
-    leads: r.leads,
-    appts: r.appts,
-    sales: r.sales,
-    gross: r.gross,
-  }));
-}
+export const getAttributionByEngine = demoRead(
+  "attribution-engine",
+  async (supabase): Promise<AttributionEngine[]> => {
+    const { data } = await supabase.from("dp_attribution_engine").select("*").order("sort");
+    return (data ?? []).map((r: any) => ({
+      engine: r.engine,
+      leads: r.leads,
+      appts: r.appts,
+      sales: r.sales,
+      gross: r.gross,
+    }));
+  },
+);
 
-export async function getRecommendations(): Promise<Recommendation[]> {
-  const supabase = await createClient();
-  const { data } = await supabase.from("dp_recommendations").select("*").order("sort");
-  return (data ?? []).map((r: any) => ({
-    id: r.id,
-    priority: r.priority,
-    title: r.title,
-    detail: r.detail,
-    impact: r.impact,
-    effort: r.effort,
-    category: r.category,
-    status: r.status ?? "open",
-  }));
-}
+export const getRecommendations = demoRead(
+  "recommendations",
+  async (supabase): Promise<Recommendation[]> => {
+    const { data } = await supabase.from("dp_recommendations").select("*").order("sort");
+    return (data ?? []).map((r: any) => ({
+      id: r.id,
+      priority: r.priority,
+      title: r.title,
+      detail: r.detail,
+      impact: r.impact,
+      effort: r.effort,
+      category: r.category,
+      status: r.status ?? "open",
+    }));
+  },
+);
 
-export async function getBenchmarks(): Promise<Benchmark[]> {
-  const supabase = await createClient();
+export const getBenchmarks = demoRead("benchmarks", async (supabase): Promise<Benchmark[]> => {
   const { data } = await supabase.from("dp_benchmarks").select("*").order("sort");
   return (data ?? []).map((r: any) => ({
     metric: r.metric,
@@ -391,10 +431,9 @@ export async function getBenchmarks(): Promise<Benchmark[]> {
     unit: r.unit,
     higherBetter: r.higher_better,
   }));
-}
+});
 
-export async function getForecast(): Promise<ForecastRow[]> {
-  const supabase = await createClient();
+export const getForecast = demoRead("forecast", async (supabase): Promise<ForecastRow[]> => {
   const { data } = await supabase.from("dp_forecast").select("*").order("sort");
   return (data ?? []).map((r: any) => ({
     metric: r.metric,
@@ -402,15 +441,12 @@ export async function getForecast(): Promise<ForecastRow[]> {
     projected: Number(r.projected),
     unit: r.unit,
   }));
-}
+});
 
-export async function getCustomersOwned(): Promise<number> {
-  const supabase = await createClient();
+export const getCustomersOwned = demoRead("customers-owned", async (supabase): Promise<number> => {
   const { data } = await supabase.from("dp_roi").select("customers_owned").maybeSingle();
-  return data?.customers_owned ?? 0;
-}
-
-import type { AgentConfig, AgentPerformance, AgentStatus } from "./types";
+  return (data as any)?.customers_owned ?? 0;
+});
 
 export async function getAgentConfig(dealerId?: string): Promise<AgentConfig | null> {
   const supabase = await createClient();
@@ -426,17 +462,18 @@ export async function getAgentConfig(dealerId?: string): Promise<AgentConfig | n
     data = created;
   }
   if (!data) return null;
-  const ch = data.channels ?? {};
+  const ch = (data as any).channels ?? {};
+  const a = data as any;
   return {
-    status: (data.status ?? "active") as AgentStatus,
-    displayName: data.display_name ?? "Ava",
-    persona: data.persona ?? "warm",
+    status: (a.status ?? "active") as AgentStatus,
+    displayName: a.display_name ?? "Ava",
+    persona: a.persona ?? "warm",
     channels: { sms: !!ch.sms, voice: !!ch.voice, chat: !!ch.chat },
-    greeting: data.greeting ?? "",
-    handoffPhone: data.handoff_phone ?? "",
-    businessHours: data.business_hours ?? "24/7 — always on",
-    speedToLeadSec: data.speed_to_lead_sec ?? 11,
-    deployedAt: data.deployed_at ?? "",
+    greeting: a.greeting ?? "",
+    handoffPhone: a.handoff_phone ?? "",
+    businessHours: a.business_hours ?? "24/7 — always on",
+    speedToLeadSec: a.speed_to_lead_sec ?? 11,
+    deployedAt: a.deployed_at ?? "",
   };
 }
 
@@ -444,20 +481,22 @@ export async function getAgentConfig(dealerId?: string): Promise<AgentConfig | n
  * Derive the agent's real output from the same tables the rest of the dashboard
  * uses — leads it worked plus attributed sales/gross by engine.
  */
-export async function getAgentPerformance(): Promise<AgentPerformance> {
-  const supabase = await createClient();
-  const [leads, attribution] = await Promise.all([
-    supabase.from("dp_leads").select("status, credit_app"),
-    supabase.from("dp_attribution_engine").select("appts, sales, gross"),
-  ]);
-  const ld = (leads.data ?? []) as any[];
-  const at = (attribution.data ?? []) as any[];
-  return {
-    leadsWorked: ld.length,
-    appts: at.reduce((s, r) => s + (r.appts ?? 0), 0),
-    creditApps: ld.filter((l) => l.credit_app).length,
-    attributedSales: at.reduce((s, r) => s + (r.sales ?? 0), 0),
-    gross: at.reduce((s, r) => s + (r.gross ?? 0), 0),
-  };
-}
+export const getAgentPerformance = demoRead(
+  "agent-performance",
+  async (supabase): Promise<AgentPerformance> => {
+    const [leads, attribution] = await Promise.all([
+      supabase.from("dp_leads").select("status, credit_app"),
+      supabase.from("dp_attribution_engine").select("appts, sales, gross"),
+    ]);
+    const ld = (leads.data ?? []) as any[];
+    const at = (attribution.data ?? []) as any[];
+    return {
+      leadsWorked: ld.length,
+      appts: at.reduce((s, r) => s + (r.appts ?? 0), 0),
+      creditApps: ld.filter((l) => l.credit_app).length,
+      attributedSales: at.reduce((s, r) => s + (r.sales ?? 0), 0),
+      gross: at.reduce((s, r) => s + (r.gross ?? 0), 0),
+    };
+  },
+);
 /* eslint-enable @typescript-eslint/no-explicit-any */
