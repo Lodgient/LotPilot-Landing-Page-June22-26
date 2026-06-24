@@ -8,6 +8,7 @@ const ENGINE_GLYPH: Record<string, string> = {
   Perplexity: "✷",
   Gemini: "✦",
   Grok: "✸",
+  Claude: "✶",
   "Google AI Overviews": "◆",
   "Bing Copilot": "❖",
 };

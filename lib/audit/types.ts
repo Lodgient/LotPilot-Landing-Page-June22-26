@@ -8,6 +8,7 @@ export type EngineName =
   | "Perplexity"
   | "Gemini"
   | "Grok"
+  | "Claude"
   | "Google AI Overviews"
   | "Bing Copilot";
 

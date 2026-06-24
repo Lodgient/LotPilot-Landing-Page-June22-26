@@ -11,6 +11,7 @@ const SHORT: Record<string, string> = {
   Perplexity: "Perplexity",
   Gemini: "Gemini",
   Grok: "Grok",
+  Claude: "Claude",
   "Google AI Overviews": "Google AIO",
   "Bing Copilot": "Copilot",
 };

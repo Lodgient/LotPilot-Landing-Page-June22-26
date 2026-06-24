@@ -24,6 +24,7 @@ const SCAN_STEPS = [
   "Querying Perplexity…",
   "Querying Gemini…",
   "Querying Grok…",
+  "Querying Claude…",
   "Querying Google AI Overviews…",
   "Querying Bing Copilot…",
   "Scoring crawlability, schema, freshness & citations…",
