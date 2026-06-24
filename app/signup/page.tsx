@@ -15,7 +15,12 @@ const POINTS = [
   "You own every customer — no lead reselling",
 ];
 
-export default function SignupPage() {
+export default async function SignupPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ plan?: string }>;
+}) {
+  const { plan } = await searchParams;
   return (
     <main className="grid min-h-screen lg:grid-cols-2">
       <div className="relative hidden overflow-hidden border-r border-line bg-canvas-2 p-12 lg:flex lg:flex-col">
@@ -55,7 +60,7 @@ export default function SignupPage() {
           <div className="mb-8 lg:hidden">
             <Logo />
           </div>
-          <SignupForm />
+          <SignupForm plan={plan} />
         </div>
       </div>
     </main>

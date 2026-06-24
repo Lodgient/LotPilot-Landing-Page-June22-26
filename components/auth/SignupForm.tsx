@@ -5,8 +5,11 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/client";
 
-export default function SignupForm() {
+export default function SignupForm({ plan }: { plan?: string }) {
   const router = useRouter();
+  const plans = (plan || "").toLowerCase().includes("agent")
+    ? ["visibility", "agent"]
+    : ["visibility"];
   const [dealership, setDealership] = useState("");
   const [fullName, setFullName] = useState("");
   const [metro, setMetro] = useState("");
@@ -23,8 +26,8 @@ export default function SignupForm() {
 
     setBusy(true);
     const supabase = createClient();
-    // app:'dealer_portal' triggers server-side provisioning (dealer + profile)
-    // and auto-confirm so the account is usable immediately.
+    // Create the account; dealership details ride along as user metadata so
+    // checkout/provisioning can build the workspace with no human in the loop.
     const { error: signUpError } = await supabase.auth.signUp({
       email: email.trim(),
       password,
@@ -42,19 +45,41 @@ export default function SignupForm() {
       setBusy(false);
       return;
     }
-    // Sign in right away (auto-confirmed by trigger).
+    // Sign in right away so checkout can link the subscription to this account.
     const { error: signInError } = await supabase.auth.signInWithPassword({
       email: email.trim(),
       password,
     });
     if (signInError) {
-      setError("Account created — please sign in.");
+      setError("Account created — please sign in to continue to payment.");
       setBusy(false);
       router.push("/login");
       return;
     }
-    router.push("/dashboard");
-    router.refresh();
+
+    // Straight to checkout (pay), then we provision their workspace automatically.
+    try {
+      const res = await fetch("/api/checkout", {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({ plans }),
+      });
+      const data = await res.json();
+      if (data?.url) {
+        window.location.href = data.url as string; // Stripe Checkout
+        return;
+      }
+      if (data?.provisioned) {
+        router.push(data.redirect || "/dashboard?welcome=1");
+        router.refresh();
+        return;
+      }
+      router.push("/activate"); // couldn't start checkout — retry from activate
+    } catch {
+      router.push("/activate");
+    } finally {
+      setBusy(false);
+    }
   }
 
   return (

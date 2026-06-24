@@ -36,7 +36,15 @@ export default function CheckoutButton({
       });
       const data = await res.json();
       if (data?.url) {
-        window.location.href = data.url as string;
+        window.location.href = data.url as string; // Stripe Checkout
+        return;
+      }
+      if (data?.provisioned) {
+        window.location.href = (data.redirect as string) || "/dashboard?welcome=1";
+        return;
+      }
+      if (res.status === 401) {
+        window.location.href = "/signup?plan=visibility";
         return;
       }
       setNote("Secure checkout opens here once billing is live ✓");

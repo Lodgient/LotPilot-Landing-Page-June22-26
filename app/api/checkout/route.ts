@@ -1,16 +1,20 @@
 import { NextResponse } from "next/server";
-import { isPlanId, type PlanId } from "@/lib/stripe/plans";
-// `PLANS` (from "@/lib/stripe/plans") holds each plan's Stripe Price-ID env var —
-// used in the commented Stripe block below when the live API is wired.
+import { createClient } from "@/lib/supabase/server";
+import { getStripe } from "@/lib/stripe/server";
+import { provisionDealer } from "@/lib/onboarding/provision";
+import { PLANS, isPlanId, type PlanId } from "@/lib/stripe/plans";
+
+export const runtime = "nodejs";
 
 /**
- * Dealer subscription checkout. The UI POSTs the selected plan(s); this returns
- * a Stripe Checkout URL to redirect to. Until the live Stripe API is wired
- * (final step), it returns { status: "stripe_not_configured" } so the button
- * degrades gracefully instead of erroring.
+ * Self-serve subscription checkout — the pay step of zero-touch onboarding.
+ * Requires a signed-in user (created at /signup) so we can link the subscription
+ * to their workspace.
  *
- * To go live: `npm i stripe`, set STRIPE_SECRET_KEY + STRIPE_PRICE_* env vars,
- * and uncomment the block below. Nothing else in the app needs to change.
+ * - Stripe configured  → returns a Checkout Session URL; provisioning happens on
+ *   the `checkout.session.completed` webhook.
+ * - Stripe NOT configured (pre-launch) → provisions a trial workspace immediately
+ *   so the flow is fully usable now; swaps to real billing the moment keys land.
  */
 export async function POST(req: Request) {
   let plans: PlanId[] = [];
@@ -18,36 +22,67 @@ export async function POST(req: Request) {
     const body = await req.json();
     plans = (Array.isArray(body?.plans) ? body.plans : []).filter(isPlanId);
   } catch {
-    /* ignore bad body */
+    /* ignore */
   }
-  if (plans.length === 0) {
-    return NextResponse.json({ error: "Select at least one plan." }, { status: 400 });
+  if (plans.length === 0) plans = ["visibility"];
+
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) {
+    return NextResponse.json({ error: "not_signed_in" }, { status: 401 });
   }
 
-  const secret = process.env.STRIPE_SECRET_KEY;
-  if (!secret) {
-    return NextResponse.json({ status: "stripe_not_configured", plans }, { status: 200 });
+  const meta = (user.user_metadata ?? {}) as Record<string, string>;
+  const dealershipName = (meta.dealership || "").trim() || "Your dealership";
+  const metro = (meta.metro || "").trim() || null;
+  const fullName = (meta.full_name || "").trim() || null;
+  const origin = new URL(req.url).origin;
+
+  const stripe = getStripe();
+
+  if (stripe) {
+    const priceIds = plans.map((id) => process.env[PLANS[id].priceEnv]).filter(Boolean) as string[];
+    if (priceIds.length !== plans.length) {
+      return NextResponse.json({ error: "stripe_prices_not_configured" }, { status: 500 });
+    }
+    const session = await stripe.checkout.sessions.create({
+      mode: "subscription",
+      line_items: priceIds.map((price) => ({ price, quantity: 1 })),
+      customer_email: user.email ?? undefined,
+      client_reference_id: user.id,
+      allow_promotion_codes: true,
+      subscription_data: {
+        metadata: { user_id: user.id, plans: plans.join(",") },
+      },
+      metadata: {
+        user_id: user.id,
+        plans: plans.join(","),
+        dealership: dealershipName,
+        metro: metro ?? "",
+        full_name: fullName ?? "",
+      },
+      success_url: `${origin}/dashboard?welcome=1`,
+      cancel_url: `${origin}/activate`,
+    });
+    return NextResponse.json({ url: session.url });
   }
 
-  // ── Connect Stripe here (final step) ──────────────────────────────────────
-  // import Stripe from "stripe";
-  // const stripe = new Stripe(secret);
-  // const origin = new URL(req.url).origin;
-  // const line_items = plans.map((id) => ({
-  //   price: process.env[PLANS[id].priceEnv]!, // the Stripe Price ID for this plan
-  //   quantity: 1,
-  // }));
-  // const session = await stripe.checkout.sessions.create({
-  //   mode: "subscription",
-  //   line_items,
-  //   allow_promotion_codes: true,
-  //   success_url: `${origin}/dashboard?checkout=success`,
-  //   cancel_url: `${origin}/#pricing`,
-  //   // customer_email / metadata: { dealer_id } when we have the signed-in dealer
-  // });
-  // return NextResponse.json({ url: session.url });
-  // ──────────────────────────────────────────────────────────────────────────
-
-  // Stripe key present but SDK not yet enabled — same graceful signal.
-  return NextResponse.json({ status: "stripe_not_configured", plans }, { status: 200 });
+  // ── Pre-launch fallback: no Stripe yet → provision a trial workspace now. ──
+  const result = await provisionDealer({
+    userId: user.id,
+    dealershipName,
+    metro,
+    fullName,
+    plans,
+    status: "trialing",
+  });
+  if (!result.ok) {
+    return NextResponse.json(
+      { error: result.error === "service_role_not_configured" ? "onboarding_not_configured" : result.error },
+      { status: 500 },
+    );
+  }
+  return NextResponse.json({ provisioned: true, redirect: "/dashboard?welcome=1" });
 }

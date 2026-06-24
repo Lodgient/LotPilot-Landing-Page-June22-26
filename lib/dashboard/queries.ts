@@ -1,4 +1,5 @@
 import { redirect } from "next/navigation";
+import { cache } from "react";
 import { unstable_cache } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
 import { createAnonClient } from "@/lib/supabase/anon";
@@ -39,6 +40,18 @@ const DEMO_DEALER_ID = "11111111-1111-1111-1111-111111111111";
 type AnonDb = ReturnType<typeof createAnonClient>;
 
 /**
+ * Resolve the session user ONCE per request (deduped via React cache), shared
+ * by requireDealer + every cached read so we don't re-hit auth per query.
+ */
+const getSessionUser = cache(async () => {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  return user;
+});
+
+/**
  * Cache a static, public demo read. The dashboard serves a single anonymous
  * demo dataset, so these reads are identical for every visitor and safe to
  * cache — cutting the per-navigation Supabase round-trips that made section
@@ -49,11 +62,23 @@ function demoRead<A extends unknown[], T>(
   key: string,
   fn: (db: AnonDb, ...args: A) => Promise<T>,
 ): (...args: A) => Promise<T> {
-  return unstable_cache(
+  const cachedAnon = unstable_cache(
     (...args: A) => fn(createAnonClient(), ...args),
     ["dashboard", key],
     { revalidate: 300, tags: ["dashboard"] },
   ) as (...args: A) => Promise<T>;
+
+  return async (...args: A) => {
+    const user = await getSessionUser();
+    if (user) {
+      // Authenticated dealer → read THEIR rows live via the session client
+      // (RLS `dp_*_own` scopes to dp_current_dealer()). Never the demo cache.
+      const db = (await createClient()) as unknown as AnonDb;
+      return fn(db, ...args);
+    }
+    // Anonymous → the cached public demo dataset.
+    return cachedAnon(...args);
+  };
 }
 
 const getDemoDealerContext = demoRead(
@@ -95,10 +120,7 @@ const getDemoDealerContext = demoRead(
  * only the anonymous demo's dealer/profile lookup is cached.
  */
 export async function requireDealer(): Promise<DealerContext> {
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const user = await getSessionUser();
 
   // Public read-only demo: anonymous visitors see the demo dealer's workspace.
   if (!user) {
@@ -108,13 +130,15 @@ export async function requireDealer(): Promise<DealerContext> {
     return ctx;
   }
 
+  const supabase = await createClient();
   const { data: profile } = await supabase
     .from("dp_profiles")
     .select("full_name, role, dealer_id")
     .eq("id", user.id)
     .single();
 
-  if (!profile?.dealer_id) redirect("/login");
+  // Signed in but not yet provisioned (signed up, hasn't paid) → activate gate.
+  if (!profile?.dealer_id) redirect("/activate");
 
   const { data: dealer } = await supabase
     .from("dp_dealers")
