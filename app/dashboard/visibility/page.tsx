@@ -366,7 +366,18 @@ export default async function VisibilityPage() {
 
       <div className="mt-6 grid gap-6 lg:grid-cols-2">
         <Card>
-          <PanelHeading title="Share of voice" sub="Who AI recommends in your market" />
+          <PanelHeading
+            title="Share of voice"
+            sub="Who AI recommends in your market"
+            action={
+              <Link
+                href="/dashboard/visibility/competitors"
+                className="text-xs text-cyan hover:underline"
+              >
+                Track competitors →
+              </Link>
+            }
+          />
           <div className="flex flex-col flex-wrap items-center justify-center gap-8 sm:flex-row">
             <Donut segments={sov} centerLabel={you ? `${you.value}%` : ""} centerSub="you" />
             <ul className="space-y-2">
