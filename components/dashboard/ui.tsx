@@ -96,7 +96,11 @@ export function StatCard({ kpi }: { kpi: KPI }) {
           </div>
           {kpi.sub && <div className="mt-0.5 text-xs text-ink-muted">{kpi.sub}</div>}
         </div>
-        {kpi.spark && <Sparkline data={kpi.spark} accent={kpi.accent ?? "cyan"} />}
+        {kpi.spark && (
+          <span className="hidden sm:block">
+            <Sparkline data={kpi.spark} accent={kpi.accent ?? "cyan"} />
+          </span>
+        )}
       </div>
     </Card>
   );

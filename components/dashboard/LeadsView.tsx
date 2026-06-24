@@ -105,6 +105,7 @@ export default function LeadsView({ leads }: { leads: Lead[] }) {
   const [shown, setShown] = useState<number>(leads[0]?.transcript.length ?? 0);
   const [typing, setTyping] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
+  const convoRef = useRef<HTMLDivElement>(null);
   const timers = useRef<ReturnType<typeof setTimeout>[]>([]);
   const clearTimers = () => {
     timers.current.forEach(clearTimeout);
@@ -164,6 +165,12 @@ export default function LeadsView({ leads }: { leads: Lead[] }) {
     setReplaying(false);
     setActiveId(id);
     setTookOver(false);
+    // On phones the conversation stacks below the list — bring it into view.
+    if (typeof window !== "undefined" && window.innerWidth < 1024) {
+      timers.current.push(
+        setTimeout(() => convoRef.current?.scrollIntoView({ behavior: "smooth", block: "start" }), 90),
+      );
+    }
   }
 
   async function sendReply() {
@@ -205,7 +212,7 @@ export default function LeadsView({ leads }: { leads: Lead[] }) {
   return (
     <div>
       {/* what your AI did */}
-      <div className="mb-6 grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+      <div className="mb-6 grid grid-cols-2 gap-3 sm:gap-4 xl:grid-cols-4">
         <StatTile icon="messages" value={stats.worked} label="Leads worked" tone="cyan" />
         <StatTile icon="bolt" value={`${stats.avgSpeed}s`} label="Avg speed-to-lead" tone="accent" />
         <StatTile icon="calendar" value={stats.appts} label="Appointments booked" tone="violet" />
@@ -284,7 +291,10 @@ export default function LeadsView({ leads }: { leads: Lead[] }) {
 
         {/* Conversation */}
         <Card className="flex min-h-[560px] flex-col p-0">
-          <div className="flex flex-wrap items-center justify-between gap-3 border-b border-line p-5">
+          <div
+            ref={convoRef}
+            className="flex scroll-mt-20 flex-wrap items-center justify-between gap-3 border-b border-line p-5"
+          >
             <div className="flex items-center gap-3">
               <span
                 className={cn(

@@ -242,7 +242,7 @@ export default function InventoryView({ vehicles, dealer }: { vehicles: Vehicle[
   return (
     <div>
       {/* summary KPIs — trend + sparkline parity with the Command Center */}
-      <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+      <div className="grid grid-cols-2 gap-3 sm:gap-4 xl:grid-cols-4">
         {kpiCards.map((k) => (
           <StatCard key={k.label} kpi={k} />
         ))}

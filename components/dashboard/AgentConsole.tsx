@@ -264,7 +264,7 @@ export default function AgentConsole({
       </Card>
 
       {/* performance */}
-      <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-5">
+      <div className="grid grid-cols-2 gap-3 sm:gap-4 xl:grid-cols-5">
         {perfCards.map((s) => (
           <Card key={s.label} className="surface-hover flex flex-col justify-between">
             <div className="flex items-start justify-between">
@@ -283,7 +283,9 @@ export default function AgentConsole({
                 <div className="font-display text-[26px] leading-none text-ink">{s.value}</div>
                 <div className="mt-0.5 text-xs text-ink-muted">{s.label}</div>
               </div>
-              <Sparkline data={s.spark} accent={s.accent} />
+              <span className="hidden sm:block">
+                <Sparkline data={s.spark} accent={s.accent} />
+              </span>
             </div>
           </Card>
         ))}
