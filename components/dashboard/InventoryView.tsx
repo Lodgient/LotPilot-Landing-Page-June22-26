@@ -502,7 +502,7 @@ export default function InventoryView({ vehicles, dealer }: { vehicles: Vehicle[
         <div className="overflow-x-auto scroll-slim">
           <table className="w-full min-w-[1080px] border-collapse">
             <thead>
-              <tr className="text-xs text-ink-faint">
+              <tr className="border-b border-line bg-canvas-2/50 text-[11px] uppercase tracking-[0.07em] text-ink-faint">
                 <th className="px-4 py-3 text-left font-medium">Vehicle</th>
                 <th className="px-3 py-3 text-right font-medium">Price</th>
                 <th className="px-3 py-3 text-center font-medium">Days</th>
@@ -526,11 +526,14 @@ export default function InventoryView({ vehicles, dealer }: { vehicles: Vehicle[
               </tr>
             </thead>
             <tbody>
-              {rows.map((v) => (
+              {rows.map((v, i) => (
                 <tr
                   key={v.id}
                   onClick={() => setActive(v)}
-                  className="cursor-pointer border-t border-line transition-colors hover:bg-black/[0.03]"
+                  className={cn(
+                    "cursor-pointer border-t border-line transition-colors hover:bg-cyan/[0.05]",
+                    i % 2 === 1 && "bg-black/[0.015]",
+                  )}
                 >
                   <td className="px-4 py-3">
                     <div className="flex items-center gap-3">
