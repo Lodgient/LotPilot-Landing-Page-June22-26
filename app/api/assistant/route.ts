@@ -101,6 +101,11 @@ async function buildSnapshot(supabase: any, ctx: DealerCtx) {
     .map((x) => [x.year, x.make, x.model].filter(Boolean).join(" "))
     .filter(Boolean);
 
+  const vehicleExamples = vh
+    .slice(0, 6)
+    .map((x) => [x.year, x.make, x.model].filter(Boolean).join(" "))
+    .filter(Boolean);
+
   return {
     dealerName: d.name ?? "your store",
     metro: d.metro ?? "",
@@ -120,6 +125,7 @@ async function buildSnapshot(supabase: any, ctx: DealerCtx) {
     invisibleCount: invisible.length,
     invisibleGross,
     invisibleExamples,
+    vehicleExamples,
   };
 }
 
@@ -185,6 +191,34 @@ function fallbackReply(question: string, s: Snapshot): string {
   return `I'm your LotPilot Copilot — I can explain any page or your live numbers: AI Visibility, invisible inventory, leads, ROI, or the AI Sales Assistant.${hi} Try “which cars are invisible to AI?” or “what does my visibility score mean?”`;
 }
 
+// Buyer-facing mode: the assistant role-plays the dealer's AI sales rep texting
+// a shopper (used by "Test Ava" on the AI Sales Assistant page).
+const BUYER_SYSTEM = (s: Snapshot) =>
+  `You are ${s.agent?.name ?? "Ava"}, the AI sales assistant for ${s.dealerName}${
+    s.metro ? ` in ${s.metro}` : ""
+  }. You are texting a real car shopper. Be warm, concise and helpful: answer their question, reference real inventory when relevant${
+    s.vehicleExamples.length ? ` (e.g. ${s.vehicleExamples.slice(0, 3).join(", ")})` : ""
+  }, and always move the conversation toward a booked appointment or a started credit app. Never quote an out-the-door price or invent a specific VIN — offer to confirm details. Keep replies to 2–4 sentences, friendly and text-message style.`;
+
+function buyerFallbackReply(question: string, s: Snapshot): string {
+  const q = question.toLowerCase();
+  const pick = (re: RegExp) => re.test(q);
+  const eg = s.vehicleExamples[0] || "a great match";
+  if (pick(/financ|credit|loan|approv|pre.?qual|payment|monthly|down/))
+    return `Good news — we work with every credit situation, and I can get you pre-approved in about two minutes with a soft pull (no hit to your score). Want me to text you a secure link? And is there a monthly payment you're hoping to stay near?`;
+  if (pick(/trade|my car|worth/))
+    return `Absolutely — happy to value your trade. Send me the year, make, model and rough mileage and I'll get you a real number fast. Want to bring it by for a quick appraisal? I've got openings tomorrow.`;
+  if (pick(/hour|open|location|where|address/))
+    return `We're open 7 days${s.metro ? ` here in ${s.metro}` : ""}. I can have the ${eg} pulled up front and ready for you — does later today or tomorrow morning work better?`;
+  if (pick(/test.?drive|see it|come in|appointment|appt|visit|schedule|tomorrow/))
+    return `Love it — let's get you behind the wheel. I have tomorrow at 11:00 or 1:30 open. Which works? I'll have the ${eg} ready, or I can line up a couple options.`;
+  if (pick(/avail|in stock|do you have|looking for|interested|price|how much|cost|suv|truck|sedan|under|\$\d/))
+    return `Yes! We've got a few that fit${
+      s.vehicleExamples.length ? ` — the ${eg} is a strong one` : ""
+    }. I can text you photos and confirm current pricing and availability right now. Want me to hold it and set a quick time for you to come see it?`;
+  return `Happy to help! Are you looking to buy in the next week or so, or just starting to shop? Either way I can pull up options at ${s.dealerName} and get you scheduled whenever works.`;
+}
+
 export async function POST(req: Request) {
   const supabase = await createClient();
   const ctx = await resolveContext(supabase);
@@ -193,9 +227,11 @@ export async function POST(req: Request) {
   }
 
   let messages: ChatMessage[] = [];
+  let mode: "buyer" | "copilot" = "copilot";
   try {
     const body = await req.json();
     messages = Array.isArray(body?.messages) ? body.messages : [];
+    if (body?.mode === "buyer") mode = "buyer";
   } catch {
     return new Response("Invalid JSON", { status: 400 });
   }
@@ -207,14 +243,18 @@ export async function POST(req: Request) {
   }
 
   const snapshot = await buildSnapshot(supabase, ctx);
-  const system = `${LOTPILOT_KNOWLEDGE}\n\n# This dealer's live snapshot (use it to ground answers)\n${snapshotToPrompt(snapshot)}`;
+  const system =
+    mode === "buyer"
+      ? BUYER_SYSTEM(snapshot)
+      : `${LOTPILOT_KNOWLEDGE}\n\n# This dealer's live snapshot (use it to ground answers)\n${snapshotToPrompt(snapshot)}`;
 
   const apiKey = process.env.ANTHROPIC_API_KEY;
 
   // No key configured → deterministic, snapshot-aware fallback (always responds).
   if (!apiKey) {
     const last = [...messages].reverse().find((m) => m.role === "user");
-    const text = fallbackReply(last?.content ?? "", snapshot);
+    const reply = mode === "buyer" ? buyerFallbackReply : fallbackReply;
+    const text = reply(last?.content ?? "", snapshot);
     return new Response(text, {
       headers: { "content-type": "text/plain; charset=utf-8", "x-assistant-mode": "fallback" },
     });

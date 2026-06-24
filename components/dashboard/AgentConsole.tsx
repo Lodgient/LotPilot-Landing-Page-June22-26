@@ -501,7 +501,10 @@ function TestAva({ name, persona, greeting }: { name: string; persona: string; g
       const res = await fetch("/api/assistant", {
         method: "POST",
         headers: { "content-type": "application/json" },
-        body: JSON.stringify({ messages: history.map((m) => ({ role: m.role, content: m.text })) }),
+        body: JSON.stringify({
+          mode: "buyer",
+          messages: history.map((m) => ({ role: m.role, content: m.text })),
+        }),
       });
       if (!res.ok || !res.body) throw new Error("unreachable");
       const reader = res.body.getReader();
