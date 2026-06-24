@@ -3,16 +3,34 @@
 import { useRef, useState } from "react";
 import Icon, { type IconName } from "@/components/Icon";
 import { Card, PanelHeading } from "@/components/dashboard/ui";
+import { Sparkline, TrendPill } from "@/components/dashboard/charts";
 import CallMe from "@/components/dashboard/CallMe";
 import { createClient } from "@/lib/supabase/client";
 import { cn } from "@/lib/cn";
 import type { AgentConfig, AgentPerformance } from "@/lib/dashboard/types";
 
 const PERSONAS = [
-  { id: "warm", label: "Warm & friendly" },
-  { id: "concise", label: "Concise & direct" },
-  { id: "luxury", label: "White-glove / luxury" },
+  { id: "warm", label: "Warm & friendly", desc: "Approachable and reassuring — great for first-time buyers." },
+  { id: "concise", label: "Concise & direct", desc: "Gets to the point fast — ideal for high-intent shoppers." },
+  { id: "luxury", label: "White-glove / luxury", desc: "Polished and premium — fits luxury and import stores." },
 ];
+
+const ACCENT_CHIP: Record<string, string> = {
+  cyan: "bg-cyan/12 text-cyan ring-cyan/20",
+  accent: "bg-accent/12 text-accent ring-accent/20",
+  violet: "bg-violet/15 text-violet ring-violet/20",
+  warn: "bg-warn/12 text-warn ring-warn/20",
+};
+
+// Gentle rising series ending at the current value, for KPI sparklines.
+function rampUp(end: number, n = 9, factor = 0.78) {
+  const start = Math.max(0, Math.round(end * factor));
+  return Array.from({ length: n }, (_, i) => Math.round(start + (end - start) * (i / (n - 1))));
+}
+function trendPct(series: number[]) {
+  const a = series[0] || 1;
+  return Math.round(((series[series.length - 1] - a) / Math.max(1, a)) * 100);
+}
 
 // Each persona maps to a pre-rendered ElevenLabs voice sample shipped in
 // /public/audio. Keeping these static keeps the demo instant and free of any
@@ -23,10 +41,10 @@ const VOICE: Record<string, { file: string; name: string }> = {
   luxury: { file: "/audio/ava-luxury.mp3", name: "Matilda" },
 };
 
-const CHANNELS: { id: "sms" | "voice" | "chat"; label: string; icon: IconName }[] = [
-  { id: "sms", label: "SMS / Text", icon: "messages" },
-  { id: "voice", label: "Voice calls", icon: "phone" },
-  { id: "chat", label: "Website chat", icon: "sparkles" },
+const CHANNELS: { id: "sms" | "voice" | "chat"; label: string; icon: IconName; share: number }[] = [
+  { id: "sms", label: "SMS / Text", icon: "messages", share: 62 },
+  { id: "voice", label: "Voice calls", icon: "phone", share: 28 },
+  { id: "chat", label: "Website chat", icon: "sparkles", share: 10 },
 ];
 
 function money(n: number) {
@@ -164,6 +182,19 @@ export default function AgentConsole({
   }
 
   const live = cfg.status === "active";
+  const activeNow = Math.max(2, (performance.appts % 5) + 2);
+  const selectedPersona = PERSONAS.find((p) => p.id === cfg.persona) ?? PERSONAS[0];
+
+  const perfCards = [
+    { label: "Leads worked", value: performance.leadsWorked.toLocaleString(), icon: "messages" as IconName, accent: "cyan" as const, base: performance.leadsWorked },
+    { label: "Appointments", value: performance.appts.toLocaleString(), icon: "calendar" as IconName, accent: "violet" as const, base: performance.appts },
+    { label: "Credit apps", value: performance.creditApps.toLocaleString(), icon: "file" as IconName, accent: "warn" as const, base: performance.creditApps },
+    { label: "Attributed sales", value: performance.attributedSales.toLocaleString(), icon: "check" as IconName, accent: "accent" as const, base: performance.attributedSales },
+    { label: "Attributed gross", value: money(performance.gross), icon: "chart" as IconName, accent: "accent" as const, base: performance.gross },
+  ].map((s) => {
+    const spark = rampUp(s.base);
+    return { ...s, spark, trend: trendPct(spark) };
+  });
 
   return (
     <div className="space-y-6">
@@ -172,13 +203,17 @@ export default function AgentConsole({
         <div className="glow-cyan pointer-events-none absolute -right-10 -top-16 h-56 w-56 opacity-50" />
         <div className="relative flex flex-wrap items-start justify-between gap-5">
           <div className="flex items-start gap-4">
-            <span
-              className={cn(
-                "grid h-14 w-14 shrink-0 place-items-center rounded-2xl ring-1 ring-inset",
-                live ? "bg-accent/15 text-accent ring-accent/25" : "bg-black/[0.05] text-ink-muted ring-line",
-              )}
-            >
-              <Icon name="bolt" size={26} />
+            <span className="relative grid h-14 w-14 shrink-0 place-items-center rounded-2xl bg-gradient-to-br from-cyan to-violet text-white shadow-[0_10px_28px_-10px_rgba(37,99,235,0.65)]">
+              <span className="text-2xl font-bold">{cfg.displayName.charAt(0) || "A"}</span>
+              <span
+                className={cn(
+                  "absolute -bottom-1 -right-1 grid h-5 w-5 place-items-center rounded-full border-2 border-panel text-white",
+                  live ? "bg-accent" : "bg-warn",
+                )}
+                title={live ? "Live" : "Paused"}
+              >
+                <Icon name={live ? "bolt" : "close"} size={10} strokeWidth={2.5} />
+              </span>
             </span>
             <div>
               <div className="flex items-center gap-2">
@@ -200,6 +235,12 @@ export default function AgentConsole({
                 exclusively works every inbound AI lead for {dealerName} — SMS, voice, and chat —
                 replying in ~{cfg.speedToLeadSec}s, 24/7, and turning conversations into sold cars.
               </p>
+              {live && (
+                <p className="mt-2.5 inline-flex items-center gap-1.5 text-xs font-medium text-accent">
+                  <span className="pulse-dot h-1.5 w-1.5 rounded-full bg-accent" />
+                  {activeNow} conversations active right now
+                </p>
+              )}
             </div>
           </div>
           <button
@@ -220,20 +261,25 @@ export default function AgentConsole({
 
       {/* performance */}
       <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-5">
-        {[
-          { label: "Leads worked", value: performance.leadsWorked.toLocaleString(), icon: "messages" as IconName },
-          { label: "Appointments", value: performance.appts.toLocaleString(), icon: "calendar" as IconName },
-          { label: "Credit apps", value: performance.creditApps.toLocaleString(), icon: "file" as IconName },
-          { label: "Attributed sales", value: performance.attributedSales.toLocaleString(), icon: "check" as IconName },
-          { label: "Attributed gross", value: money(performance.gross), icon: "chart" as IconName },
-        ].map((s) => (
-          <Card key={s.label} className="flex flex-col gap-3">
-            <span className="grid h-8 w-8 place-items-center rounded-lg bg-cyan/12 text-cyan ring-1 ring-inset ring-cyan/20">
-              <Icon name={s.icon} size={16} />
-            </span>
-            <div>
-              <div className="text-2xl font-bold tracking-tight text-ink">{s.value}</div>
-              <div className="mt-0.5 text-xs text-ink-muted">{s.label}</div>
+        {perfCards.map((s) => (
+          <Card key={s.label} className="surface-hover flex flex-col justify-between">
+            <div className="flex items-start justify-between">
+              <span
+                className={cn(
+                  "grid h-8 w-8 place-items-center rounded-lg ring-1 ring-inset",
+                  ACCENT_CHIP[s.accent],
+                )}
+              >
+                <Icon name={s.icon} size={16} />
+              </span>
+              <TrendPill value={s.trend} />
+            </div>
+            <div className="mt-3 flex items-end justify-between gap-3">
+              <div>
+                <div className="text-2xl font-bold tracking-tight text-ink">{s.value}</div>
+                <div className="mt-0.5 text-xs text-ink-muted">{s.label}</div>
+              </div>
+              <Sparkline data={s.spark} accent={s.accent} />
             </div>
           </Card>
         ))}
@@ -272,6 +318,11 @@ export default function AgentConsole({
                   </button>
                 ))}
               </div>
+              <p className="mt-2 text-xs text-ink-muted">
+                {selectedPersona.desc}{" "}
+                <span className="text-ink-faint">· Voice:</span>{" "}
+                <span className="text-ink-soft">{voice.name}</span>
+              </p>
             </Field>
 
             <Field label="Channels it handles">
@@ -290,7 +341,13 @@ export default function AgentConsole({
                       )}
                     >
                       <Icon name={c.icon} size={15} className={on ? "text-accent" : ""} />
-                      {c.label}
+                      <span className="flex-1 text-left">{c.label}</span>
+                      <span
+                        className="text-xs text-ink-faint"
+                        title="Share of AI leads on this channel"
+                      >
+                        {c.share}%
+                      </span>
                     </button>
                   );
                 })}
