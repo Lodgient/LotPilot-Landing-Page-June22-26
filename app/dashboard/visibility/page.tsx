@@ -4,6 +4,7 @@ import { Card, PanelHeading, Badge } from "@/components/dashboard/ui";
 import { LineChart, Donut, ProgressBar } from "@/components/dashboard/charts";
 import Benchmarks from "@/components/dashboard/Benchmarks";
 import AnswerMonitor from "@/components/dashboard/AnswerMonitor";
+import VinCitationBreakdown from "@/components/dashboard/VinCitationBreakdown";
 import RunScanButton from "@/components/dashboard/RunScanButton";
 import {
   requireDealer,
@@ -216,6 +217,8 @@ export default async function VisibilityPage() {
           prioritizes closing those gaps first.
         </p>
       </Card>
+
+      <VinCitationBreakdown vehicles={vehicles} dealerName={dealer.name} />
 
       <Card className="mt-6">
         <PanelHeading title="The five pillars" sub="What the score is built from" />
