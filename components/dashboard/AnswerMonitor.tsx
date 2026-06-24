@@ -50,6 +50,7 @@ export default function AnswerMonitor({
   metro,
   queries,
   captures,
+  live,
 }: {
   dealerName: string;
   metro: string;
