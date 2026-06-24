@@ -2,6 +2,7 @@ import Section from "@/components/ui/Section";
 import Reveal from "@/components/ui/Reveal";
 import Icon from "@/components/Icon";
 import type { IconName } from "@/components/Icon";
+import CheckoutButton from "@/components/CheckoutButton";
 
 const DISCOVERY: { icon: IconName; label: string }[] = [
   { icon: "radar", label: "An AI-searchable page for every VIN — schema.org + llms.txt" },
@@ -84,13 +85,13 @@ export default function Pricing() {
               <FeatureList items={DISCOVERY} />
 
               <div className="mt-auto flex flex-col items-center gap-3 pt-8">
-                <a
-                  href="/#feed"
-                  className="inline-flex h-12 w-full items-center justify-center gap-1.5 rounded-full bg-cyan px-7 text-sm font-semibold text-ink-inverse transition-all hover:-translate-y-0.5 hover:bg-cyan-dim cta-glow"
+                <CheckoutButton
+                  plans={["visibility"]}
+                  className="inline-flex h-12 w-full items-center justify-center gap-1.5 rounded-full bg-cyan px-7 text-sm font-semibold text-ink-inverse transition-all hover:-translate-y-0.5 hover:bg-cyan-dim cta-glow disabled:opacity-70"
                 >
                   Start AI Visibility
                   <Icon name="arrow-right" size={16} />
-                </a>
+                </CheckoutButton>
                 <a
                   href="/#audit"
                   className="text-xs font-medium text-ink-muted transition-colors hover:text-cyan"

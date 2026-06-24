@@ -170,9 +170,13 @@ function SidebarInner({
         <NavLinks onNavigate={onNavigate} />
       </div>
 
-      {/* user / logout */}
+      {/* user / settings / logout */}
       <div className="mt-4 border-t border-line pt-4">
-        <div className="flex items-center gap-2.5 px-1">
+        <Link
+          href="/dashboard/settings"
+          onClick={onNavigate}
+          className="group -mx-1 flex items-center gap-2.5 rounded-xl px-2 py-2 transition-colors hover:bg-black/[0.04]"
+        >
           <span className="grid h-8 w-8 place-items-center rounded-full bg-violet/20 text-xs font-semibold text-violet">
             {initials(profile.fullName)}
           </span>
@@ -180,9 +184,24 @@ function SidebarInner({
             <p className="truncate text-xs font-medium text-ink">{profile.fullName}</p>
             <p className="truncate text-[11px] text-ink-faint">{profile.role}</p>
           </div>
+          <Icon
+            name="gauge"
+            size={15}
+            className="text-ink-faint transition-colors group-hover:text-ink"
+          />
+        </Link>
+        <div className="mt-1 flex items-center gap-1 px-1 text-xs">
+          <Link
+            href="/dashboard/settings"
+            onClick={onNavigate}
+            className="rounded-md px-2 py-1 text-ink-muted transition-colors hover:bg-black/[0.05] hover:text-ink"
+          >
+            Settings
+          </Link>
+          <span className="text-ink-faint">·</span>
           <button
             onClick={logout}
-            className="rounded-lg px-2 py-1 text-xs text-ink-muted hover:bg-black/[0.05] hover:text-ink"
+            className="rounded-md px-2 py-1 text-ink-muted transition-colors hover:bg-black/[0.05] hover:text-ink"
           >
             Log out
           </button>
