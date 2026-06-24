@@ -3,6 +3,7 @@ import { Card, PanelHeading, Badge } from "@/components/dashboard/ui";
 import { LineChart, Donut, ProgressBar } from "@/components/dashboard/charts";
 import Benchmarks from "@/components/dashboard/Benchmarks";
 import AnswerMonitor from "@/components/dashboard/AnswerMonitor";
+import RunScanButton from "@/components/dashboard/RunScanButton";
 import {
   requireDealer,
   getVisibility,
@@ -99,6 +100,9 @@ export default async function VisibilityPage() {
               ▲ +{visibility.delta} pts since feed connect
             </Badge>
           )}
+          <div className="mt-5">
+            <RunScanButton />
+          </div>
         </Card>
 
         <Card>
@@ -185,6 +189,7 @@ export default async function VisibilityPage() {
             metro={dealer.metro}
             queries={queries}
             captures={monitor.captures}
+            live={monitor.live}
           />
         </div>
       )}

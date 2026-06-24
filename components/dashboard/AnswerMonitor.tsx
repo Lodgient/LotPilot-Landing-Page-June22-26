@@ -56,6 +56,8 @@ export default function AnswerMonitor({
   queries: VisibilityQuery[];
   /** Live captured runs keyed `${query}|${EngineName}` — real response + screenshot. */
   captures?: Record<string, { rawResponse?: string; screenshotUrl?: string }>;
+  /** True when the data came from real bot captures (vs representative sample). */
+  live?: boolean;
 }) {
   const [qi, setQi] = useState(0);
   const q = queries[Math.min(qi, queries.length - 1)];
@@ -88,6 +90,19 @@ export default function AnswerMonitor({
       <PanelHeading
         title="AI answer monitor"
         sub="Exactly what a buyer sees when they ask an AI engine — including Grok"
+        action={
+          <span
+            className={cn(
+              "inline-flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-[11px] font-medium",
+              live
+                ? "border-accent/30 bg-accent/10 text-accent"
+                : "border-warn/30 bg-warn/10 text-warn",
+            )}
+          >
+            <span className={cn("h-1.5 w-1.5 rounded-full", live ? "bg-accent" : "bg-warn")} />
+            {live ? "Live captures" : "Representative sample"}
+          </span>
+        }
       />
 
       {/* pick a real buyer query */}
