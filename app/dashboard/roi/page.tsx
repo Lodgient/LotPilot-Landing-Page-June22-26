@@ -5,6 +5,7 @@ import { Card, PanelHeading, StatCard, Badge } from "@/components/dashboard/ui";
 import { Funnel } from "@/components/dashboard/charts";
 import Forecast from "@/components/dashboard/Forecast";
 import { ExportCsv } from "@/components/dashboard/Exports";
+import { cn } from "@/lib/cn";
 import {
   requireDealer,
   getKpis,
@@ -47,6 +48,10 @@ export default async function RoiPage() {
     >
       {/* the verdict a GM signs renewals on */}
       <Card glow className="relative mb-6 overflow-hidden">
+        <span
+          aria-hidden
+          className="pointer-events-none absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-cyan via-accent to-violet"
+        />
         <div className="glow-accent pointer-events-none absolute -right-10 -top-16 h-56 w-56 opacity-50" />
         <div className="relative grid gap-6 lg:grid-cols-[1.5fr_auto] lg:items-center">
           <div>
@@ -177,7 +182,7 @@ export default async function RoiPage() {
         <div className="hidden overflow-x-auto scroll-slim sm:block">
           <table className="w-full min-w-[640px] border-collapse">
             <thead>
-              <tr className="text-xs text-ink-faint">
+              <tr className="border-b border-line bg-canvas-2/50 text-[11px] uppercase tracking-[0.07em] text-ink-faint">
                 <th className="px-3 py-3 text-left font-medium">Engine</th>
                 <th className="px-3 py-3 text-center font-medium">Leads</th>
                 <th className="px-3 py-3 text-center font-medium">Appts</th>
@@ -186,8 +191,11 @@ export default async function RoiPage() {
               </tr>
             </thead>
             <tbody>
-              {byEngine.map((e) => (
-                <tr key={e.engine} className="border-t border-line">
+              {byEngine.map((e, i) => (
+                <tr
+                  key={e.engine}
+                  className={cn("border-t border-line", i % 2 === 1 && "bg-black/[0.015]")}
+                >
                   <td className="px-3 py-3 text-sm font-medium text-ink">{e.engine}</td>
                   <td className="px-3 py-3 text-center text-sm tabular-nums text-ink-soft">{e.leads}</td>
                   <td className="px-3 py-3 text-center text-sm tabular-nums text-ink-soft">{e.appts}</td>
