@@ -1,3 +1,4 @@
+import Link from "next/link";
 import Shell from "@/components/dashboard/Shell";
 import { Card, PanelHeading, Badge } from "@/components/dashboard/ui";
 import { LineChart, Donut, ProgressBar } from "@/components/dashboard/charts";
@@ -61,6 +62,45 @@ export default async function VisibilityPage() {
   const totalQueries = queries.length;
   const citedQueries = queries.filter((q) => !q.competitor).length;
   const verdict = visibility ? BAND_VERDICT[visibility.band] : null;
+
+  // First-run: brand-new dealer, no scan yet (spec §6.3).
+  if (!visibility && queries.length === 0) {
+    return (
+      <Shell
+        dealer={dealer}
+        profile={profile}
+        title="AI Visibility"
+        intro="How discoverable your inventory is across AI answer engines."
+      >
+        <Card glow className="relative overflow-hidden text-center">
+          <div className="glow-cyan pointer-events-none absolute left-1/2 -top-16 h-56 w-56 -translate-x-1/2 opacity-50" />
+          <div className="relative mx-auto max-w-xl py-6">
+            <Badge tone="cyan">● Not yet measured</Badge>
+            <h2 className="mt-4 text-2xl font-semibold tracking-tight text-ink sm:text-3xl">
+              See where you stand in <span className="text-gradient">AI search.</span>
+            </h2>
+            <p className="mt-3 text-sm text-ink-muted">
+              We&apos;ll ask ChatGPT, Grok, Perplexity, Gemini and Claude the car-buying questions
+              your local buyers actually type — then show you exactly where {dealer.name} appears,
+              and which competitors show up instead.
+            </p>
+            <div className="mt-6 flex flex-col items-center justify-center gap-3 sm:flex-row">
+              <RunScanButton label="Run your first scan" />
+              <Link
+                href="/#feed"
+                className="inline-flex h-10 items-center rounded-full border border-line-strong px-5 text-sm font-medium text-ink transition-colors hover:border-cyan/50 hover:bg-black/[0.04]"
+              >
+                Connect your feed
+              </Link>
+            </div>
+            <p className="mt-5 text-xs text-ink-faint">
+              Takes about a minute · runs across all 5 AI answer engines.
+            </p>
+          </div>
+        </Card>
+      </Shell>
+    );
+  }
 
   return (
     <Shell

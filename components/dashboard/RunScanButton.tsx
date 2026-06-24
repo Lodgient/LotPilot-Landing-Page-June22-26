@@ -18,7 +18,7 @@ const STEPS = [
  * and plays the scan-progress overlay, then refreshes the page to pull the new
  * scan. The "run it live on a sales call" tool from the spec.
  */
-export default function RunScanButton() {
+export default function RunScanButton({ label = "Run a fresh scan" }: { label?: string }) {
   const router = useRouter();
   const [running, setRunning] = useState(false);
   const [step, setStep] = useState(0);
@@ -56,7 +56,7 @@ export default function RunScanButton() {
         className="inline-flex h-10 items-center gap-1.5 rounded-full border border-cyan/40 bg-cyan/10 px-4 text-sm font-semibold text-cyan transition-colors hover:bg-cyan/15 disabled:opacity-60"
       >
         <Icon name="radar" size={15} strokeWidth={2} />
-        {running ? "Scanning…" : "Run a fresh scan"}
+        {running ? "Scanning…" : label}
       </button>
 
       {running && (
