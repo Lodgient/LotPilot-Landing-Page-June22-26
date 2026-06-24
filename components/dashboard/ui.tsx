@@ -45,15 +45,20 @@ export function PanelHeading({
   title,
   sub,
   action,
+  tag,
 }: {
   title: ReactNode;
   sub?: ReactNode;
   action?: ReactNode;
+  tag?: ReactNode;
 }) {
   return (
     <div className="mb-5 flex items-start justify-between gap-4">
       <div>
-        <h2 className="font-display text-[19px] leading-tight text-ink">{title}</h2>
+        <div className="flex items-center gap-2">
+          <h2 className="font-display text-[19px] leading-tight text-ink">{title}</h2>
+          {tag}
+        </div>
         {sub && <p className="mt-1 text-sm text-ink-muted">{sub}</p>}
       </div>
       {action}

@@ -4,7 +4,10 @@ import { Card, PanelHeading, Badge } from "@/components/dashboard/ui";
 import { Sparkline } from "@/components/dashboard/charts";
 import { ExportCsv } from "@/components/dashboard/Exports";
 import { requireDealer, getDemand } from "@/lib/dashboard/queries";
+import { EmptyState, ScanningState, DataTag } from "@/components/dashboard/States";
 import { cn } from "@/lib/cn";
+
+const DEMO_DEALER_ID = "11111111-1111-1111-1111-111111111111";
 
 function Tile({
   icon,
@@ -62,6 +65,8 @@ export default async function DemandPage() {
   const ordered = [...demand].sort(
     (a, b) => rank[a.status] - rank[b.status] || b.weeklyVolume - a.weeklyVolume,
   );
+  const feedConnected = (dealer.vehicles ?? 0) > 0 || !!dealer.feedType;
+  const isDemo = dealer.id === DEMO_DEALER_ID;
 
   return (
     <Shell
@@ -71,34 +76,20 @@ export default async function DemandPage() {
       intro="What buyers are asking AI in your market — and where your inventory answers (or doesn't)."
     >
       {demand.length === 0 ? (
-        <Card glow className="relative overflow-hidden text-center">
-          <div className="glow-violet pointer-events-none absolute left-1/2 -top-16 h-56 w-56 -translate-x-1/2 opacity-50" />
-          <div className="relative mx-auto max-w-xl py-6">
-            <Badge tone="violet">● No signal yet</Badge>
-            <h2 className="mt-4 font-display text-3xl text-ink sm:text-4xl">
-              See what buyers are asking AI{dealer.metro ? (
-                <>
-                  {" "}in <span className="text-gradient">{dealer.metro}.</span>
-                </>
-              ) : (
-                <span className="text-gradient"> in your market.</span>
-              )}
-            </h2>
-            <p className="mt-3 text-sm text-ink-muted">
-              Once your feed is live, we map the car-buying questions buyers ask AI in your market
-              against your inventory — and surface the demand gaps competitors are winning, so you
-              know what to stock and where you&apos;re invisible.
-            </p>
-            <div className="mt-6">
-              <a
-                href="/#feed"
-                className="inline-flex h-11 items-center rounded-full bg-cyan px-6 text-sm font-semibold text-ink-inverse transition-all hover:-translate-y-0.5 hover:bg-cyan/90 cta-glow"
-              >
-                Connect your feed →
-              </a>
-            </div>
-          </div>
-        </Card>
+        feedConnected ? (
+          <ScanningState
+            title="Mapping buyer demand in your market…"
+            desc={`We're matching the car-buying questions buyers ask AI ${dealer.metro ? `in ${dealer.metro}` : "in your market"} against ${dealer.name}'s inventory. Your demand gaps land here shortly.`}
+          />
+        ) : (
+          <EmptyState
+            icon="trending"
+            title="See what buyers are asking AI in your market."
+            desc="Connect your feed and we map the car-buying questions buyers ask AI against your inventory — surfacing the demand gaps competitors are winning."
+            cta="Connect your feed"
+            href="/#feed"
+          />
+        )
       ) : (
       <>
       {/* headline */}
@@ -153,6 +144,7 @@ export default async function DemandPage() {
         <div className="p-5 sm:p-6">
           <PanelHeading
             title="Buyer demand vs your coverage"
+            tag={<DataTag live={!isDemo} />}
             sub={`Weekly query volume in ${dealer.metro}`}
             action={
               <ExportCsv

@@ -7,6 +7,7 @@ import AnswerMonitor from "@/components/dashboard/AnswerMonitor";
 import VinCitationBreakdown from "@/components/dashboard/VinCitationBreakdown";
 import { ShareProof } from "@/components/audit/ShareCard";
 import RunScanButton from "@/components/dashboard/RunScanButton";
+import { EmptyState, ScanningState, DataTag } from "@/components/dashboard/States";
 import {
   requireDealer,
   getVisibility,
@@ -111,7 +112,9 @@ export default async function VisibilityPage() {
         }
       : null;
 
-  // First-run: brand-new dealer, no scan yet (spec §6.3).
+  // First-run: no scan yet. If the feed is connected we're scanning; otherwise
+  // we need the feed first.
+  const feedConnected = (dealer.vehicles ?? 0) > 0 || !!dealer.feedType;
   if (!visibility && queries.length === 0) {
     return (
       <Shell
@@ -120,32 +123,22 @@ export default async function VisibilityPage() {
         title="AI Visibility"
         intro="How discoverable your inventory is across AI answer engines."
       >
-        <Card glow className="relative overflow-hidden text-center">
-          <div className="glow-cyan pointer-events-none absolute left-1/2 -top-16 h-56 w-56 -translate-x-1/2 opacity-50" />
-          <div className="relative mx-auto max-w-xl py-6">
-            <Badge tone="cyan">● Not yet measured</Badge>
-            <h2 className="mt-4 font-display text-3xl text-ink sm:text-4xl">
-              See where you stand in <span className="text-gradient">AI search.</span>
-            </h2>
-            <p className="mt-3 text-sm text-ink-muted">
-              We&apos;ll ask ChatGPT, Grok, Perplexity, Gemini and Claude the car-buying questions
-              your local buyers actually type — then show you exactly where {dealer.name} appears,
-              and which competitors show up instead.
-            </p>
-            <div className="mt-6 flex flex-col items-center justify-center gap-3 sm:flex-row">
-              <RunScanButton label="Run your first scan" />
-              <Link
-                href="/#feed"
-                className="inline-flex h-10 items-center rounded-full border border-line-strong px-5 text-sm font-medium text-ink transition-colors hover:border-cyan/50 hover:bg-black/[0.04]"
-              >
-                Connect your feed
-              </Link>
-            </div>
-            <p className="mt-5 text-xs text-ink-faint">
-              Takes about a minute · runs across all 5 AI answer engines.
-            </p>
-          </div>
-        </Card>
+        {feedConnected ? (
+          <ScanningState
+            title="Scanning your inventory across the engines…"
+            desc={`We rebuilt ${dealer.name}'s VINs as AI-readable pages and we're testing them against the buyer questions in your market. Your first visibility score lands here shortly.`}
+          />
+        ) : (
+          <EmptyState
+            icon="radar"
+            title="See where you stand in AI search."
+            desc="Connect the inventory feed you already export and we'll show exactly where you appear across ChatGPT, Perplexity, Gemini, Grok and Claude — and which competitors show up instead."
+            cta="Connect your feed"
+            href="/#feed"
+            secondaryCta="Run a free audit"
+            secondaryHref="/#audit"
+          />
+        )}
       </Shell>
     );
   }
@@ -219,6 +212,7 @@ export default async function VisibilityPage() {
         <PanelHeading
           title="Visibility by engine"
           sub="How often you're the cited answer on each AI platform"
+          tag={<DataTag live={monitor.live} />}
         />
         <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
           {ENGINES.map((e) => {
