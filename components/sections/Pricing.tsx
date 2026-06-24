@@ -83,19 +83,19 @@ export default function Pricing() {
 
               <FeatureList items={DISCOVERY} />
 
-              <div className="mt-7 flex flex-col gap-3 pt-1">
+              <div className="mt-auto flex flex-col items-center gap-3 pt-8">
                 <a
                   href="/#feed"
-                  className="inline-flex h-12 items-center justify-center gap-1.5 rounded-full bg-cyan px-7 text-sm font-semibold text-ink-inverse transition-all hover:-translate-y-0.5 hover:bg-cyan-dim cta-glow"
+                  className="inline-flex h-12 w-full items-center justify-center gap-1.5 rounded-full bg-cyan px-7 text-sm font-semibold text-ink-inverse transition-all hover:-translate-y-0.5 hover:bg-cyan-dim cta-glow"
                 >
                   Start AI Visibility
                   <Icon name="arrow-right" size={16} />
                 </a>
                 <a
                   href="/#audit"
-                  className="inline-flex h-12 items-center justify-center rounded-full border border-line-strong bg-white px-7 text-sm font-semibold text-ink shadow-sm transition-colors hover:border-cyan/50"
+                  className="text-xs font-medium text-ink-muted transition-colors hover:text-cyan"
                 >
-                  Run the free check first
+                  Or run the free 60-second check first →
                 </a>
               </div>
             </div>
@@ -119,17 +119,15 @@ export default function Pricing() {
 
               <FeatureList items={CONVERSION} />
 
-              <div className="mt-7 flex flex-col gap-3 pt-1">
+              <div className="mt-auto flex flex-col items-center gap-3 pt-8">
                 <a
                   href="/dashboard/assistant"
-                  className="inline-flex h-12 items-center justify-center gap-1.5 rounded-full border border-violet/40 bg-violet/10 px-7 text-sm font-semibold text-violet transition-all hover:-translate-y-0.5 hover:bg-violet/15"
+                  className="inline-flex h-12 w-full items-center justify-center gap-1.5 rounded-full border border-violet/40 bg-violet/10 px-7 text-sm font-semibold text-violet transition-all hover:-translate-y-0.5 hover:bg-violet/15"
                 >
                   See the agent work
                   <Icon name="arrow-right" size={16} />
                 </a>
-                <p className="text-center text-xs text-ink-faint">
-                  Most dealers start with Visibility, then add the agent once the leads come in.
-                </p>
+                <p className="text-xs text-ink-faint">Add it once the leads start coming in.</p>
               </div>
             </div>
           </div>
