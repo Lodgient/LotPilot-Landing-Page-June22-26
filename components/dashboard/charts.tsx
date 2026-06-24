@@ -1,3 +1,6 @@
+"use client";
+
+import { useRef, useState } from "react";
 import { cn } from "@/lib/cn";
 
 const ACCENT_VAR: Record<string, string> = {
@@ -189,10 +192,12 @@ export function LineChart({
   data,
   accent = "cyan",
   height = 160,
+  unit = "",
 }: {
   data: number[];
   accent?: keyof typeof ACCENT_VAR;
   height?: number;
+  unit?: string;
 }) {
   const width = 560;
   const min = Math.min(...data, 0);
@@ -208,19 +213,53 @@ export function LineChart({
   const area = `${line} L${width},${height} L0,${height} Z`;
   const color = ACCENT_VAR[accent];
 
+  const [hover, setHover] = useState<number | null>(null);
+  const ref = useRef<HTMLDivElement>(null);
+
+  function onMove(e: React.MouseEvent) {
+    const el = ref.current;
+    if (!el || data.length < 2) return;
+    const rect = el.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const idx = Math.max(0, Math.min(data.length - 1, Math.round((x / rect.width) * (data.length - 1))));
+    setHover(idx);
+  }
+
+  const hx = hover != null ? (hover / (data.length - 1 || 1)) * 100 : 0;
+  const hyPct = hover != null ? (pts[hover][1] / height) * 100 : 0;
+
   return (
-    <svg viewBox={`0 0 ${width} ${height}`} className="w-full" preserveAspectRatio="none" style={{ height }}>
-      <defs>
-        <linearGradient id="lc" x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0%" stopColor={color} stopOpacity="0.3" />
-          <stop offset="100%" stopColor={color} stopOpacity="0" />
-        </linearGradient>
-      </defs>
-      {[0.25, 0.5, 0.75].map((g) => (
-        <line key={g} x1="0" x2={width} y1={height * g} y2={height * g} stroke="rgba(255,255,255,0.06)" strokeWidth="1" />
-      ))}
-      <path d={area} fill="url(#lc)" />
-      <path d={line} fill="none" stroke={color} strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
-    </svg>
+    <div ref={ref} className="relative" style={{ height }} onMouseMove={onMove} onMouseLeave={() => setHover(null)}>
+      <svg viewBox={`0 0 ${width} ${height}`} className="w-full" preserveAspectRatio="none" style={{ height }}>
+        <defs>
+          <linearGradient id={`lc-${accent}`} x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stopColor={color} stopOpacity="0.3" />
+            <stop offset="100%" stopColor={color} stopOpacity="0" />
+          </linearGradient>
+        </defs>
+        {[0.25, 0.5, 0.75].map((g) => (
+          <line key={g} x1="0" x2={width} y1={height * g} y2={height * g} stroke="rgba(38,32,24,0.06)" strokeWidth="1" />
+        ))}
+        <path d={area} fill={`url(#lc-${accent})`} />
+        <path d={line} fill="none" stroke={color} strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
+      </svg>
+
+      {hover != null && (
+        <>
+          <div className="pointer-events-none absolute bottom-0 top-0 w-px bg-ink/15" style={{ left: `${hx}%` }} />
+          <div
+            className="pointer-events-none absolute h-3 w-3 -translate-x-1/2 -translate-y-1/2 rounded-full border-2 border-white shadow"
+            style={{ left: `${hx}%`, top: `${hyPct}%`, background: color }}
+          />
+          <div
+            className="pointer-events-none absolute z-10 -translate-x-1/2 -translate-y-full whitespace-nowrap rounded-lg border border-line bg-panel px-2.5 py-1 text-xs font-semibold text-ink shadow-[0_8px_24px_-10px_rgba(38,32,24,0.4)]"
+            style={{ left: `${Math.min(Math.max(hx, 8), 92)}%`, top: `calc(${hyPct}% - 12px)` }}
+          >
+            {data[hover]}
+            {unit}
+          </div>
+        </>
+      )}
+    </div>
   );
 }
