@@ -162,6 +162,31 @@ body::before {
 }
 .lp-indeterminate { animation: lp-indeterminate 1.4s var(--ease-out-expo) infinite; }
 
+/* Accessible keyboard focus — a visible ring on interactive elements (only for
+   keyboard users, via :focus-visible; mouse clicks stay clean). */
+:where(a, button, input, select, textarea, summary, [role="button"], [role="tab"], [tabindex]):focus-visible {
+  outline: 2px solid color-mix(in oklab, var(--color-cyan) 80%, transparent);
+  outline-offset: 2px;
+}
+
+/* Respect reduced-motion: kill ambient loops + make transitions instant. */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+  .kenburns,
+  .pulse-dot,
+  .lp-indeterminate,
+  .scanline {
+    animation: none !important;
+  }
+}
+
 /* Cinematic hero photo drift */
 @keyframes kenburns {
   0% { transform: scale(1) translate3d(0, 0, 0); }
