@@ -79,10 +79,10 @@ export default function Proof() {
               See if AI can find your inventory →
             </a>
             <a
-              href="#demo"
+              href="/dashboard"
               className="text-sm text-ink-soft underline-offset-4 transition-colors hover:text-ink hover:underline"
             >
-              or claim your market / book a demo →
+              or click through the live demo →
             </a>
           </div>
         </Reveal>

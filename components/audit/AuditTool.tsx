@@ -489,10 +489,10 @@ function ReportCard({ report }: { report: AuditReport }) {
           <Icon name="arrow-right" size={16} />
         </a>
         <a
-          href="#demo"
+          href="/dashboard"
           className="inline-flex h-12 flex-1 items-center justify-center rounded-full border border-line-strong bg-white px-7 text-sm font-semibold text-ink shadow-sm transition-colors hover:border-cyan/50"
         >
-          Book a demo
+          See the live demo
         </a>
       </div>
     </motion.div>

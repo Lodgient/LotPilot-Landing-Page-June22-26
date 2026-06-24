@@ -5,23 +5,23 @@ import Icon, { type IconName } from "@/components/Icon";
 const POINTS: { icon: IconName; title: string; body: string }[] = [
   {
     icon: "file",
-    title: "A citable page for every VIN",
-    body: "Machine-readable vehicle pages that stay in sync with your feed, so engines can quote them directly.",
+    title: "A machine-readable page for every VIN",
+    body: "Your VDPs are built for humans and buried under JavaScript — answer engines can't read them. We publish a clean, crawlable twin for each car that LLMs can actually parse and quote.",
   },
   {
     icon: "command",
-    title: "Structured vehicle data",
-    body: "Price, trim, mileage, photos and availability modeled the way answer engines actually read.",
+    title: "Schema.org structured data + llms.txt",
+    body: "Price, trim, mileage, VIN, photos and availability marked up as schema.org Vehicle JSON-LD, with an llms.txt manifest — the exact format ChatGPT, Grok, Gemini, Perplexity and Claude parse and cite.",
   },
   {
     icon: "target",
-    title: "Answers built for your market",
-    body: "Pages shaped around how buyers in your area shop — so you match the questions they ask.",
+    title: "Thousands of queries, continuously tested",
+    body: "We run the real questions buyers in your market ask against every engine, measure who gets cited, and tune your pages until the answer is your inventory — not a marketplace.",
   },
   {
     icon: "bolt",
-    title: "Freshness signals",
-    body: "Sold units drop and price changes propagate fast, so AI never recommends a car you don't have.",
+    title: "Real-time freshness",
+    body: "Live price and availability sync, so sold units drop instantly and AI never recommends a car you no longer have.",
   },
 ];
 
@@ -40,7 +40,7 @@ export default function Discovery() {
           <span className="font-display text-gradient">which car to buy.</span>
         </>
       }
-      intro="When a shopper asks an answer engine for a recommendation, your matching inventory should be the answer — routed straight back to your store, not a marketplace."
+      intro="When a shopper asks an answer engine for a recommendation, your matching inventory should be the answer. But your current vehicle pages are built for humans, not AI — so LotPilot rebuilds them into pages the engines read, cite, and route straight back to your store."
       centered={false}
     >
       <div className="grid items-center gap-12 lg:grid-cols-2">

@@ -6,9 +6,9 @@ import Pricing from "@/components/sections/Pricing";
 import AuditSection from "@/components/sections/AuditSection";
 
 export const metadata: Metadata = {
-  title: "Book a demo · Connect your inventory feed",
+  title: "See LotPilot live · Connect your inventory feed",
   description:
-    "Book a LotPilot demo or connect your inventory feed. We accept vAuto, HomeNet, Dealer.com, DealerSocket, CSV and XML — zero ongoing work for your team.",
+    "Click through the live LotPilot demo or connect your inventory feed. We accept vAuto, HomeNet, Dealer.com, DealerSocket, CSV and XML — zero ongoing work, no sales call.",
   alternates: { canonical: "https://dealers.lotpilot.com/demo" },
 };
 

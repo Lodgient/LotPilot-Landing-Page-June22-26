@@ -16,7 +16,7 @@ const COLS = [
     title: "Get started",
     links: [
       { label: "Connect your feed", href: "#feed" },
-      { label: "Book a demo", href: "#demo" },
+      { label: "See the live demo", href: "/dashboard" },
       { label: "Pricing", href: "#pricing" },
       { label: "Dealer login", href: "/login" },
     ],

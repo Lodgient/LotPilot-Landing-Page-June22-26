@@ -30,8 +30,9 @@ export default function FinalCTA() {
           </h2>
 
           <p className="mx-auto mt-6 max-w-xl text-pretty text-ink-muted sm:text-lg">
-            Run the free audit, or book a demo and connect your feed. From there,
-            LotPilot handles discovery and works your leads. You just send the feed.
+            Run the free check, click through the live demo, then connect the feed you already
+            export. LotPilot handles discovery and works your leads — no sales call, no rep, no
+            waiting.
           </p>
 
           <div className="mt-10 flex flex-col items-center justify-center gap-3 sm:flex-row">
@@ -39,14 +40,14 @@ export default function FinalCTA() {
               href="#audit"
               className="inline-flex h-14 w-full items-center justify-center gap-2 rounded-full bg-cyan px-8 text-base font-semibold text-ink-inverse transition-all hover:-translate-y-0.5 hover:bg-cyan-dim cta-glow sm:w-auto"
             >
-              Run the free AI audit
+              Run the free AI check
               <Icon name="arrow-right" size={18} />
             </a>
             <a
-              href="#feed"
+              href="/dashboard"
               className="inline-flex h-14 w-full items-center justify-center rounded-full border border-line-strong bg-white px-8 text-base font-semibold text-ink shadow-sm transition-all hover:-translate-y-0.5 hover:border-cyan/50 sm:w-auto"
             >
-              Connect your feed / book a demo
+              See the live demo
             </a>
           </div>
 

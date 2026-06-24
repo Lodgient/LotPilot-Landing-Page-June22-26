@@ -65,8 +65,8 @@ const graph = {
         {
           "@type": "ListItem",
           position: 3,
-          name: "Book a demo",
-          item: `${SITE}/demo`,
+          name: "See the live demo",
+          item: `${SITE}/dashboard`,
         },
       ],
     },

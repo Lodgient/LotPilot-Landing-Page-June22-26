@@ -71,10 +71,10 @@ export default function Nav() {
             Login
           </Link>
           <Link
-            href="/#demo"
+            href="/dashboard"
             className="ml-1.5 inline-flex items-center gap-1.5 rounded-full bg-[#2563eb] px-5 py-2.5 text-[12px] font-semibold uppercase tracking-[0.08em] text-white shadow-[0_8px_24px_-8px_rgba(37,99,235,0.8)] transition-all duration-300 hover:-translate-y-0.5 hover:bg-[#1d4ed8] hover:shadow-[0_14px_32px_-10px_rgba(37,99,235,0.95)]"
           >
-            Speak with us
+            See the live demo
           </Link>
         </div>
 
@@ -112,11 +112,11 @@ export default function Nav() {
               Login
             </Link>
             <Link
-              href="/#demo"
+              href="/dashboard"
               onClick={() => setOpen(false)}
               className="mt-2 inline-flex items-center justify-center rounded-sm bg-cyan px-5 py-3 text-[12px] font-medium uppercase tracking-[0.1em] text-white"
             >
-              Speak with us
+              See the live demo
             </Link>
           </div>
         </div>
