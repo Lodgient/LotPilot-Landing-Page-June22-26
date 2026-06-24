@@ -14,6 +14,7 @@ import DateRange from "./DateRange";
 import { PrintButton } from "./Exports";
 import Copilot from "./Copilot";
 import CommandPalette, { OPEN_CMDK } from "./CommandPalette";
+import NotificationBell from "./NotificationBell";
 
 type NavItem = { href: string; label: string; icon: IconName; exact?: boolean };
 
@@ -272,6 +273,7 @@ export default function Shell({
             <span className="hidden md:inline">Search</span>
             <kbd className="rounded border border-line bg-panel px-1 text-[10px] leading-tight">⌘K</kbd>
           </button>
+          <NotificationBell />
           <Suspense fallback={null}>
             <DateRange />
           </Suspense>
