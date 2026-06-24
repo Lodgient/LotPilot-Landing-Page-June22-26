@@ -31,7 +31,18 @@ export default async function ActivatePage() {
     .select("dealer_id")
     .eq("id", user.id)
     .maybeSingle();
-  if (profile?.dealer_id) redirect("/dashboard");
+
+  // Only bounce to the dashboard once they're actually paid (active/trialing) —
+  // otherwise stay here so an unpaid dealer doesn't ping-pong with the gate.
+  if (profile?.dealer_id) {
+    const { data: dealer } = await supabase
+      .from("dp_dealers")
+      .select("subscription_status")
+      .eq("id", profile.dealer_id)
+      .maybeSingle();
+    const status = (dealer as { subscription_status?: string } | null)?.subscription_status;
+    if (status === "active" || status === "trialing") redirect("/dashboard");
+  }
 
   const dealership = ((user.user_metadata?.dealership as string) || "your dealership").trim();
 
