@@ -202,6 +202,43 @@ export default function InventoryView({ vehicles, dealer }: { vehicles: Vehicle[
 
   const maxOpp = Math.max(1, ...vehicles.map(oppOf));
 
+  // First-run: feed not connected yet — onboarding instead of an empty table.
+  if (vehicles.length === 0) {
+    return (
+      <Card glow className="relative overflow-hidden text-center">
+        <div className="glow-cyan pointer-events-none absolute left-1/2 -top-16 h-56 w-56 -translate-x-1/2 opacity-50" />
+        <div className="relative mx-auto max-w-xl py-6">
+          <span className="inline-flex items-center gap-2 rounded-full border border-cyan/25 bg-cyan/10 px-3 py-1 text-xs font-medium text-cyan">
+            <span className="h-1.5 w-1.5 rounded-full bg-cyan" /> No inventory yet
+          </span>
+          <h2 className="mt-4 text-2xl font-semibold tracking-tight text-ink sm:text-3xl">
+            Connect your feed to see every car&apos;s{" "}
+            <span className="text-gradient">AI performance.</span>
+          </h2>
+          <p className="mt-3 text-sm text-ink-muted">
+            Send the inventory export you already produce ({dealer.feedType || "vAuto, HomeNet, Dealer.com, CSV…"}).
+            We make each VIN AI-readable and score how it shows up across ChatGPT, Grok, Perplexity,
+            Gemini and Claude — then surface the gaps and the gross sitting dark.
+          </p>
+          <div className="mt-6 flex flex-col items-center justify-center gap-3 sm:flex-row">
+            <a
+              href="/#feed"
+              className="inline-flex h-11 items-center rounded-full bg-cyan px-6 text-sm font-semibold text-ink-inverse transition-all hover:-translate-y-0.5 hover:bg-cyan/90 cta-glow"
+            >
+              Connect your feed →
+            </a>
+            <a
+              href="/#audit"
+              className="inline-flex h-11 items-center rounded-full border border-line-strong px-6 text-sm font-medium text-ink transition-colors hover:border-cyan/50 hover:bg-black/[0.04]"
+            >
+              Run a free audit
+            </a>
+          </div>
+        </div>
+      </Card>
+    );
+  }
+
   return (
     <div>
       {/* summary KPIs — trend + sparkline parity with the Command Center */}

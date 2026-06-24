@@ -71,12 +71,34 @@ export default async function DemandPage() {
       intro="What buyers are asking AI in your market — and where your inventory answers (or doesn't)."
     >
       {demand.length === 0 ? (
-      <Card className="text-center">
-        <p className="py-6 text-sm text-ink-muted">
-          No demand signal yet — once your feed is live, we map what buyers ask AI in {dealer.metro}{" "}
-          against your inventory and surface the gaps here.
-        </p>
-      </Card>
+        <Card glow className="relative overflow-hidden text-center">
+          <div className="glow-violet pointer-events-none absolute left-1/2 -top-16 h-56 w-56 -translate-x-1/2 opacity-50" />
+          <div className="relative mx-auto max-w-xl py-6">
+            <Badge tone="violet">● No signal yet</Badge>
+            <h2 className="mt-4 text-2xl font-semibold tracking-tight text-ink sm:text-3xl">
+              See what buyers are asking AI{dealer.metro ? (
+                <>
+                  {" "}in <span className="text-gradient">{dealer.metro}.</span>
+                </>
+              ) : (
+                <span className="text-gradient"> in your market.</span>
+              )}
+            </h2>
+            <p className="mt-3 text-sm text-ink-muted">
+              Once your feed is live, we map the car-buying questions buyers ask AI in your market
+              against your inventory — and surface the demand gaps competitors are winning, so you
+              know what to stock and where you&apos;re invisible.
+            </p>
+            <div className="mt-6">
+              <a
+                href="/#feed"
+                className="inline-flex h-11 items-center rounded-full bg-cyan px-6 text-sm font-semibold text-ink-inverse transition-all hover:-translate-y-0.5 hover:bg-cyan/90 cta-glow"
+              >
+                Connect your feed →
+              </a>
+            </div>
+          </div>
+        </Card>
       ) : (
       <>
       {/* headline */}
