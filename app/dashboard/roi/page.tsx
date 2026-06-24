@@ -32,8 +32,8 @@ export default async function RoiPage() {
   const maxGross = Math.max(...byEngine.map((e) => e.gross), 1);
   const totalGross = byEngine.reduce((s, e) => s + e.gross, 0);
 
-  // Money-proof verdict: gross driven vs the founding subscription rate.
-  const cost = 999; // $/mo founding rate (see pricing)
+  // Money-proof verdict: gross driven vs the all-in subscription rate.
+  const cost = 1098; // $/mo all-in — $399 Visibility + $699 Sales Agent (see pricing)
   const roiMultiple = Math.max(1, Math.round(totalGross / cost));
   const net = totalGross - cost;
   const costPct = Math.max(2, Math.round((cost / Math.max(1, totalGross)) * 100));
@@ -60,7 +60,8 @@ export default async function RoiPage() {
               </span>
             </div>
             <p className="mt-3 max-w-xl text-pretty text-base text-ink sm:text-lg">
-              You pay <span className="font-semibold">{money(cost)}/mo</span> — that&apos;s{" "}
+              You pay <span className="font-semibold">{money(cost)}/mo all-in</span> — Visibility +
+              Sales Agent — that&apos;s{" "}
               <span className="font-semibold text-accent">≈{roiMultiple}× back</span>, about{" "}
               <span className="font-semibold">{money(net)}</span> in gross you keep after LotPilot,
               with <span className="font-semibold">{owned} customers</span> you own outright.
@@ -90,7 +91,7 @@ export default async function RoiPage() {
           <div>
             <div className="mb-1 flex items-center justify-between text-[11px] text-ink-faint">
               <span>What you pay LotPilot</span>
-              <span className="tabular-nums text-ink-soft">{money(cost)}/mo</span>
+              <span className="tabular-nums text-ink-soft">{money(cost)}/mo all-in</span>
             </div>
             <div className="h-2.5 overflow-hidden rounded-full bg-black/[0.06]">
               <div className="h-full rounded-full bg-ink/30" style={{ width: `${costPct}%` }} />

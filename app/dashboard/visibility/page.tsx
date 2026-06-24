@@ -13,6 +13,7 @@ import {
   getShareOfVoice,
   getRecommendedVins,
   getBenchmarks,
+  getVehicles,
 } from "@/lib/dashboard/queries";
 import { ENGINES } from "@/lib/dashboard/types";
 
@@ -42,13 +43,14 @@ const PILLAR_HELP: Record<string, string> = {
 
 export default async function VisibilityPage() {
   const { dealer, profile } = await requireDealer();
-  const [visibility, pillars, monitor, sov, vins, benchmarks] = await Promise.all([
+  const [visibility, pillars, monitor, sov, vins, benchmarks, vehicles] = await Promise.all([
     getVisibility(),
     getPillars(),
     getVisibilityMonitor(dealer.id),
     getShareOfVoice(),
     getRecommendedVins(),
     getBenchmarks(),
+    getVehicles(),
   ]);
   const queries = monitor.queries;
 
@@ -62,6 +64,14 @@ export default async function VisibilityPage() {
   const totalQueries = queries.length;
   const citedQueries = queries.filter((q) => !q.competitor).length;
   const verdict = visibility ? BAND_VERDICT[visibility.band] : null;
+
+  // THE hero metric (product doc §4.3): % of live inventory that is the cited
+  // answer — VIN-grounded, not store-level reputation. A VIN counts as cited
+  // when at least one AI engine surfaces it (same signal Inventory AI uses).
+  const totalVins = vehicles.length;
+  const citedVins = vehicles.filter((v) => v.enginesCiting > 0).length;
+  const darkVins = totalVins - citedVins;
+  const citationRate = totalVins ? Math.round((citedVins / totalVins) * 100) : 0;
 
   // First-run: brand-new dealer, no scan yet (spec §6.3).
   if (!visibility && queries.length === 0) {
@@ -111,35 +121,39 @@ export default async function VisibilityPage() {
     >
       <div className="grid gap-6 lg:grid-cols-[1fr_1.6fr]">
         <Card glow className="flex flex-col items-center justify-center text-center">
-          <p className="text-sm text-ink-muted">AI Visibility Score</p>
+          <p className="text-sm text-ink-muted">Inventory Citation Rate</p>
           <div className="mt-3 text-7xl font-bold leading-none tracking-tight text-ink">
-            {visibility?.score ?? "—"}
-            <span className="align-top text-2xl font-semibold text-ink-faint">/100</span>
+            {citationRate}
+            <span className="align-top text-2xl font-semibold text-ink-faint">%</span>
           </div>
+          <p className="mt-2 max-w-[18rem] text-sm font-medium leading-snug text-ink-soft">
+            of your live inventory is the cited answer in AI
+          </p>
           {verdict && (
             <Badge tone={verdict.tone} className="mt-3">
               {verdict.label}
             </Badge>
           )}
+          <p className="mt-4 text-sm leading-relaxed text-ink-soft">
+            <span className="font-semibold text-ink">
+              {citedVins} of {totalVins} VINs
+            </span>{" "}
+            cited across AI engines{darkVins > 0 && <> · {darkVins} still dark</>}.
+            <br />
+            <span className="text-xs text-ink-muted">Refreshes as your feed changes.</span>
+          </p>
           {you && (
-            <p className="mt-4 text-sm leading-relaxed text-ink-soft">
-              You&apos;re the{" "}
-              <span className="font-semibold text-ink">#1 store AI recommends</span> in{" "}
-              {dealer.metro} — {you.value}% share of voice.
+            <p className="mt-1.5 text-xs text-ink-muted">
+              <span className="font-semibold text-ink">#1 store</span> in {dealer.metro} ·{" "}
+              {you.value}% share of voice · cited in {citedQueries}/{totalQueries} tracked queries
             </p>
           )}
-          <p className="mt-1.5 text-xs text-ink-muted">
-            Cited as the answer in{" "}
-            <span className="font-semibold text-ink">
-              {citedQueries} of {totalQueries}
-            </span>{" "}
-            buyer questions we track.
-          </p>
-          {visibility && (
-            <Badge tone="accent" className="mt-4">
-              ▲ +{visibility.delta} pts since feed connect
-            </Badge>
-          )}
+          <div className="mt-4 flex flex-wrap items-center justify-center gap-2">
+            <Badge tone="cyan">AVTS {visibility?.score ?? "—"}/100</Badge>
+            {visibility && (
+              <Badge tone="accent">▲ +{visibility.delta} since feed connect</Badge>
+            )}
+          </div>
           <div className="mt-5">
             <RunScanButton />
           </div>

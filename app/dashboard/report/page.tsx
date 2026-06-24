@@ -9,6 +9,7 @@ import {
   getVisibilityMonitor,
   getKpis,
   getCustomersOwned,
+  getVehicles,
 } from "@/lib/dashboard/queries";
 import { ENGINES } from "@/lib/dashboard/types";
 
@@ -21,19 +22,24 @@ const band = (s: number) =>
 
 export default async function BoardReportPage() {
   const { dealer, profile } = await requireDealer();
-  const [visibility, byEngine, monitor, kpis, owned] = await Promise.all([
+  const [visibility, byEngine, monitor, kpis, owned, vehicles] = await Promise.all([
     getVisibility(),
     getAttributionByEngine(),
     getVisibilityMonitor(dealer.id),
     getKpis("roi"),
     getCustomersOwned(),
+    getVehicles(),
   ]);
 
   const totalGross = byEngine.reduce((s, e) => s + e.gross, 0);
   const maxGross = Math.max(...byEngine.map((e) => e.gross), 1);
-  const cost = 999;
+  const cost = 1098; // $/mo all-in — $399 Visibility + $699 Sales Agent
   const roiMultiple = Math.max(1, Math.round(totalGross / cost));
   const score = visibility?.score ?? 0;
+  // Inventory Citation Rate — the headline visibility metric (product doc §4.3).
+  const totalVins = vehicles.length;
+  const citedVins = vehicles.filter((v) => v.enginesCiting > 0).length;
+  const citationRate = totalVins ? Math.round((citedVins / totalVins) * 100) : 0;
   const queries = monitor.queries;
   const totalQ = queries.length;
 
@@ -85,7 +91,7 @@ export default async function BoardReportPage() {
             </div>
             <div>
               <p className="text-3xl font-bold tracking-tight text-accent">{roiMultiple}×</p>
-              <p className="text-xs text-ink-muted">return on {money(cost)}/mo</p>
+              <p className="text-xs text-ink-muted">return on {money(cost)}/mo all-in</p>
             </div>
             <div>
               <p className="text-3xl font-bold tracking-tight text-ink">{owned}</p>
@@ -112,11 +118,17 @@ export default async function BoardReportPage() {
           <p className="mb-3 text-sm font-semibold text-ink">AI visibility</p>
           <div className="grid gap-4 rounded-xl border border-line bg-black/[0.02] p-5 sm:grid-cols-[auto_1fr] sm:items-center">
             <div className="text-center">
-              <p className="text-4xl font-bold tabular-nums" style={{ color: band(score) }}>
-                {score}
-                <span className="align-top text-base font-semibold text-ink-faint">/100</span>
+              <p className="text-4xl font-bold tabular-nums" style={{ color: band(citationRate) }}>
+                {citationRate}
+                <span className="align-top text-base font-semibold text-ink-faint">%</span>
               </p>
-              <p className="text-[11px] text-ink-muted">AI Visibility Score</p>
+              <p className="text-[11px] text-ink-muted">
+                Inventory Citation Rate
+                <br />
+                <span className="text-ink-faint">
+                  {citedVins}/{totalVins} VINs · AVTS {score}/100
+                </span>
+              </p>
             </div>
             <div className="grid grid-cols-2 gap-x-5 gap-y-1.5 sm:grid-cols-3">
               {ENGINES.map((e) => {
