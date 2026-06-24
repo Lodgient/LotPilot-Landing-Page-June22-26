@@ -202,20 +202,42 @@ skeleton + cached demo reads (sub-second navigation).
 
 ---
 
-## 10. Open items / good places to start
+## 10. Self-serve onboarding & billing (zero-touch)
 
-- **AI Sales Assistant** (`/dashboard/assistant`) and **ROI & Attribution** (`/dashboard/roi`)
-  — last two pages still due for the design-lift pass (match the table/card conventions in §7).
-- **Marketing "audit your rival" hook** — the audit already exports a shock image; add a
-  post-report CTA to audit a competitor's site (viral loop).
-- **Unify engine count** (5 vs 7, §6).
-- **Re-key the demo cache by dealer id** before multi-tenant auth (§5).
-- When the bot backend lands: wire `AI_MONITOR_LIVE`, validate against `contract.ts`.
+Signup → pay → auto-provisioned workspace, no human in the loop. Flow:
+`/signup?plan=visibility` → Supabase auth user (details in user_metadata) → `/api/checkout`
+→ Stripe Checkout → pay → `/api/stripe/webhook` provisions → their dashboard.
+
+- A **pre-existing Supabase DB trigger** creates `dp_dealers` + `dp_profiles` on signup
+  (`subscription_status='inactive'`, role "Owner").
+- **Pay-to-access gate**: `requireDealer()` routes any dealer not `active`/`trialing` → `/activate`.
+- **Multi-tenant isolation**: authed dealers read their own rows (cookie client, RLS `dp_*_own`);
+  anon gets the cached public demo. `provisionDealer()` (lib/onboarding/provision.ts) uses the
+  service-role client.
+- **Pre-launch fallback**: with no Stripe key, `/api/checkout` provisions a `trialing` workspace
+  directly (still needs the service-role key).
+
+**⚠️ TO GO LIVE — set these in Vercel** (currently NOT set, so new signups hit `/activate` and
+can't complete):
+- `SUPABASE_SERVICE_ROLE_KEY` — required for provisioning.
+- `STRIPE_SECRET_KEY`, `STRIPE_PRICE_VISIBILITY`, `STRIPE_PRICE_AGENT`, `STRIPE_WEBHOOK_SECRET`.
+- Add a Stripe webhook → `https://<domain>/api/stripe/webhook` for `checkout.session.completed`,
+  `customer.subscription.updated`, `customer.subscription.deleted`.
+- (Supabase Auth email confirmation is already OFF, so signup → instant session.)
+
+Marketing leads (audit + feed) persist to `lp_marketing_leads` (anon INSERT-only RLS).
+
+## 11. Other open items
+
+- When the bot backend lands: wire `AI_MONITOR_LIVE`, validate against `contract.ts`; build the
+  per-VIN public pages route + the inventory-derived query engine (the moat).
+- Lead notifications (Slack/email) + an internal view of `lp_marketing_leads`.
 - Point a real domain at the Vercel deployment.
+- Counsel review of the /privacy /terms /security copy.
 
 ---
 
-## 11. Working together
+## 12. Working together
 
 Duncan is committing to `main` frequently (auto-deploys). To avoid stepping on each other:
 
