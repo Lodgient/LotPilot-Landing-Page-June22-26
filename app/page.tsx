@@ -3,6 +3,7 @@ import Footer from "@/components/Footer";
 import Hero from "@/components/sections/Hero";
 import Problem from "@/components/sections/Problem";
 import AuditSection from "@/components/sections/AuditSection";
+import ProductShowcase from "@/components/sections/ProductShowcase";
 import HowItWorks from "@/components/sections/HowItWorks";
 import Discovery from "@/components/sections/Discovery";
 import Conversion from "@/components/sections/Conversion";
@@ -20,6 +21,7 @@ export default function Home() {
         <Hero />
         <Problem />
         <AuditSection />
+        <ProductShowcase />
         <HowItWorks />
         <Discovery />
         <Conversion />
