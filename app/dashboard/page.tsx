@@ -8,11 +8,13 @@ import ScoreRing from "@/components/audit/ScoreRing";
 import { Sparkline } from "@/components/dashboard/charts";
 import CountUp from "@/components/dashboard/CountUp";
 import Greeting from "@/components/dashboard/Greeting";
+import { cn } from "@/lib/cn";
 import {
   requireDealer,
   getKpis,
   getActivity,
   getVisibility,
+  getVisibilityMonitor,
   getLeads,
   getOvernightSummary,
   getRecommendations,
@@ -22,16 +24,71 @@ export const dynamic = "force-dynamic";
 
 export default async function CommandCenter() {
   const { dealer, profile } = await requireDealer();
-  const [kpis, activity, visibility, leads, overnight, recommendations] = await Promise.all([
-    getKpis("today"),
-    getActivity(),
-    getVisibility(),
-    getLeads(),
-    getOvernightSummary(),
-    getRecommendations(),
-  ]);
+  const [kpis, activity, visibility, monitor, leads, overnight, recommendations] =
+    await Promise.all([
+      getKpis("today"),
+      getActivity(),
+      getVisibility(),
+      getVisibilityMonitor(dealer.id),
+      getLeads(),
+      getOvernightSummary(),
+      getRecommendations(),
+    ]);
   const hot = leads.filter((l) => l.temp === "Hot");
   const isFresh = kpis.length === 0 && activity.length === 0;
+
+  // Surface the most urgent AI-visibility signal as a top banner (spec §8.3).
+  const trend = visibility?.trend ?? [];
+  const score = visibility?.score ?? trend[trend.length - 1] ?? 0;
+  const weekDelta = trend.length >= 2 ? trend[trend.length - 1] - trend[trend.length - 2] : 0;
+  const gapQueries = monitor.queries.filter((q) => q.competitor).length;
+  const totalQ = monitor.queries.length;
+
+  const alert: {
+    tone: "danger" | "warn" | "accent";
+    icon: IconName;
+    msg: string;
+    cta: string;
+    href: string;
+  } | null = visibility && score < 15
+    ? {
+        tone: "danger",
+        icon: "radar",
+        msg: `You're nearly invisible in AI search — only ${score}/100. Buyers asking AI which car to buy aren't seeing ${dealer.name}.`,
+        cta: "See the gaps",
+        href: "/dashboard/visibility",
+      }
+    : weekDelta <= -5
+      ? {
+          tone: "danger",
+          icon: "trending",
+          msg: `Your AI Visibility dropped ${Math.abs(weekDelta)} pts this week — a competitor may be gaining ground.`,
+          cta: "See what changed",
+          href: "/dashboard/visibility/history",
+        }
+      : gapQueries > 0
+        ? {
+            tone: "warn",
+            icon: "radar",
+            msg: `AI is routing ${gapQueries} of ${totalQ} buyer searches in your market to competitors right now.`,
+            cta: "See who's winning",
+            href: "/dashboard/visibility/competitors",
+          }
+        : weekDelta >= 5
+          ? {
+              tone: "accent",
+              icon: "trending",
+              msg: `Up ${weekDelta} pts this week — your AI visibility is climbing.`,
+              cta: "View trend",
+              href: "/dashboard/visibility/history",
+            }
+          : null;
+
+  const ALERT_TONE: Record<string, string> = {
+    danger: "border-danger/30 bg-danger/[0.06] text-danger",
+    warn: "border-warn/30 bg-warn/[0.06] text-warn",
+    accent: "border-accent/30 bg-accent/[0.06] text-accent",
+  };
 
   if (isFresh) {
     return (
@@ -81,6 +138,25 @@ export default async function CommandCenter() {
       title={<Greeting name={profile.fullName.split(" ")[0]} />}
       intro={`Here's what your AI did for ${dealer.name}.`}
     >
+      {/* AI-visibility alert — the most urgent signal, first thing seen */}
+      {alert && (
+        <Link
+          href={alert.href}
+          className={cn(
+            "mb-6 flex flex-wrap items-center gap-3 rounded-2xl border p-4 transition-colors hover:brightness-[0.99]",
+            ALERT_TONE[alert.tone],
+          )}
+        >
+          <span className="grid h-9 w-9 shrink-0 place-items-center rounded-lg bg-black/[0.05]">
+            <Icon name={alert.icon} size={18} />
+          </span>
+          <p className="min-w-0 flex-1 text-sm font-medium text-ink">{alert.msg}</p>
+          <span className="inline-flex items-center gap-1 text-sm font-semibold">
+            {alert.cta} <Icon name="arrow-right" size={15} />
+          </span>
+        </Link>
+      )}
+
       {/* While you slept */}
       <Card glow className="relative overflow-hidden">
         <div className="glow-cyan pointer-events-none absolute -right-10 -top-16 h-56 w-56 opacity-50" />
