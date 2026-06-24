@@ -111,6 +111,46 @@ export default async function VisibilityPage() {
       </div>
 
       <Card className="mt-6">
+        <PanelHeading
+          title="Visibility by engine"
+          sub="How often you're the cited answer on each AI platform"
+        />
+        <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+          {ENGINES.map((e) => {
+            const cited = queries.filter((q) => q.engines[e]).length;
+            const pct = totalQueries ? Math.round((cited / totalQueries) * 100) : 0;
+            const color =
+              pct >= 50
+                ? "var(--color-accent)"
+                : pct >= 20
+                  ? "var(--color-cyan)"
+                  : "var(--color-danger)";
+            const label = e.replace(" AI Overviews", " AIO").replace("Bing ", "");
+            return (
+              <div key={e} className="rounded-xl border border-line bg-black/[0.02] p-4">
+                <div className="flex items-center justify-between gap-2">
+                  <span className="text-sm font-medium text-ink">{label}</span>
+                  <span className="text-sm font-bold tabular-nums" style={{ color }}>
+                    {pct}%
+                  </span>
+                </div>
+                <div className="mt-2 h-2 overflow-hidden rounded-full bg-black/[0.06]">
+                  <div className="h-full rounded-full" style={{ width: `${pct}%`, background: color }} />
+                </div>
+                <p className="mt-2 text-xs text-ink-faint">
+                  cited in {cited} of {totalQueries} queries
+                </p>
+              </div>
+            );
+          })}
+        </div>
+        <p className="mt-3 text-xs text-ink-faint">
+          Newer engines like Grok and Claude are where most dealers are invisible — LotPilot
+          prioritizes closing those gaps first.
+        </p>
+      </Card>
+
+      <Card className="mt-6">
         <PanelHeading title="The five pillars" sub="What the score is built from" />
         <div className="grid gap-x-10 gap-y-5 sm:grid-cols-2">
           {pillars.map((p) => (
