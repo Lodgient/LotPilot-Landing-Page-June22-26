@@ -75,6 +75,26 @@ export default async function VisibilityPage() {
   const darkVins = totalVins - citedVins;
   const citationRate = totalVins ? Math.round((citedVins / totalVins) * 100) : 0;
 
+  // Inventory-grounded AVTS (doc §4.4): ground the five pillars in real feed
+  // signals only LotPilot can produce — not generic site checks. Citation
+  // presence IS the VIN-level citation rate; the rest carry live evidence.
+  const schemaVins = vehicles.filter((v) => !/schema/i.test(v.blocker ?? "")).length;
+  const PILLAR_EVIDENCE: Record<string, { score?: number; evidence: string }> = {
+    "Citation presence": {
+      score: citationRate,
+      evidence: `${citedVins} of ${totalVins} VINs are the cited answer in AI`,
+    },
+    "Structured-data fidelity": {
+      evidence: `${schemaVins} of ${totalVins} VINs publishing valid schema.org Vehicle data`,
+    },
+    Freshness: {
+      evidence: `Feed synced ${dealer.lastSync || "recently"} — sold units retire automatically`,
+    },
+    Crawlability: {
+      evidence: `Every VIN rebuilt as a clean, AI-readable page`,
+    },
+  };
+
   // Forwardable shock asset (doc §4.3): a real buyer query where AI named a rival
   // instead of this store — exportable as an image straight from the dashboard.
   const shockQuery = queries.find((q) => q.competitor && !ENGINES.every((e) => q.engines[e]));
@@ -248,29 +268,43 @@ export default async function VisibilityPage() {
       )}
 
       <Card className="mt-6">
-        <PanelHeading title="The five pillars" sub="What the score is built from" />
+        <PanelHeading
+          title="The five pillars"
+          sub="Scored from your live inventory — not generic site checks"
+        />
         <div className="grid gap-x-10 gap-y-5 sm:grid-cols-2">
-          {pillars.map((p) => (
-            <div key={p.label}>
-              <div className="mb-1.5 flex items-baseline justify-between">
-                <span className="text-sm text-ink-soft">{p.label}</span>
-                <span className="flex items-center gap-2">
-                  <span className="text-sm font-semibold tabular-nums text-ink">{p.score}</span>
-                  <span className="text-xs text-accent">▲{p.delta}</span>
-                </span>
+          {pillars.map((p) => {
+            const grounded = PILLAR_EVIDENCE[p.label];
+            const score = grounded?.score ?? p.score;
+            return (
+              <div key={p.label}>
+                <div className="mb-1.5 flex items-baseline justify-between">
+                  <span className="text-sm text-ink-soft">{p.label}</span>
+                  <span className="flex items-center gap-2">
+                    <span className="text-sm font-semibold tabular-nums text-ink">{score}</span>
+                    <span className="text-xs text-accent">▲{p.delta}</span>
+                  </span>
+                </div>
+                <ProgressBar
+                  value={score}
+                  label={`${p.label}: ${score} out of 100`}
+                  accent={score >= 75 ? "accent" : score >= 55 ? "cyan" : "warn"}
+                />
+                {grounded ? (
+                  <p className="mt-1.5 flex items-start gap-1.5 text-xs leading-snug text-cyan">
+                    <span aria-hidden>●</span>
+                    <span>{grounded.evidence}</span>
+                  </p>
+                ) : (
+                  PILLAR_HELP[p.label] && (
+                    <p className="mt-1.5 text-xs leading-snug text-ink-faint">
+                      {PILLAR_HELP[p.label]}
+                    </p>
+                  )
+                )}
               </div>
-              <ProgressBar
-                value={p.score}
-                label={`${p.label}: ${p.score} out of 100`}
-                accent={p.score >= 75 ? "accent" : p.score >= 55 ? "cyan" : "warn"}
-              />
-              {PILLAR_HELP[p.label] && (
-                <p className="mt-1.5 text-xs leading-snug text-ink-faint">
-                  {PILLAR_HELP[p.label]}
-                </p>
-              )}
-            </div>
-          ))}
+            );
+          })}
         </div>
       </Card>
 
