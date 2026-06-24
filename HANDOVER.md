@@ -237,6 +237,24 @@ Marketing leads (audit + feed) persist to `lp_marketing_leads` (anon INSERT-only
 
 ---
 
+## 11b. Connector seams (dashboard interactions — for Helmy)
+
+Every interactive control is wired to a real endpoint with finished UX. To make it
+live, point each seam at its backend. The demo/anon paths no-op so nothing errors.
+
+| Control | Seam | What to connect | Env |
+|---|---|---|---|
+| Onboarding checklist / states | data signals (`dealer.vehicles`/`feedType`, `visibility`, `agent.status`) | feed-ingest + bot scans populate `dp_*`; steps + `ScanningState`→live flip automatically | — |
+| "Run a fresh scan" | `POST /api/ai-visibility/scans` | forward to the bot's scan trigger | `BOT_SCAN_WEBHOOK_URL`, `BOT_SCAN_KEY` |
+| Leads "Take over → Send" | `POST /api/lead/reply` | agent outbound (Twilio SMS / ElevenLabs voice) + insert `dp_messages` | `AGENT_SEND_WEBHOOK_URL`, `AGENT_SEND_KEY` |
+| AI Visibility live data | `AI_MONITOR_LIVE=true` + bot tables (`ai_visibility_*`) | the `DataTag` flips Demo→Live per widget; `getVisibilityMonitor()` reads live | `AI_MONITOR_LIVE` |
+| Settings → Profile Save | server action `saveProfile` (RLS `dp_profiles_update_self`) | already live for signed-in dealers | — |
+| Date-range selector | `?range=` URL param (already wired) | scope ranged queries to the param when time-series data exists | — |
+| Feed / visibility / agent ingest | `POST /api/feed/ingest`, `/api/visibility/ingest`, `/api/agent/webhook` | the bot/normalizer POSTs here (already real) | `SUPABASE_SERVICE_ROLE_KEY`, `LOTPILOT_INGEST_KEY` |
+
+Dashboard reads live per-dealer data via the session client (RLS `dp_*_own`); the
+public demo (Capitol Nissan) stays on the cached anon path. See §5/§10.
+
 ## 12. Working together
 
 Duncan is committing to `main` frequently (auto-deploys). To avoid stepping on each other:
