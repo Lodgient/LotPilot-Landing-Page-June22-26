@@ -40,45 +40,9 @@ export default function ShowcaseGallery() {
   const cur = SHOTS[active];
 
   return (
-    <div className="grid gap-6 lg:grid-cols-[1fr_288px] lg:items-start">
-      {/* main column: title + description + big preview */}
-      <div className="order-2 lg:order-1">
-        <div className="mb-4">
-          <p className="text-base font-semibold text-ink">{cur.title}</p>
-          <p className="mt-1 max-w-2xl text-sm leading-relaxed text-ink-muted">{cur.body}</p>
-        </div>
-
-        <div className="overflow-hidden rounded-xl border border-line-strong bg-panel shadow-[0_30px_80px_-32px_rgba(15,23,34,0.38)]">
-          <div className="flex items-center gap-1.5 border-b border-line bg-canvas-2 px-3.5 py-2.5">
-            <span className="h-2.5 w-2.5 rounded-full bg-danger/40" />
-            <span className="h-2.5 w-2.5 rounded-full bg-warn/40" />
-            <span className="h-2.5 w-2.5 rounded-full bg-accent/40" />
-            <span className="ml-2 truncate text-[10px] text-ink-faint">
-              dealers.lotpilot.com/{cur.label}
-            </span>
-          </div>
-          <div className="relative aspect-[16/10] bg-canvas-2">
-            <motion.img
-              key={cur.src}
-              src={cur.src}
-              alt={`LotPilot ${cur.title}`}
-              width={1600}
-              height={1000}
-              initial={{ opacity: 0, scale: 1.008 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ duration: 0.45, ease: [0.16, 1, 0.3, 1] }}
-              className="absolute inset-0 block h-full w-full"
-            />
-          </div>
-        </div>
-      </div>
-
-      {/* side rail: compact selectable list (horizontal scroll on mobile) */}
-      <div
-        role="tablist"
-        aria-label="Product views"
-        className="order-1 flex gap-2.5 overflow-x-auto pb-1 lg:order-2 lg:flex-col lg:overflow-visible lg:pb-0"
-      >
+    <div>
+      {/* compact selectable tabs — a row across the top */}
+      <div role="tablist" aria-label="Product views" className="grid grid-cols-2 gap-2.5 sm:grid-cols-4">
         {SHOTS.map((s, i) => {
           const on = active === i;
           return (
@@ -88,7 +52,7 @@ export default function ShowcaseGallery() {
               aria-selected={on}
               onClick={() => setActive(i)}
               className={cn(
-                "group flex w-60 shrink-0 items-center gap-3 rounded-xl border p-2 text-left transition-all lg:w-full",
+                "group flex items-center gap-3 rounded-xl border p-2 text-left transition-all",
                 on
                   ? "border-cyan/60 bg-cyan/[0.05] ring-1 ring-cyan/25"
                   : "border-line bg-panel hover:border-line-strong hover:bg-canvas-2",
@@ -101,7 +65,7 @@ export default function ShowcaseGallery() {
                   alt=""
                   loading="lazy"
                   className={cn(
-                    "block h-12 w-[76px] object-cover transition-opacity",
+                    "block h-11 w-[68px] object-cover transition-opacity",
                     on ? "opacity-100" : "opacity-80 group-hover:opacity-100",
                   )}
                 />
@@ -110,7 +74,7 @@ export default function ShowcaseGallery() {
                 <span
                   className={cn(
                     "block truncate text-sm font-semibold transition-colors",
-                    on ? "text-cyan" : "text-ink group-hover:text-ink",
+                    on ? "text-cyan" : "text-ink",
                   )}
                 >
                   {s.title}
@@ -120,6 +84,37 @@ export default function ShowcaseGallery() {
             </button>
           );
         })}
+      </div>
+
+      {/* active title + description */}
+      <div className="mt-6 text-center">
+        <p className="text-base font-semibold text-ink">{cur.title}</p>
+        <p className="mx-auto mt-1 max-w-2xl text-sm leading-relaxed text-ink-muted">{cur.body}</p>
+      </div>
+
+      {/* the big preview */}
+      <div className="mt-4 overflow-hidden rounded-xl border border-line-strong bg-panel shadow-[0_30px_80px_-32px_rgba(15,23,34,0.38)]">
+        <div className="flex items-center gap-1.5 border-b border-line bg-canvas-2 px-3.5 py-2.5">
+          <span className="h-2.5 w-2.5 rounded-full bg-danger/40" />
+          <span className="h-2.5 w-2.5 rounded-full bg-warn/40" />
+          <span className="h-2.5 w-2.5 rounded-full bg-accent/40" />
+          <span className="ml-2 truncate text-[10px] text-ink-faint">
+            dealers.lotpilot.com/{cur.label}
+          </span>
+        </div>
+        <div className="relative aspect-[16/10] bg-canvas-2">
+          <motion.img
+            key={cur.src}
+            src={cur.src}
+            alt={`LotPilot ${cur.title}`}
+            width={1600}
+            height={1000}
+            initial={{ opacity: 0, scale: 1.008 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.45, ease: [0.16, 1, 0.3, 1] }}
+            className="absolute inset-0 block h-full w-full"
+          />
+        </div>
       </div>
     </div>
   );
