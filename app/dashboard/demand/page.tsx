@@ -222,7 +222,7 @@ export default async function DemandPage() {
         <div className="hidden overflow-x-auto scroll-slim lg:block">
           <table className="w-full min-w-[820px] border-collapse">
             <thead>
-              <tr className="text-xs text-ink-faint">
+              <tr className="border-b border-line bg-canvas-2/50 text-[11px] uppercase tracking-[0.07em] text-ink-faint">
                 <th className="px-5 py-3 text-left font-medium">What buyers ask AI</th>
                 <th className="px-3 py-3 text-center font-medium">Weekly</th>
                 <th className="px-3 py-3 text-center font-medium">Trend</th>
@@ -233,10 +233,13 @@ export default async function DemandPage() {
               </tr>
             </thead>
             <tbody>
-              {ordered.map((d) => {
+              {ordered.map((d, i) => {
                 const meta = STATUS[d.status];
                 return (
-                  <tr key={d.query} className="border-t border-line">
+                  <tr
+                    key={d.query}
+                    className={cn("border-t border-line", i % 2 === 1 && "bg-black/[0.015]")}
+                  >
                     <td className="px-5 py-3">
                       <p className="text-sm font-medium text-ink">{d.query}</p>
                       <p className="text-xs text-ink-faint">{d.segment}</p>
@@ -256,9 +259,15 @@ export default async function DemandPage() {
                       </span>
                     </td>
                     <td className="px-3 py-3 text-sm">
-                      <span className={d.topSource === "You" ? "text-accent" : "text-danger"}>
-                        {d.topSource}
-                      </span>
+                      {d.topSource === "You" ? (
+                        <span className="inline-flex items-center gap-1 rounded-full bg-accent/12 px-2 py-0.5 text-xs font-medium text-accent">
+                          <Icon name="check" size={11} strokeWidth={2.5} /> You
+                        </span>
+                      ) : (
+                        <span className="inline-flex items-center gap-1 rounded-full bg-danger/10 px-2 py-0.5 text-xs font-medium text-danger">
+                          → {d.topSource}
+                        </span>
+                      )}
                     </td>
                     <td className="px-3 py-3 text-center">
                       <Badge tone={meta.tone}>{meta.label}</Badge>
