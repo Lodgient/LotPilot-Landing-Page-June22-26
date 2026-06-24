@@ -24,7 +24,7 @@ export async function GET() {
     ]);
 
     const hot = leads.filter((l) => l.temp === "Hot");
-    const applied = recs.filter((r) => r.status === "done").length;
+    const applied = recs.filter((r) => r.status === "applied").length;
 
     type N = {
       id: string;
