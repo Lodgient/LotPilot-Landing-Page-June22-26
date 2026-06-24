@@ -146,7 +146,12 @@ export async function requireDealer(): Promise<DealerContext> {
     .eq("id", profile.dealer_id)
     .single();
 
-  if (!dealer) redirect("/login");
+  if (!dealer) redirect("/activate");
+
+  // Pay-to-access: a provisioned dealer must have an active or trialing
+  // subscription. Unpaid (inactive/canceled) → activate gate.
+  const status = (dealer as { subscription_status?: string }).subscription_status;
+  if (status !== "active" && status !== "trialing") redirect("/activate");
 
   return {
     dealer: {
