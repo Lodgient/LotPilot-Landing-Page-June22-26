@@ -48,7 +48,7 @@ function NavLinks({ onNavigate }: { onNavigate?: () => void }) {
       {NAV_GROUPS.map((group, gi) => (
         <div key={group.heading ?? gi} className="flex flex-col gap-1">
           {group.heading && (
-            <p className="px-3 pb-1 text-[10px] font-mono font-medium uppercase tracking-[0.14em] text-ink-muted">
+            <p className="px-3 pb-1 text-[10px] font-semibold uppercase tracking-[0.16em] text-ink-faint">
               {group.heading}
             </p>
           )}
@@ -61,10 +61,10 @@ function NavLinks({ onNavigate }: { onNavigate?: () => void }) {
                 onClick={onNavigate}
                 aria-current={active ? "page" : undefined}
                 className={cn(
-                  "group relative flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition-all",
+                  "group relative flex items-center gap-3 rounded-xl px-3 py-2.5 text-[13.5px] tracking-[-0.01em] transition-all",
                   active
-                    ? "bg-cyan/10 text-cyan ring-1 ring-inset ring-cyan/20"
-                    : "text-ink-soft hover:bg-ink/[0.05] hover:text-ink",
+                    ? "bg-cyan/10 font-semibold text-cyan ring-1 ring-inset ring-cyan/20"
+                    : "font-medium text-ink-soft hover:bg-ink/[0.05] hover:text-ink",
                 )}
               >
                 {active && (
