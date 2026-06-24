@@ -146,7 +146,15 @@ export default async function VisibilityPage() {
         </Card>
 
         <Card>
-          <PanelHeading title="Score over time" sub="Last 12 weeks" />
+          <PanelHeading
+            title="Score over time"
+            sub="Last 12 weeks"
+            action={
+              <Link href="/dashboard/visibility/history" className="text-xs text-cyan hover:underline">
+                Full history →
+              </Link>
+            }
+          />
           <LineChart data={visibility?.trend ?? []} accent="accent" height={170} />
           <div className="mt-2 flex justify-between text-xs text-ink-faint">
             <span>12 wks ago</span>
