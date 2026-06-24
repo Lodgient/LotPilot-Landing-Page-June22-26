@@ -7,20 +7,21 @@
    ============================================================ */
 
 @theme {
-  /* LotPilot brand palette — cool, clean automotive-tech.
-     Crisp cool-white surfaces, slate-black ink, electric-blue brand. */
-  --color-canvas: #f6f8fb; /* cool near-white */
-  --color-canvas-2: #ecf0f6; /* lifted panel tone */
-  --color-panel: #ffffff;
-  --color-panel-2: #f1f4f9;
-  --color-line: rgba(15, 23, 34, 0.1);
-  --color-line-strong: rgba(15, 23, 34, 0.16);
+  /* LotPilot brand palette — Editorial Tech-Lux.
+     Warm paper-white surfaces, crisp white cards, rich warm-black ink,
+     electric-blue brand. Warm neutrals + a serif display read bespoke. */
+  --color-canvas: #f6f4ef; /* warm paper-white */
+  --color-canvas-2: #efebe3; /* warm lifted panel tone */
+  --color-panel: #ffffff; /* crisp white cards lift off the warm canvas */
+  --color-panel-2: #f5f1ea;
+  --color-line: rgba(38, 32, 24, 0.1);
+  --color-line-strong: rgba(38, 32, 24, 0.16);
 
-  /* Text — cool slate-black down to soft steel greys */
-  --color-ink: #0f1722;
-  --color-ink-soft: #475569;
-  --color-ink-muted: #74808f;
-  --color-ink-faint: #a3adba;
+  /* Text — warm near-black down to soft taupe-greys */
+  --color-ink: #1a1714;
+  --color-ink-soft: #57514a;
+  --color-ink-muted: #847b6f;
+  --color-ink-faint: #b1a89b;
 
   /* Brand: electric blue primary, bright sky-cyan secondary.
      (Token names kept so existing bg-cyan CTAs become electric blue,
@@ -88,13 +89,14 @@ body::before {
   color: var(--color-ink);
 }
 
-/* Display accent — Sora, upright, semibold. (Sora has no italic face, so we
-   emphasize with weight + the blue gradient instead of synthetic obliquing.) */
+/* Display accent — Fraunces editorial serif. Optical display sizing, tight
+   tracking; emphasis via weight + the blue gradient. */
 .font-display {
   font-family: var(--font-serif);
   font-style: normal;
   font-weight: 600;
-  letter-spacing: -0.02em;
+  letter-spacing: -0.015em;
+  font-variation-settings: "opsz" 144, "SOFT" 0, "WONK" 0;
 }
 
 /* Ambient grid + glows — dark hairlines on white, soft pastel blooms. */
@@ -156,8 +158,9 @@ body::after {
   background: var(--color-panel);
   border: 1px solid var(--color-line);
   box-shadow:
-    0 1px 2px rgba(13, 17, 23, 0.04),
-    0 12px 28px -20px rgba(13, 17, 23, 0.18);
+    0 1px 1px rgba(38, 32, 24, 0.03),
+    0 2px 6px -2px rgba(38, 32, 24, 0.05),
+    0 18px 40px -24px rgba(38, 32, 24, 0.16);
   transition: border-color 0.25s ease, transform 0.25s var(--ease-out-expo), box-shadow 0.25s ease;
 }
 .surface-hover:hover {

@@ -1,12 +1,13 @@
 import type { Metadata } from "next";
-import { Geist_Mono, Sora, Inter } from "next/font/google";
+import { Geist_Mono, Fraunces, Inter } from "next/font/google";
 import "./globals.css";
 import StructuredData from "@/components/StructuredData";
 import SmoothScroll from "@/components/SmoothScroll";
 
-// LotPilot brand system — modern automotive-tech: Sora geometric display
-// + Inter clean body. (CSS var names kept stable so `font-sans`/`font-serif`
-// remap through globals.css without editing every component.)
+// LotPilot brand system — Editorial Tech-Lux: Fraunces (editorial serif) for
+// display moments + Inter for clean UI/body. (CSS var names kept stable so
+// `font-sans`/`font-serif` remap through globals.css without touching every
+// component.)
 const sans = Inter({
   variable: "--font-geist-sans",
   subsets: ["latin"],
@@ -20,10 +21,11 @@ const geistMono = Geist_Mono({
   display: "swap",
 });
 
-const instrument = Sora({
+const instrument = Fraunces({
   variable: "--font-instrument",
   subsets: ["latin"],
   weight: ["400", "500", "600", "700"],
+  style: ["normal", "italic"],
   display: "swap",
 });
 
