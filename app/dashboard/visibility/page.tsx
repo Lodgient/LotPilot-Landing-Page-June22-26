@@ -160,7 +160,7 @@ export default async function VisibilityPage() {
       <div className="grid gap-6 lg:grid-cols-[1fr_1.6fr]">
         <Card glow className="flex flex-col items-center justify-center text-center">
           <p className="text-sm text-ink-muted">Inventory Citation Rate</p>
-          <div className="mt-3 text-7xl font-bold leading-none tracking-tight text-ink">
+          <div className="mt-3 font-display text-7xl leading-none tracking-tight text-ink">
             {citationRate}
             <span className="align-top text-2xl font-semibold text-ink-faint">%</span>
           </div>

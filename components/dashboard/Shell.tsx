@@ -240,7 +240,7 @@ export default function Shell({
             <Icon name="menu" size={18} />
           </button>
           <div className="min-w-0 flex-1">
-            <h1 className="truncate text-base font-semibold text-ink sm:text-lg">{title}</h1>
+            <h1 className="truncate font-display text-lg text-ink sm:text-xl">{title}</h1>
             {intro && <p className="hidden truncate text-xs text-ink-muted sm:block">{intro}</p>}
           </div>
           <Suspense fallback={null}>

@@ -176,7 +176,7 @@ export default async function CommandCenter() {
               AI-influenced gross overnight
             </p>
             <div className="mt-1 flex flex-wrap items-baseline gap-x-3 gap-y-2">
-              <span className="text-gradient text-4xl font-bold tracking-tight sm:text-5xl">
+              <span className="font-display text-gradient text-5xl tracking-tight sm:text-6xl">
                 <CountUp value={overnight.grossInfluenced ?? "—"} />
               </span>
               <span className="inline-flex items-center gap-1 rounded-full bg-accent/12 px-2 py-0.5 text-xs font-medium text-accent">

@@ -60,7 +60,7 @@ export default async function RoiPage() {
               LotPilot drove in attributed front gross
             </p>
             <div className="mt-1 flex flex-wrap items-baseline gap-x-3 gap-y-1">
-              <span className="text-gradient text-5xl font-bold tracking-tight sm:text-6xl">
+              <span className="font-display text-gradient text-5xl tracking-tight sm:text-6xl">
                 {money(totalGross)}
               </span>
             </div>

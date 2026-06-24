@@ -53,8 +53,8 @@ export function PanelHeading({
   return (
     <div className="mb-5 flex items-start justify-between gap-4">
       <div>
-        <h2 className="text-lg font-semibold tracking-tight text-ink">{title}</h2>
-        {sub && <p className="mt-0.5 text-sm text-ink-muted">{sub}</p>}
+        <h2 className="font-display text-[19px] leading-tight text-ink">{title}</h2>
+        {sub && <p className="mt-1 text-sm text-ink-muted">{sub}</p>}
       </div>
       {action}
     </div>
@@ -86,7 +86,7 @@ export function StatCard({ kpi }: { kpi: KPI }) {
       </div>
       <div className="mt-3 flex items-end justify-between gap-3">
         <div>
-          <div className="text-3xl font-bold tracking-tight text-ink">
+          <div className="font-display text-[32px] leading-none text-ink [font-feature-settings:'tnum'_'lnum']">
             <CountUp value={kpi.value} />
           </div>
           {kpi.sub && <div className="mt-0.5 text-xs text-ink-muted">{kpi.sub}</div>}
