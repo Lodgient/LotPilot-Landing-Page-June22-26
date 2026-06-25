@@ -1,3 +1,8 @@
+# LotPilot — Developer Handover (combined)
+
+> **Split, focused versions:** **`HANDOVER-WEBSITE.md`** (marketing site) ·
+> **`HANDOVER-DASHBOARD.md`** (dealer dashboard platform). This combined doc remains for full context.
+
 # LotPilot — Website & Dashboard · Developer Handover
 
 Welcome aboard, Helmy. This is everything you need to start working on the LotPilot
