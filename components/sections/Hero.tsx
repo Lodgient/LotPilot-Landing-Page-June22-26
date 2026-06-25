@@ -46,7 +46,7 @@ export default function Hero() {
       <div className="absolute inset-0 z-[2] bg-[linear-gradient(100deg,rgba(6,10,18,0.72)_0%,rgba(8,12,20,0.3)_40%,transparent_66%)]" />
       <div className="pointer-events-none absolute left-[-4%] top-[6%] z-[2] h-[70%] w-[60%] bg-[radial-gradient(ellipse_at_30%_40%,rgba(56,189,248,0.18),transparent_60%)] blur-2xl" />
 
-      <div className="relative z-[5] mx-auto w-full max-w-[1240px] px-7 pb-28 pt-32 text-[#f8fafc] sm:px-14">
+      <div className="relative z-[5] mx-auto w-full max-w-[1240px] px-6 pb-20 pt-28 text-[#f8fafc] sm:px-14 sm:pb-28 sm:pt-32">
         <motion.div
           {...fade(0)}
           className="mb-9 inline-flex items-center gap-3 rounded-full border border-[#5b8def]/45 bg-[#0b1220]/55 px-5 py-2.5 text-[11px] font-medium uppercase tracking-[0.28em] text-[#8fc7ff] backdrop-blur"
@@ -94,7 +94,7 @@ export default function Hero() {
         {...fade(0.85)}
         className="absolute inset-x-0 bottom-0 z-[5] border-t border-[#f8fafc]/15 bg-[#0b1220]/40 backdrop-blur-sm"
       >
-        <div className="mx-auto flex max-w-[1240px] items-center px-7 py-6 sm:px-14">
+        <div className="mx-auto flex max-w-[1240px] items-center px-6 py-5 sm:px-14 sm:py-6">
           {STATS.map((s, i) => (
             <div
               key={s.l}
