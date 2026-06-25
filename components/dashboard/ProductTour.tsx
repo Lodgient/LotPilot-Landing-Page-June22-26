@@ -187,18 +187,14 @@ export default function ProductTour() {
   if (!active) return null;
   const step = STEPS[i];
   const pad = 8;
+  const TT_H = 172;
+  const winW = typeof window !== "undefined" ? window.innerWidth : 1200;
+  const winH = typeof window !== "undefined" ? window.innerHeight : 800;
   const below = !box || step.place !== "top";
-  const tipTop = box
-    ? below
-      ? box.top + box.height + pad + 10
-      : box.top - pad - 10
-    : (typeof window !== "undefined" ? window.innerHeight : 800) / 2;
-  const tipLeft = box
-    ? Math.min(
-        Math.max(box.left + box.width / 2, 180),
-        (typeof window !== "undefined" ? window.innerWidth : 1200) - 180,
-      )
-    : (typeof window !== "undefined" ? window.innerWidth : 1200) / 2;
+  const desired = box ? (below ? box.top + box.height + 14 : box.top - 14 - TT_H) : winH / 2 - TT_H / 2;
+  // always keep the tooltip fully on screen, even for very tall targets
+  const tipTop = Math.min(Math.max(desired, 16), winH - TT_H - 16);
+  const tipLeft = box ? Math.min(Math.max(box.left + box.width / 2, 180), winW - 180) : winW / 2;
 
   return (
     <div className="fixed inset-0 z-[120]">
@@ -227,7 +223,7 @@ export default function ProductTour() {
 
       <div
         className="absolute w-[300px] max-w-[calc(100vw-2rem)] rounded-2xl border border-line bg-panel p-4 shadow-[0_30px_80px_-24px_rgba(20,23,32,0.6)]"
-        style={{ top: tipTop, left: tipLeft, transform: `translateX(-50%) ${below ? "" : "translateY(-100%)"}` }}
+        style={{ top: tipTop, left: tipLeft, transform: "translateX(-50%)" }}
       >
         <p className="font-display text-base text-ink">{step.title}</p>
         <p className="mt-1.5 text-sm leading-relaxed text-ink-soft">{step.body}</p>
