@@ -219,7 +219,7 @@ export default function LeadsView({ leads }: { leads: Lead[] }) {
         <StatTile icon="file" value={stats.credit} label="Credit apps captured" tone="warn" />
       </div>
 
-      <div className="grid gap-6 lg:grid-cols-[340px_1fr]">
+      <div data-tour="inbox" className="grid gap-6 lg:grid-cols-[340px_1fr]">
         {/* List */}
         <div>
           <div className="mb-3 flex flex-wrap gap-2">

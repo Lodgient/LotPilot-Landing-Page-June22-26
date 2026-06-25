@@ -150,7 +150,7 @@ export default async function VisibilityPage() {
       title="AI Visibility"
       intro="How discoverable your inventory is across AI answer engines."
     >
-      <div className="grid gap-6 lg:grid-cols-[1fr_1.6fr]">
+      <div data-tour="citation" className="grid gap-6 lg:grid-cols-[1fr_1.6fr]">
         <Card glow className="flex flex-col items-center justify-center text-center">
           <p className="text-sm text-ink-muted">Inventory Citation Rate</p>
           <div className="mt-3 font-display text-7xl leading-none tracking-tight text-ink">
@@ -252,13 +252,15 @@ export default async function VisibilityPage() {
       <VinCitationBreakdown vehicles={vehicles} dealerName={dealer.name} />
 
       {shockData && (
-        <Card className="mt-6">
-          <PanelHeading
-            title="Forward the proof"
-            sub="A board-ready image of AI naming a rival instead of you — share it in one tap"
-          />
-          <ShareProof data={shockData} showHeading={false} />
-        </Card>
+        <div data-tour="shock">
+          <Card className="mt-6">
+            <PanelHeading
+              title="Forward the proof"
+              sub="A board-ready image of AI naming a rival instead of you — share it in one tap"
+            />
+            <ShareProof data={shockData} showHeading={false} />
+          </Card>
+        </div>
       )}
 
       <Card className="mt-6">

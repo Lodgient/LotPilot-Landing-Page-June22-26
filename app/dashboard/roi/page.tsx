@@ -53,7 +53,7 @@ export default async function RoiPage() {
           className="pointer-events-none absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-cyan via-accent to-violet"
         />
         <div className="glow-accent pointer-events-none absolute -right-10 -top-16 h-56 w-56 opacity-50" />
-        <div className="relative grid gap-6 lg:grid-cols-[1.5fr_auto] lg:items-center">
+        <div data-tour="roi" className="relative grid gap-6 lg:grid-cols-[1.5fr_auto] lg:items-center">
           <div>
             <Badge tone="accent">● This month</Badge>
             <p className="mt-3 text-sm font-medium text-ink-muted">
