@@ -35,7 +35,7 @@ export default function DemoBanner() {
       </div>
       <button
         onClick={() => window.dispatchEvent(new Event(START_TOUR))}
-        className="hidden h-10 shrink-0 items-center gap-1.5 rounded-full border border-line-strong bg-panel px-4 text-sm font-medium text-ink transition-colors hover:border-cyan/50 sm:inline-flex"
+        className="inline-flex h-10 shrink-0 items-center gap-1.5 rounded-full border border-line-strong bg-panel px-4 text-sm font-medium text-ink transition-colors hover:border-cyan/50"
       >
         <Icon name="play" size={13} /> Take the tour
       </button>
