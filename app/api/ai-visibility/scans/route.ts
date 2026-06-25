@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
+import { captureError } from "@/lib/notify";
 
 export const runtime = "nodejs";
 
@@ -44,7 +45,7 @@ export async function POST() {
         body: JSON.stringify({ dealer_id: dealerId, requested_by: user.id }),
       });
     } catch (e) {
-      console.error("[scan] bot trigger failed:", e);
+      await captureError(e, { where: "scan bot trigger" });
       // Don't hard-fail the UX; the dealer can retry.
     }
   }

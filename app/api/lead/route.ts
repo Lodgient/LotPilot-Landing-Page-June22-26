@@ -5,6 +5,7 @@
 
 import { NextResponse } from "next/server";
 import { createAnonClient } from "@/lib/supabase/anon";
+import { notifyNewLead, sendEmail, feedThanksEmail, captureError } from "@/lib/notify";
 
 export const runtime = "nodejs";
 
@@ -61,13 +62,23 @@ export async function POST(req: Request) {
       source: "feed-onboarding-chat",
     });
     if (error) {
-      console.error("[feed-lead] insert failed:", error.message);
+      await captureError(error, { where: "feed-lead insert" });
       return NextResponse.json({ ok: false, error: "Couldn't save — please try again." }, { status: 500 });
     }
   } catch (e) {
-    console.error("[feed-lead] insert threw:", e);
+    await captureError(e, { where: "feed-lead" });
     return NextResponse.json({ ok: false, error: "Couldn't save — please try again." }, { status: 500 });
   }
+
+  await notifyNewLead({
+    kind: "feed",
+    dealership: dealershipName,
+    email,
+    website: (body.website || "").trim() || null,
+    feedType: (body.feedType || "").trim() || null,
+  });
+  const tpl = feedThanksEmail({ dealership: dealershipName });
+  await sendEmail({ to: email, subject: tpl.subject, html: tpl.html });
 
   return NextResponse.json({ ok: true });
 }

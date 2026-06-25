@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
+import { captureError } from "@/lib/notify";
 
 export const runtime = "nodejs";
 
@@ -47,7 +48,7 @@ export async function POST(req: Request) {
         body: JSON.stringify({ lead_id: leadId, text, sender: "rep", by: user.id }),
       });
     } catch (e) {
-      console.error("[lead/reply] send failed:", e);
+      await captureError(e, { where: "lead/reply send" });
     }
   }
 

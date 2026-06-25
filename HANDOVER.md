@@ -66,6 +66,14 @@ data). You only need env vars for the AI/voice features below.
 | `DEMO_EMAIL` / `DEMO_PASSWORD` | demo-login flow | `/api/demo-login` |
 | `AI_MONITOR_LIVE` | `"true"` switches visibility data from demo → live bot tables | live monitor |
 | `DASHBOARD_PUBLIC` | set `"false"` to require login for `/dashboard` (default: public demo) | access control |
+| `SLACK_WEBHOOK_URL` | new-lead pings + error alerts (`lib/notify.ts`) | lead notifications / errors |
+| `SLACK_ERROR_WEBHOOK_URL` | (optional) separate channel for errors | errors |
+| `RESEND_API_KEY` / `EMAIL_FROM` | transactional email (audit results, feed thanks) | emails |
+| `BOT_SCAN_WEBHOOK_URL` / `BOT_SCAN_KEY` | "Run a fresh scan" → bot trigger | scans |
+| `AGENT_SEND_WEBHOOK_URL` / `AGENT_SEND_KEY` | inbox "Take over → Send" → agent outbound | lead replies |
+| `STRIPE_SECRET_KEY` / `STRIPE_PRICE_VISIBILITY` / `STRIPE_PRICE_AGENT` / `STRIPE_WEBHOOK_SECRET` | billing | checkout + webhook |
+
+All of the above no-op gracefully until set — the app never errors for a missing key.
 
 Ask Duncan for the real values (don't commit them).
 

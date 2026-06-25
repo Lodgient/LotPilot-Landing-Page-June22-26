@@ -3,6 +3,7 @@ import { getStripe } from "@/lib/stripe/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { provisionDealer } from "@/lib/onboarding/provision";
 import { isPlanId, type PlanId } from "@/lib/stripe/plans";
+import { captureError } from "@/lib/notify";
 
 export const runtime = "nodejs";
 
@@ -62,8 +63,8 @@ export async function POST(req: Request) {
           .eq("stripe_subscription_id", sub.id);
       }
     }
-  } catch (err: any) {
-    console.error("[stripe webhook] handler error:", err?.message);
+  } catch (err: unknown) {
+    await captureError(err, { where: `stripe webhook ${event.type}` });
     return NextResponse.json({ error: "handler_failed" }, { status: 500 });
   }
 

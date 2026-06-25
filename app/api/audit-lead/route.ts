@@ -6,6 +6,7 @@
 
 import { NextResponse } from "next/server";
 import { createAnonClient } from "@/lib/supabase/anon";
+import { notifyNewLead, sendEmail, auditResultEmail, captureError } from "@/lib/notify";
 
 export const runtime = "nodejs";
 
@@ -56,13 +57,19 @@ export async function POST(req: Request) {
       source: "free-audit",
     });
     if (error) {
-      console.error("[audit-lead] insert failed:", error.message);
+      await captureError(error, { where: "audit-lead insert" });
       return NextResponse.json({ ok: false, error: "Couldn't save — please try again." }, { status: 500 });
     }
   } catch (e) {
-    console.error("[audit-lead] insert threw:", e);
+    await captureError(e, { where: "audit-lead" });
     return NextResponse.json({ ok: false, error: "Couldn't save — please try again." }, { status: 500 });
   }
+
+  // Notify the team + email the dealer their results (both no-op until configured).
+  const score = typeof body.score === "number" ? Math.round(body.score) : null;
+  await notifyNewLead({ kind: "audit", dealership: dealershipName, email, score, website: body.url, city: body.city });
+  const tpl = auditResultEmail({ dealership: dealershipName, score, city: body.city });
+  await sendEmail({ to: email, subject: tpl.subject, html: tpl.html });
 
   return NextResponse.json({ ok: true });
 }

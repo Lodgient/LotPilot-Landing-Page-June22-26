@@ -11,8 +11,18 @@ export default function Error({
   reset: () => void;
 }) {
   useEffect(() => {
-    // Surface for logging/monitoring (wire Sentry here when added).
     console.error(error);
+    // Report to the server sink → logs + optional Slack alert.
+    fetch("/api/log", {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify({
+        message: error?.message,
+        digest: error?.digest,
+        where: "app/error",
+        url: typeof window !== "undefined" ? window.location.href : "",
+      }),
+    }).catch(() => {});
   }, [error]);
 
   return (
