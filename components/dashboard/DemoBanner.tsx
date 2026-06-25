@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import Icon from "@/components/Icon";
+import { START_TOUR } from "./ProductTour";
 
 /**
  * Shown only on the public demo (anonymous → demo dealer). The demo link is the
@@ -32,8 +33,15 @@ export default function DemoBanner() {
           See this on your own inventory — free to start, live in about a minute.
         </p>
       </div>
+      <button
+        onClick={() => window.dispatchEvent(new Event(START_TOUR))}
+        className="hidden h-10 shrink-0 items-center gap-1.5 rounded-full border border-line-strong bg-panel px-4 text-sm font-medium text-ink transition-colors hover:border-cyan/50 sm:inline-flex"
+      >
+        <Icon name="play" size={13} /> Take the tour
+      </button>
       <Link
         href="/signup?plan=visibility"
+        data-tour="start"
         className="inline-flex h-10 shrink-0 items-center gap-1.5 rounded-full bg-cyan px-5 text-sm font-semibold text-ink-inverse transition-all hover:-translate-y-0.5 hover:bg-cyan-dim cta-glow"
       >
         Start your own

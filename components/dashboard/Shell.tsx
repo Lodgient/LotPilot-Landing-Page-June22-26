@@ -16,6 +16,7 @@ import Copilot from "./Copilot";
 import CommandPalette, { OPEN_CMDK } from "./CommandPalette";
 import NotificationBell from "./NotificationBell";
 import DemoBanner from "./DemoBanner";
+import ProductTour from "./ProductTour";
 
 type NavItem = { href: string; label: string; icon: IconName; exact?: boolean };
 
@@ -62,6 +63,7 @@ function NavLinks({ onNavigate }: { onNavigate?: () => void }) {
                 key={item.href}
                 href={item.href}
                 onClick={onNavigate}
+                data-tour={item.href === "/dashboard/visibility" ? "nav-visibility" : undefined}
                 aria-current={active ? "page" : undefined}
                 className={cn(
                   "group relative flex items-center gap-3 rounded-xl px-3 py-2.5 text-[13.5px] tracking-[-0.01em] transition-all",
@@ -274,7 +276,9 @@ export default function Shell({
             <span className="hidden md:inline">Search</span>
             <kbd className="rounded border border-line bg-panel px-1 text-[10px] leading-tight">⌘K</kbd>
           </button>
-          <NotificationBell />
+          <span data-tour="bell">
+            <NotificationBell />
+          </span>
           <Suspense fallback={null}>
             <DateRange />
           </Suspense>
@@ -300,6 +304,7 @@ export default function Shell({
 
       <Copilot dealerName={dealer.name} />
       <CommandPalette />
+      <ProductTour />
     </div>
   );
 }

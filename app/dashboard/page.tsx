@@ -193,7 +193,7 @@ export default async function CommandCenter() {
           className="pointer-events-none absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-cyan via-accent to-violet"
         />
         <div className="glow-cyan pointer-events-none absolute -right-10 -top-16 h-56 w-56 opacity-50" />
-        <div className="relative grid gap-6 lg:grid-cols-[1fr_auto]">
+        <div data-tour="gross" className="relative grid gap-6 lg:grid-cols-[1fr_auto]">
           <div>
             <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
               <Badge tone="cyan">● While you slept</Badge>
@@ -270,7 +270,7 @@ export default async function CommandCenter() {
       </Card>
 
       {/* Today KPIs */}
-      <div className="mt-6 grid grid-cols-2 gap-3 sm:gap-4 xl:grid-cols-4">
+      <div data-tour="kpis" className="mt-6 grid grid-cols-2 gap-3 sm:gap-4 xl:grid-cols-4">
         {kpis.map((k) => (
           <StatCard key={k.label} kpi={k} />
         ))}
