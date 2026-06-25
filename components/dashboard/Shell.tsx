@@ -15,6 +15,7 @@ import { PrintButton } from "./Exports";
 import Copilot from "./Copilot";
 import CommandPalette, { OPEN_CMDK } from "./CommandPalette";
 import NotificationBell from "./NotificationBell";
+import DemoBanner from "./DemoBanner";
 
 type NavItem = { href: string; label: string; icon: IconName; exact?: boolean };
 
@@ -291,7 +292,10 @@ export default function Shell({
           )}
         </header>
 
-        <main className="px-5 pb-24 pt-6 sm:px-8 sm:py-8">{children}</main>
+        <main className="px-5 pb-24 pt-6 sm:px-8 sm:py-8">
+          {dealer.id === "11111111-1111-1111-1111-111111111111" && <DemoBanner />}
+          {children}
+        </main>
       </div>
 
       <Copilot dealerName={dealer.name} />

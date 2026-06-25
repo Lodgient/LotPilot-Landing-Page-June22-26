@@ -93,7 +93,7 @@ export default async function VisibilityHistoryPage() {
         </Card>
       ) : (
         <>
-          <div className="mt-4 grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+          <div className="mt-4 grid grid-cols-2 gap-3 sm:gap-4 xl:grid-cols-4">
             <Tile icon="target" label="Current score" value={`${current}/100`} color={band(current)} />
             <Tile
               icon="trending"

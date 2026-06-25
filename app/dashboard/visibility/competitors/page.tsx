@@ -88,7 +88,7 @@ export default async function CompetitorsPage() {
         </Card>
       ) : (
         <>
-          <div className="mt-4 grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+          <div className="mt-4 grid grid-cols-2 gap-3 sm:gap-4 xl:grid-cols-4">
             <Tile icon="radar" label="Competitors tracked" value={String(competitors.length)} />
             <Tile icon="target" label="Searches they're winning" value={String(gapQueries)} />
             <Tile
